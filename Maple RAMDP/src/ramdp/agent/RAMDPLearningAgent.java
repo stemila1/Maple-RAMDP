@@ -104,11 +104,11 @@ public class RAMDPLearningAgent implements LearningAgent{
 		State baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 		State currentState = task.mapState(baseState);
 
-		System.out.println(task.getGroundedChildTasks(currentState));
+//		System.out.println(task.getGroundedChildTasks(currentState));
 //		debugPrinting(task.toString());
 		depth += 1;
 		
-		System.out.println(task.isTerminal(currentState));
+//		System.out.println(task.isTerminal(currentState));
 		while(!task.isTerminal(currentState) && (steps < maxSteps || maxSteps == -1)){
 			Action a = nextAction(task, currentState);
 			
@@ -122,7 +122,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 				addChildrenToMap(task, currentState);
 				action = this.taskNames.get(a.actionName());
 			}
-			debugPrinting(action.toString());
+//			debugPrinting(action.toString());
 			if(action.isPrimitive()){
 				result = baseEnv.executeAction(a);
 				e.transition(result);
@@ -144,8 +144,6 @@ public class RAMDPLearningAgent implements LearningAgent{
 			//update task model
 			RAMDPModel model = getModel(task, currentState);
 			model.updateModel(result);
-			
-			debugPrinting("" + task.isTerminal(currentState));
 		}
 		return e;
 	}

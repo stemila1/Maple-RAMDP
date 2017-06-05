@@ -34,15 +34,21 @@ public class TaxiHierarchy {
 	 * @param s The initial state
 	 * @return a root of the taxi hierarchy
 	 */
-	public static Task createRAMDPHierarchy(TaxiState s, boolean fickle){
+	public static Task createRAMDPHierarchy(TaxiState s, boolean fickle, boolean deterministicMoves){
 		//domains generators
 		TerminalFunction tf0 = new TaxiTerminationFunction();
 		RewardFunction rf0 = new TaxiRewardFunction(s.passengers.size(), tf0);
 		TaxiDomain baseGenerator = new TaxiDomain(rf0, tf0);
 		baseGenerator.setFickleTaxi(fickle);
 		baseGenerator.setIncludeFuel(false);
-		if(fickle)
+		if(fickle) {
 			baseGenerator.setTransitionDynamicsLikeFickleTaxiProlem();
+		}
+		if(deterministicMoves) {
+			baseGenerator.setDeterministicTransitionDynamics();
+		} else {
+			baseGenerator.setTransitionNondetirministicDynamics();
+		}
 		
 		TerminalFunction tf1 = new TaxiL1TerminalFunction();
 		RewardFunction rf1 = new GoalBasedRF(tf1);

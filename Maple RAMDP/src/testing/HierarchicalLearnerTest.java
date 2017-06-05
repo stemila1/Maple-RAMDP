@@ -62,10 +62,10 @@ public class HierarchicalLearnerTest {
 		
 		SimulatedEnvironment env = new SimulatedEnvironment(groundDomain, initial);
 		
-		VisualActionObserver obs = new VisualActionObserver(groundDomain, TaxiVisualizer.getVisualizer(5, 5));
-        obs.initGUI();
-        obs.setDefaultCloseOperation(obs.EXIT_ON_CLOSE);
-        env.addObservers(obs);
+//		VisualActionObserver obs = new VisualActionObserver(groundDomain, TaxiVisualizer.getVisualizer(5, 5));
+//        obs.initGUI();
+//        obs.setDefaultCloseOperation(obs.EXIT_ON_CLOSE);
+//        env.addObservers(obs);
 		
 		for(int i = 1; i <= numEpisode; i++){
 			long time = System.currentTimeMillis();
@@ -84,22 +84,30 @@ public class HierarchicalLearnerTest {
 	
 	public static void main(String[] args) {
 		boolean usesFuel = false;
-		boolean fickle = false;
+		boolean fickle = true;
+		boolean deterministicMoves = false;
 //		TaxiState s = TaxiDomain.getClassicState(usesFuel);
-		TaxiState s = TaxiDomain.getTinyClassicState(usesFuel);
-//		TaxiState s = TaxiDomain.getSmallClassicState(usesFuel);
-		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, fickle);
+//		TaxiState s = TaxiDomain.getTinyClassicState(usesFuel);
+		TaxiState s = TaxiDomain.getSmallClassicState(usesFuel);
+//		TaxiState s = TaxiDomain.getMediumClassicState(usesFuel);
+				
+		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, fickle, deterministicMoves);
 		OOSADomain base = TaxiHierarchy.getGroundDomain();
 //		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, false);
 		
-		int numEpisodes = 10;
-		int maxSteps = 10;
-		int threshold = 5;
+		int numEpisodes = 1000;
+		int maxSteps = 1000;
+		int threshold = 3;
 		double discount = 0.99;
 		double rmax = 30;
 		double maxDelta = 0.0001;
 		runRAMDPEpisodes(numEpisodes, maxSteps, RAMDProot, s, base, threshold, discount, rmax, maxDelta);
 		
+		if (deterministicMoves) {
+			System.err.println("used deterministic move transitions");
+		} else {
+			System.err.println("used stochastic move transitions");
+		}
 //		runRMAXQEpsodes(100, RMAXQroot, s, 30, 5, 0.01, base);
 		
 	}

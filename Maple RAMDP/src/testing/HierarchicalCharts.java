@@ -20,10 +20,10 @@ import utilities.SimpleHashableStateFactory;
 
 public class HierarchicalCharts {
 
-	public static void createCrarts(State s, OOSADomain domain, Task RAMDPRoot, Task RMEXQRoot, 
-			int rmax, int threshold, double maxDelta, double discount){
-		HashableStateFactory hs = new SimpleHashableStateFactory();
-		GroundedTask RAMDPGroot = RAMDPRoot.getAllGroundedTasks(s).get(0); 
+	public static void createCrarts(final State s, OOSADomain domain, Task RAMDPRoot, final Task RMEXQRoot, 
+			final int rmax, final int threshold, final double maxDelta, final double discount){
+		final HashableStateFactory hs = new SimpleHashableStateFactory();
+		final GroundedTask RAMDPGroot = RAMDPRoot.getAllGroundedTasks(s).get(0); 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
 		
 		LearningAgentFactory rmaxq = new LearningAgentFactory() {
@@ -52,7 +52,7 @@ public class HierarchicalCharts {
 			}
 		};
 		
-		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 1, 100, ramdp, rmaxq);
+		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 5, 1000, ramdp, rmaxq);
 		exp.setUpPlottingConfiguration(900, 500, 2, 1000,
 				TrialMode.MOST_RECENT_AND_AVERAGE,
 				PerformanceMetric.STEPS_PER_EPISODE,
@@ -63,11 +63,11 @@ public class HierarchicalCharts {
 	}
 	
 	public static void main(String[] args) {
-		boolean ficjle = true;
+		boolean fickle = true;
 		TaxiState s = TaxiDomain.getSmallClassicState(false);
-		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, ficjle);
+		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, fickle, false);
 		OOSADomain base = TaxiHierarchy.getGroundDomain();
-		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, ficjle);
+		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, fickle);
 		createCrarts(s, base, RAMDProot, RMAXQroot, 30, 5, 0.01, 0.99);
 	}
 }

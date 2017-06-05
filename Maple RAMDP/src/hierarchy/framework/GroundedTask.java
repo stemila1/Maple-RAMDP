@@ -136,7 +136,7 @@ public class GroundedTask {
 	
 	@Override
 	public String toString() {
-		String out = "GT: (";
+		String out = "GT(";
 		out += t.toString();
 		out += ", ";
 		out += action.toString();
