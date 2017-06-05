@@ -37,5 +37,10 @@ public class SolveActionType implements ActionType{
 		public Action copy() {
 			return new SolveAction();
 		}
+		
+		@Override
+		public String toString() {
+			return actionName();
+		}
 	}
 }

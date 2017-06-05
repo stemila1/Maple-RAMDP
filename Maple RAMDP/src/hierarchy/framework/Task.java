@@ -108,4 +108,12 @@ public abstract class Task {
 	 * primitive (true) or composite (false)
 	 */
 	public abstract boolean isPrimitive();
+	
+	@Override
+	public String toString() {
+		String out = "";
+		out += actionType.typeName();
+		return out;
+	}
+	
 }

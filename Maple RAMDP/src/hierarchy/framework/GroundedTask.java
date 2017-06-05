@@ -12,6 +12,7 @@ import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import cern.colt.Arrays;
 
 public class GroundedTask {
 
@@ -131,5 +132,21 @@ public class GroundedTask {
 			return npt.reward(s, action);
 		}
 		return 0;
+	}
+	
+	@Override
+	public String toString() {
+		String out = "GT: (";
+		out += t.toString();
+		out += ", ";
+		out += action.toString();
+		out += ", ";
+		if (t.getChildren() == null) {
+			out += "null-task";
+		} else {
+			out += Arrays.toString(t.getChildren());
+		}
+		out += ")";
+		return out;
 	}
 }

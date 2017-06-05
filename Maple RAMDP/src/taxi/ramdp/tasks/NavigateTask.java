@@ -32,7 +32,7 @@ public class NavigateTask extends NonprimitiveTask {
 		String goalLocation = action.location;
 		TaxiLocation goal = state.touchLocation(state.locationIndWithColour(goalLocation));
 		TaxiAgent t = state.taxi;
-		
-		return t.x == goal.x && t.y == goal.y; 
+		boolean result = t.x == goal.x && t.y == goal.y;
+		return result; 
 	}
 }

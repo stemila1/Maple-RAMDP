@@ -19,6 +19,10 @@ import utilities.ValueIteration;
 
 public class RAMDPLearningAgent implements LearningAgent{
 
+	private static final int MAX_ITERATIONS = 1000;
+	
+	private int maxIterations;
+	
 	/**
 	 * The root of the task hierarchy
 	 */
@@ -69,6 +73,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 		this.models = new HashMap<GroundedTask, RAMDPModel>();
 		this.taskNames = new HashMap<String, GroundedTask>();
 		this.maxDelta = delta;
+		this.maxIterations = MAX_ITERATIONS;
 	}
 	
 	@Override
@@ -78,24 +83,46 @@ public class RAMDPLearningAgent implements LearningAgent{
 
 	@Override
 	public Episode runLearningEpisode(Environment env, int maxSteps) {
+		depth = 0;
 		steps = 0;
 		Episode e = new Episode(env.currentObservation());
 		return solveTask(root, e, env, maxSteps);
 	}
 
+	public static int depth = 0;
+	
+	public void debugPrinting(String string) {
+		String tabs = "";
+		for (int i = 0; i < depth; i++) {
+			tabs += "   ";
+		}
+		System.out.println(tabs + string);
+	}
+	
+	
 	protected Episode solveTask(GroundedTask task, Episode e, Environment baseEnv, int maxSteps){
 		State baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 		State currentState = task.mapState(baseState);
+
+		System.out.println(task.getGroundedChildTasks(currentState));
+//		debugPrinting(task.toString());
+		depth += 1;
 		
+		System.out.println(task.isTerminal(currentState));
 		while(!task.isTerminal(currentState) && (steps < maxSteps || maxSteps == -1)){
 			Action a = nextAction(task, currentState);
+			
+//			debugPrinting(a.toString());
+			
 			EnvironmentOutcome result;
 
 			GroundedTask action = this.taskNames.get(a.actionName());
+			
 			if(action == null){
 				addChildrenToMap(task, currentState);
 				action = this.taskNames.get(a.actionName());
 			}
+			debugPrinting(action.toString());
 			if(action.isPrimitive()){
 				result = baseEnv.executeAction(a);
 				e.transition(result);
@@ -104,7 +131,9 @@ public class RAMDPLearningAgent implements LearningAgent{
 			}else{
 				//get child task
 				result = task.executeAction(currentState, a);
+				
 				e = solveTask(action, e, baseEnv, maxSteps);
+				depth += -1;
 				
 				baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 				currentState = task.mapState(baseState);
@@ -115,8 +144,9 @@ public class RAMDPLearningAgent implements LearningAgent{
 			//update task model
 			RAMDPModel model = getModel(task, currentState);
 			model.updateModel(result);
+			
+			debugPrinting("" + task.isTerminal(currentState));
 		}
-		
 		return e;
 	}
 	
@@ -129,7 +159,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 	
 	protected Action nextAction(GroundedTask task, State s){
 		OOSADomain domain = task.getDomain(getModel(task, s));
-		Planner plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, 100);
+		Planner plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, maxIterations);
 		Policy p = plan.planFromState(s);
 		return p.action(s);
 	}

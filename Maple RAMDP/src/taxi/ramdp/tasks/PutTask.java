@@ -30,12 +30,18 @@ public class PutTask extends NonprimitiveTask{
 	public boolean isTerminal(State s, Action a) {
 		PutAction action = (PutAction) a;
 		TaxiL1State state = (TaxiL1State) s;
-		String goalLocation = action.location;
 		String passname = action.passenger;
 		TaxiL1Passenger pass = state.touchPassenger(passname);
-		if(!state.taxi.taxiOccupied)
+		if(!state.taxi.taxiOccupied) {
+			// if there is no passenger, Put is in terminal state
 			return true;
-		return pass.currentLocation.equals(goalLocation) && pass.pickUpOnce;
+		} else {
+			// debug, may not be accurate?
+			return false;
+		}
+////		String goalLocation = action.location;
+//		String goalLocation = pass.goalLocation;
+//		return pass.currentLocation.equals(goalLocation);// && pass.pickUpOnce;
 	}
 
 	public class PutRF implements RewardFunction{
@@ -44,10 +50,11 @@ public class PutTask extends NonprimitiveTask{
 		public double reward(State s, Action a, State sprime) {
 			PutAction action = (PutAction) a;
 			TaxiL1State state = (TaxiL1State) s;
-			String goalLocation = action.location;
 			String passname = action.passenger;
 			TaxiL1Passenger pass = state.touchPassenger(passname);
 
+//			String goalLocation = action.location;
+			String goalLocation = pass.goalLocation;
 			if(pass.currentLocation.equals(goalLocation) && !pass.inTaxi && pass.pickUpOnce)
 				return 1;
 			else
