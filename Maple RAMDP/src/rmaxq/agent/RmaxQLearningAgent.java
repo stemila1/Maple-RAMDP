@@ -17,9 +17,15 @@ import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 import hierarchy.framework.GroundedTask;
 import hierarchy.framework.Task;
+import ramdp.agent.RAMDPLearningAgent;
 
 public class RmaxQLearningAgent implements LearningAgent {
 
+	/**
+	 * Steps currently taken
+	 */
+	private int steps;
+	
 	//Pa(s', x)
 	private Map<GroundedTask, Map<HashableState, Map<HashableState, Double>>> transition;
 
@@ -89,7 +95,8 @@ public class RmaxQLearningAgent implements LearningAgent {
 		return time;
 	}
 	public Episode runLearningEpisode(Environment env) {
-		return runLearningEpisode(env, -1);
+		System.err.println("Warning, using default MAX_STEPS of: " + RAMDPLearningAgent.DEFAULT_MAX_STEPS);
+		return runLearningEpisode(env, RAMDPLearningAgent.DEFAULT_MAX_STEPS);
 	}
 
 	public Episode runLearningEpisode(Environment env, int maxSteps) {
@@ -100,18 +107,20 @@ public class RmaxQLearningAgent implements LearningAgent {
 		actionTimestaps.clear();
 		
 		//look at equals in grounded task
+		steps = 0;
 		time = System.currentTimeMillis();
 		HashableState hs = hashingFactory.hashState(env.currentObservation());
-		e = R_MaxQ(hs, rootSolve, e);
+		e = R_MaxQ(hs, rootSolve, e, maxSteps);
 		time = System.currentTimeMillis() - time;
 		return e;
 	}
 
-	protected Episode R_MaxQ(HashableState hs, GroundedTask task, Episode e){
+	protected Episode R_MaxQ(HashableState hs, GroundedTask task, Episode e, int maxSteps){
 		if(task.isPrimitive()){
 			Action a = task.getAction();
 			EnvironmentOutcome outcome = env.executeAction(a);
 			e.transition(outcome);
+			steps++;
 			State sprime = outcome.op;
 			HashableState hsprime = hashingFactory.hashState(sprime);
 
@@ -200,12 +209,12 @@ public class RmaxQLearningAgent implements LearningAgent {
 					childFromPolicy = groundedTaskMap.get(maxqAction.actionName());
 				}
 				//R pia(s') (s')
-				e = R_MaxQ(hs, childFromPolicy , e);
+				e = R_MaxQ(hs, childFromPolicy , e, maxSteps);
 				State s = e.stateSequence.get(e.stateSequence.size() - 1);
 				hs = hashingFactory.hashState(s);
 
 				terminal = task.isTerminal(s);
-			}while(!terminal);
+			}while(!terminal && steps < maxSteps);
 
 			return e;
 		}

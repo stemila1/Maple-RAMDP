@@ -85,7 +85,8 @@ public class HierarchicalLearnerTest {
 		OOSADomain base = TaxiHierarchy.getGroundDomain();
 		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, fickle);
 		
-		runRAMDPEpisodes(100, 10000, RAMDProot, s, base, 5, 0.9, 30, 0.01);
-//		runRMAXQEpsodes(100, RMAXQroot, s, 30, 5, 0.01, base);
+		int numEpisodes = 200;
+		runRAMDPEpisodes(numEpisodes, 10000, RAMDProot, s, base, 5, 0.9, 30, 0.01);
+//		runRMAXQEpsodes(numEpisodes, RMAXQroot, s, 30, 5, 0.01, base);
 	}
 }

@@ -59,22 +59,33 @@ public class HierarchicalCharts {
 			}
 		};
 		
-		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, numTrial, numEpisode, rmaxq, ramdp);
+		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, numTrial, numEpisode, ramdp, rmaxq);
 		exp.setUpPlottingConfiguration(500, 300, 2, 1000,
 				TrialMode.MOST_RECENT_AND_AVERAGE,
-				PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE
+				PerformanceMetric.STEPS_PER_EPISODE,
+				PerformanceMetric.CUMULATIVE_STEPS_PER_EPISODE,
+				PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE,
+				PerformanceMetric.CUMULATIVE_REWARD_PER_STEP,
+				PerformanceMetric.AVERAGE_EPISODE_REWARD,
+				PerformanceMetric.MEDIAN_EPISODE_REWARD
 				);
 		
 		exp.startExperiment();
-		exp.writeEpisodeDataToCSV("/tmp/guest-gny6nj/ramdp full state data2.csv");
+		exp.writeEpisodeDataToCSV("./ramdp_full_state_data_jw.csv");
 	}
 	
 	public static void main(String[] args) {
-		boolean ficjle = false;
+		boolean fickle = true;
 		TaxiState s = TaxiDomain.getSmallClassicState(false);
-		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, ficjle);
+		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, fickle);
 		OOSADomain base = TaxiHierarchy.getGroundDomain();
-		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, ficjle);
-		createCrarts(s, base, RAMDProot, RMAXQroot, 30, 5, 0.01, 0.9, 100, 2);
+		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, fickle);
+		int numEpisodes = 30;
+		int numTrials = 10;
+		double discount = 0.9;
+		double maxDelta = 0.001;
+		int threshold = 5;
+		int rmax = 20;
+		createCrarts(s, base, RAMDProot, RMAXQroot, rmax, threshold, maxDelta, discount, numEpisodes, numTrials);
 	}
 }

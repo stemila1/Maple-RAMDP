@@ -21,6 +21,8 @@ import hierarchy.framework.GroundedTask;
 import utilities.ValueIteration;
 
 public class RAMDPLearningAgent implements LearningAgent{
+	
+	public static final int DEFAULT_MAX_STEPS = 500;
 
 	/**
 	 * The root of the task hierarchy
@@ -76,7 +78,8 @@ public class RAMDPLearningAgent implements LearningAgent{
 	
 	@Override
 	public Episode runLearningEpisode(Environment env) {
-		return runLearningEpisode(env, -1);
+		System.err.println("Warning, using default MAX_STEPS of: " + RAMDPLearningAgent.DEFAULT_MAX_STEPS);
+		return runLearningEpisode(env, RAMDPLearningAgent.DEFAULT_MAX_STEPS);
 	}
 
 	@Override
