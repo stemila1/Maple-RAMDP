@@ -49,9 +49,9 @@ public class GetTask extends NonprimitiveTask {
 			TaxiL1Passenger pass = state.touchPassenger(passname);
 			
 			if(pass.inTaxi)
-				return 1;
+				return 1.0;
 			else
-				return -1;
+				return 0.0;
 		}
 		
 	}

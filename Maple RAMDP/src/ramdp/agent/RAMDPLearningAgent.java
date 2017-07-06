@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.planning.Planner;
@@ -18,6 +20,7 @@ import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
 import hierarchy.framework.GroundedTask;
+import testing.HierarchicalCharts;
 import utilities.ValueIteration;
 
 public class RAMDPLearningAgent implements LearningAgent{
@@ -86,7 +89,13 @@ public class RAMDPLearningAgent implements LearningAgent{
 	public Episode runLearningEpisode(Environment env, int maxSteps) {
 		steps = 0;
 		Episode e = new Episode(env.currentObservation());
-		return solveTask(root, e, env, maxSteps);
+		System.out.println("begin RAMDP");
+		Episode eOut =  solveTask(root, e, env, maxSteps);
+		
+		// debug code
+		HierarchicalCharts.episodeNumber += 1;
+		HierarchicalCharts.episodeNumber = HierarchicalCharts.episodeNumber % 100;
+		return eOut;
 	}
 
 	protected Episode solveTask(GroundedTask task, Episode e, Environment baseEnv, int maxSteps){
@@ -96,6 +105,10 @@ public class RAMDPLearningAgent implements LearningAgent{
 		while(!task.isTerminal(currentState) && (steps < maxSteps || maxSteps == -1)){
 			Action a = nextAction(task, currentState);
 			EnvironmentOutcome result;
+			
+			if (steps > 490 && (HierarchicalCharts.episodeNumber == 99)) {
+				System.out.println(steps);
+			}
 
 			GroundedTask action = this.taskNames.get(a.actionName());
 			if(action == null){
@@ -143,8 +156,13 @@ public class RAMDPLearningAgent implements LearningAgent{
 //		plan.setMaxRolloutDepth(100);
 //        plan.toggleDebugPrinting(false);
         ValueIteration plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, 1000);
+        plan.setValueFunctionInitialization(new ConstantValueFunction(0.0));
 		Policy p = plan.planFromState(s);
-		return p.action(s);
+		Action a = p.action(s);
+//		System.out.println(PolicyUtils.sampleFromActionDistribution((EnumerablePolicy) p,s));
+		System.out.println(a.actionName());
+		System.out.println(plan.qValue(s, a));
+		return a;
 	}
 	
 	protected RAMDPModel getModel(GroundedTask t, State s){

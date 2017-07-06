@@ -14,6 +14,7 @@ public class RootTask extends NonprimitiveTask {
 
 	@Override
 	public boolean isTerminal(State s, Action a) {
+		System.out.println(this.domain.getModel().terminal(s));
 		return this.domain.getModel().terminal(s);
 	}
 }

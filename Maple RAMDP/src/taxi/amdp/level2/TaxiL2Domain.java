@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.singleagent.Episode;
+import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.common.NullTermination;
@@ -12,14 +16,19 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.common.GoalBasedRF;
 import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
+import taxi.TaxiDomain;
+import taxi.amdp.level2.state.L2StateMapper;
 import taxi.amdp.level2.state.TaxiL2Location;
 import taxi.amdp.level2.state.TaxiL2Passenger;
 import taxi.amdp.level2.state.TaxiL2State;
+import utilities.ValueIteration;
 
 /**
  * Created by ngopalan on 8/10/16.
@@ -140,16 +149,15 @@ public class TaxiL2Domain implements DomainGenerator {
 
         private void putAction(State s, Action a, List<StateTransitionProb> transitions) {
             TaxiL2State ns = (TaxiL2State) s.copy();
-//            String location = ((PutType.PutAction) a).location;
-
-            for(TaxiL2Passenger p : ns.passengers){
-            	if(p.inTaxi){
-            		p.inTaxi = false;
-            		p.currentLocation = p.goalLocation;
-            		break;
-            	}
-            }
+            String passengerName = ((PutType.PutAction) a).passenger;
+            String location = ((PutType.PutAction) a).location;
+            TaxiL2Passenger p1 = ns.touchPassenger(passengerName);
             
+            if (p1.inTaxi) {
+                p1.inTaxi = false;
+                p1.currentLocation = location;
+            }
+
             transitions.add(new StateTransitionProb(ns, 1.));
         }
 
@@ -252,6 +260,36 @@ public class TaxiL2Domain implements DomainGenerator {
 
 
     }
+    
+    public static void main(String[] args) {
+    	
+    	TerminalFunction tf = new TaxiL2TerminalFunction();
+    	RewardFunction rf = new GoalBasedRF(tf);
+    	TaxiL2Domain dg = new TaxiL2Domain(rf, tf);
+    	OOSADomain domain = dg.generateDomain();
+    	
+    	State baseState = TaxiDomain.getSmallClassicState(false);
+    	L2StateMapper mapper = new L2StateMapper();
+    	State s = mapper.mapState(baseState);
+    	
+    	double gamma = 0.9;
+    	SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+    	double maxDelta = 0.001;
+    	int maxSteps = 500;
+    	
+        ValueIteration plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, 1000);
+        plan.setValueFunctionInitialization(new ConstantValueFunction(0.0));
+		Policy p = plan.planFromState(s);
+		Action a = p.action(s);
+		
+		Episode e = PolicyUtils.rollout(p, s, domain.getModel(), maxSteps);
+
+		System.out.println(e.stateSequence);
+		System.out.println(e.actionSequence);
+		
+//		System.out.println(a.actionName());
+    	
+    }
 
     public static class PutType implements ActionType {
 
@@ -262,7 +300,7 @@ public class TaxiL2Domain implements DomainGenerator {
 
         @Override
         public Action associatedAction(String strRep) {
-            return new PutAction();//(strRep.split("_")[0]);
+            return new PutAction(strRep.split("_")[0], strRep.split("_")[1]);
         }
 
         @Override
@@ -270,29 +308,33 @@ public class TaxiL2Domain implements DomainGenerator {
             List<Action> actions = new ArrayList<Action>();
             List<TaxiL2Passenger> passengers = ((TaxiL2State) s).passengers;
             List<TaxiL2Location> locations = ((TaxiL2State) s).locations;
-//            for (TaxiL2Location loc : locations) {
-            	actions.add(new PutAction());
-//            }
+            for (TaxiL2Passenger passenger : passengers) {
+                for (TaxiL2Location loc : locations) {
+                    actions.add(new PutAction(passenger.name(), loc.colour));
+                }
 
+            }
             return actions;
         }
 
         public static class PutAction implements Action {
 
-//            public String location;
+            public String passenger;
+            public String location;
 
-            public PutAction(){//(String passenger, String location) {
-//                this.location = location;
+            public PutAction(String passenger, String location) {
+                this.passenger = passenger;
+                this.location = location;
             }
 
             @Override
             public String actionName() {
-                return ACTION_PUT;// + "_" + location;
+                return ACTION_PUT + "_" + passenger + "_" + location;
             }
 
             @Override
             public Action copy() {
-                return new PutAction();//(location);
+                return new PutAction(passenger, location);
             }
 
             @Override
@@ -302,13 +344,13 @@ public class TaxiL2Domain implements DomainGenerator {
 
                 PutAction that = (PutAction) o;
 
-                return true;//that.passenger.equals(passenger) && that.location.equals(location);
+                return that.passenger.equals(passenger) && that.location.equals(location);
 
             }
 
             @Override
             public int hashCode() {
-                String str = ACTION_PUT;// +  "_" + location;
+                String str = ACTION_PUT + "_" + passenger + "_" + location;
                 return str.hashCode();
             }
 

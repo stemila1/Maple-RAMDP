@@ -21,6 +21,9 @@ import taxi.state.TaxiState;
 import utilities.SimpleHashableStateFactory;
 
 public class HierarchicalCharts {
+	
+	// debug static counter
+	public static int episodeNumber = 0;
 
 	public static void createCrarts(final State s, OOSADomain domain, final Task RAMDPRoot, final Task RMEXQRoot, 
 			final int rmax, final int threshold, final double maxDelta, final double discount, int numEpisode, int numTrial){
@@ -59,7 +62,7 @@ public class HierarchicalCharts {
 			}
 		};
 		
-		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, numTrial, numEpisode, ramdp, rmaxq);
+		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, numTrial, numEpisode, ramdp); //, rmaxq);
 		exp.setUpPlottingConfiguration(500, 300, 2, 1000,
 				TrialMode.MOST_RECENT_AND_AVERAGE,
 				PerformanceMetric.STEPS_PER_EPISODE,
@@ -75,16 +78,16 @@ public class HierarchicalCharts {
 	}
 	
 	public static void main(String[] args) {
-		boolean fickle = true;
+		boolean fickle = false;
 		TaxiState s = TaxiDomain.getSmallClassicState(false);
 		Task RAMDProot = TaxiHierarchy.createRAMDPHierarchy(s, fickle);
 		OOSADomain base = TaxiHierarchy.getGroundDomain();
 		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(s, fickle);
-		int numEpisodes = 30;
+		int numEpisodes = 50;
 		int numTrials = 10;
 		double discount = 0.9;
 		double maxDelta = 0.001;
-		int threshold = 5;
+		int threshold = 3;
 		int rmax = 20;
 		createCrarts(s, base, RAMDProot, RMAXQroot, rmax, threshold, maxDelta, discount, numEpisodes, numTrials);
 	}
