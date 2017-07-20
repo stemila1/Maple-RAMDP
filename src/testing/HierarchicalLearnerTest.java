@@ -5,6 +5,7 @@ import java.util.List;
 
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
+import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.common.VisualActionObserver;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -18,7 +19,8 @@ import rmaxq.agent.RmaxQLearningAgent;
 import taxi.TaxiVisualizer;
 import taxi.hierarchies.TaxiHierarchy;
 import taxi.state.TaxiState;
-import taxi.stateGenerator.RandonPassengerTaxiState;
+import taxi.stateGenerator.RandomPassengerClassicTaxiState;
+import taxi.stateGenerator.RandomPassengerSmallTaxiState;
 import taxi.stateGenerator.TaxiStateFactory;
 
 public class HierarchicalLearnerTest {
@@ -27,20 +29,16 @@ public class HierarchicalLearnerTest {
 			State initial, OOSADomain groundDomain,
 			int threshold, double discount, double rmax, double maxDelta, boolean randomStart){
 		List<Episode> episodes = new ArrayList<Episode>();
+		SimulatedEnvironment env;
+		env = new SimulatedEnvironment(groundDomain, initial);
 		GroundedTask rootgt = root.getAllGroundedTasks(initial).get(0);
 		
 		RAMDPLearningAgent ramdp = new RAMDPLearningAgent(rootgt, threshold, discount, rmax, 
 				new SimpleHashableStateFactory(true), maxDelta);
-		SimulatedEnvironment env;
-		if(randomStart)
-			env = new SimulatedEnvironment(groundDomain, new RandonPassengerTaxiState());
-		else
-			env= new SimulatedEnvironment(groundDomain, initial);
-
-		VisualActionObserver obs = new VisualActionObserver(groundDomain, TaxiVisualizer.getVisualizer(5, 5));
-        obs.initGUI();
-        obs.setDefaultCloseOperation(obs.EXIT_ON_CLOSE);
-        env.addObservers(obs);
+//		VisualActionObserver obs = new VisualActionObserver(groundDomain, TaxiVisualizer.getVisualizer(5, 5));
+//        obs.initGUI();
+//        obs.setDefaultCloseOperation(obs.EXIT_ON_CLOSE);
+//        env.addObservers(obs);
 		
 		for(int i = 1; i <= numEpisode; i++){
 			long time = System.currentTimeMillis();
@@ -85,20 +83,40 @@ public class HierarchicalLearnerTest {
 	
 	public static void main(String[] args) {
 		double correctMoveprob = 1;
-		double fickleProb = 0.5;
-		int numEpisodes = 200;
-		int maxSteps = 1000;
-		int rmaxThreshold = 3;
-		double gamma = 0.9;
+		double fickleProb = 0.333;
+		int numEpisodes = 1000;
+		int maxSteps = 100;
+		int rmaxThreshold = 5;
+		double gamma = 0.99;
 		double rmax = 20;
-		double maxDelta = 0.01;
-		boolean randomStart = true;
-		TaxiState s = TaxiStateFactory.createClassicState();
+		double maxDelta = 0.00001;
+		boolean randomStart = false;
+		String stateSetup = "small";
 		Task RAMDProot = TaxiHierarchy.createAMDPHierarchy(correctMoveprob, fickleProb);
 		OOSADomain base = TaxiHierarchy.getBaseDomain();
 //		Task RMAXQroot = TaxiHierarchy.createRMAXQHierarchy(correctMoveprob, fickleProb);
-		
-		runRAMDPEpisodes(numEpisodes, maxSteps, RAMDProot, s, base, rmaxThreshold, gamma, rmax, maxDelta, randomStart);
+		StateGenerator sg = null;
+		State initial = null;
+		if(randomStart) {
+			if ("classic".equals(stateSetup)) {
+				sg = new RandomPassengerClassicTaxiState();
+			} else if ("small".equals(stateSetup)) {
+				sg = new RandomPassengerSmallTaxiState();
+			} else {
+				throw new RuntimeException("unknown stateSetup type");
+			}
+			initial = sg.generateState();
+		} else {
+			if ("classic".equals(stateSetup)) {
+				initial = TaxiStateFactory.createClassicState();
+			} else if ("small".equals(stateSetup)) {
+				initial = TaxiStateFactory.createSmallState();
+			} else {
+				throw new RuntimeException("unknown stateSetup type");
+			}
+		}
+
+		runRAMDPEpisodes(numEpisodes, maxSteps, RAMDProot, initial, base, rmaxThreshold, gamma, rmax, maxDelta, randomStart);
 //		runRMAXQEpsodes(numEpisodes, maxSteps, RMAXQroot, s, rmax, rmaxThreshold, maxDelta, base);
 	}
 }

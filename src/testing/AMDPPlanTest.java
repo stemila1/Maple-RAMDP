@@ -41,7 +41,7 @@ public class AMDPPlanTest {
 		double gamma = 0.9;
 		double maxDelta = 0.01;
 		int maxRollouts = 1000;
-		int numEpisodes = 10;
+		int numEpisodes = 100;
 		
 		RandomFactory.seedMapped(0, 2320942930L);
 				

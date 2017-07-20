@@ -20,7 +20,7 @@ public class TaxiState implements MutableOOState{
 	private Map<String, TaxiPassenger> passengers;
 	private Map<String, TaxiLocation> locations;
 	private Map<String, TaxiWall> walls;
-	private boolean isNavState = false;
+//	private boolean isNavState = false;
 	
 	public TaxiState(TaxiAgent taxi, List<TaxiPassenger> passengers, List<TaxiLocation> locations,
 			List<TaxiWall> walls) {
@@ -52,8 +52,8 @@ public class TaxiState implements MutableOOState{
 	
 	@Override
 	public int numObjects() {
-		if(isNavState)
-			return 1 + locations.size() + walls.size();
+//		if(isNavState)
+//			return 1 + locations.size() + walls.size();
 		return 1 + passengers.size() + locations.size() + walls.size();
 	}
 
@@ -81,7 +81,7 @@ public class TaxiState implements MutableOOState{
 	public List<ObjectInstance> objects() {
 		List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
 		objs.add(taxi);
-		if(!isNavState)
+//		if(!isNavState)
 			objs.addAll(passengers.values());
 		objs.addAll(locations.values());
 		objs.addAll(walls.values());
@@ -333,11 +333,11 @@ public class TaxiState implements MutableOOState{
 		return out;
 	}
 	
-	public void makeNaveState(){
-		isNavState = true;
-	}
-	
-	public boolean isNavState(){
-		return isNavState;
-	}
+//	public void makeNaveState(){
+//		isNavState = true;
+//	}
+//	
+//	public boolean isNavState(){
+//		return isNavState;
+//	}
 }

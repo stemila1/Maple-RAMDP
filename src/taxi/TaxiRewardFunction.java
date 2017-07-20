@@ -58,12 +58,12 @@ public class TaxiRewardFunction implements RewardFunction{
 		if(tf.isTerminal(sprime))
 			return goalReward + stepReward;
 		
-		boolean taxiOccupied = (boolean) state.getTaxiAtt(Taxi.ATT_TAXI_OCCUPIED);
 		int tx = (int) state.getTaxiAtt(Taxi.ATT_X);
 		int ty = (int) state.getTaxiAtt(Taxi.ATT_Y);
 		
 		//illegal pickup when no passenger at taxi's location or if taxi is occupied
 		if(a.actionName().equals(Taxi.ACTION_PICKUP)){
+			boolean taxiOccupied = (boolean) state.getTaxiAtt(Taxi.ATT_TAXI_OCCUPIED);
 			if(taxiOccupied)
 				return stepReward + illegalActionReward;
 			
@@ -82,6 +82,7 @@ public class TaxiRewardFunction implements RewardFunction{
 		}
 		//illegal dropoff if not at depot or passenger not in taxi
 		else if(a.actionName().equals(Taxi.ACTION_DROPOFF)){
+			boolean taxiOccupied = (boolean) state.getTaxiAtt(Taxi.ATT_TAXI_OCCUPIED);
 			if(!taxiOccupied)
 				return stepReward + illegalActionReward;
 			

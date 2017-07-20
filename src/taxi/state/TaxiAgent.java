@@ -22,15 +22,15 @@ public class TaxiAgent extends MutableObject {
 	/**
 	 * only x, y in nav states
 	 */
-	private final static List<Object> navKeys = Arrays.<Object>asList(
-			Taxi.ATT_X,
-			Taxi.ATT_Y
-			);
+//	private final static List<Object> navKeys = Arrays.<Object>asList(
+//			Taxi.ATT_X,
+//			Taxi.ATT_Y
+//			);
 
 	/**
 	 * flag for nav states
 	 */
-	private boolean nav = false;
+//	private boolean nav = false;
 	
 	public TaxiAgent(String name, int x, int y) {
 		this(name, x, y, false);
@@ -69,12 +69,13 @@ public class TaxiAgent extends MutableObject {
 
 	@Override
 	public List<Object> variableKeys() {
-		if(nav)
-			return navKeys;
+//		if(nav)
+//			return navKeys;
 		return keys;
 	}
 	
 	public void abstractNavigate(){
-		nav = true;
+		set(Taxi.ATT_TAXI_OCCUPIED, "unset");
 	}
+	
 }

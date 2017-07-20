@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.mdp.core.action.Action;
@@ -114,6 +115,9 @@ public class AMDPPlanner {
 			Policy taskPolicy = getPolicy(task, currentState);
 			while(!(task.isFailure(currentState) || task.isComplete(currentState))){
 				Action a = taskPolicy.action(currentState);
+				AMDPModel amdpModel = new AMDPModel(task, (FullModel) task.getDomain().getModel());
+				Episode oneStepRollout = PolicyUtils.rollout(taskPolicy, currentState, amdpModel, 1);
+				State expectedState = oneStepRollout.stateSequence.get(oneStepRollout.stateSequence.size() - 1);
 				GroundedTask child = getChildGT(task, a, currentState);
 				
 				//recurse to solve the chosen subtask
@@ -121,7 +125,26 @@ public class AMDPPlanner {
 				
 				//project the current base state into the current task's state space
 				baseState = e.stateSequence.get(e.stateSequence.size() - 1);
-				currentState = task.mapState(baseState);
+				State nextState = task.mapState(baseState);
+				currentState = nextState;
+				
+//				 debug check if state is not what was expected
+				HashableState hExpected = hs.hashState(expectedState);
+				HashableState hNextState = hs.hashState(nextState);
+				if (hExpected.equals(hNextState)) {
+//					System.out.println(".");
+				} else {
+//					System.out.println("Expected\n" + expectedState);
+//					System.out.println("got\n" + nextState);
+//					System.err.println("Debug return immediately");
+//					System.err.println(task.getAction().actionName());
+					if (task.getAction().actionName().equals("solve")) { 					// FIX THIS 
+						taskPolicy = getPolicy(task, currentState);
+						continue;
+					} else {
+						return e;
+					}
+				}
 			}
 		}	
 		return e;
@@ -163,6 +186,9 @@ public class AMDPPlanner {
 			BoundedRTDP brtdp = new BoundedRTDP(copy, gamma, hs, new ConstantValueFunction(0), new ConstantValueFunction(1),
 					 maxDelta, maxRollouts);
 			p = brtdp.planFromState(s);
+//			Episode tempEpisode = PolicyUtils.rollout(p, s, newModel);
+//			System.out.println(tempEpisode.stateSequence);
+//			System.out.println(tempEpisode.actionSequence);
 			taskPolicies.put(hscurrwnt, p);
 		}
 		return p;

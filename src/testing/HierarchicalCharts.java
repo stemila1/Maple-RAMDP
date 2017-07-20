@@ -17,7 +17,7 @@ import rmaxq.agent.RmaxQLearningAgent;
 import taxi.TaxiVisualizer;
 import taxi.hierarchies.TaxiHierarchy;
 import taxi.state.TaxiState;
-import taxi.stateGenerator.RandonPassengerTaxiState;
+import taxi.stateGenerator.RandomPassengerClassicTaxiState;
 import taxi.stateGenerator.TaxiStateFactory;
 //import utilities.SimpleHashableStateFactory;
 import utilities.LearningAlgorithmExperimenter;
@@ -75,7 +75,7 @@ public class HierarchicalCharts {
 	public static void createRandomCrarts(OOSADomain domain, final Task RAMDPRoot, 
 			final double rmax, final int threshold, final double maxDelta, final double discount,
 			int numEpisode, int maxSteps, int numTrial){
-		SimulatedEnvironment env = new SimulatedEnvironment(domain, new RandonPassengerTaxiState());
+		SimulatedEnvironment env = new SimulatedEnvironment(domain, new RandomPassengerClassicTaxiState());
 		
 		final HashableStateFactory hs = new SimpleHashableStateFactory(true);
 		final GroundedTask RAMDPGroot = RAMDPRoot.getAllGroundedTasks(env.currentObservation()).get(0); 

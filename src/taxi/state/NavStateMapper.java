@@ -10,7 +10,7 @@ public class NavStateMapper implements StateMapping {
 	public State mapState(State s) {
 		TaxiState st = (TaxiState) s;
 		TaxiState snav = st.copy();
-		snav.makeNaveState();
+//		snav.makeNaveState();
 		
 		TaxiAgent taxi = snav.touchTaxi();
 		taxi.abstractNavigate();
