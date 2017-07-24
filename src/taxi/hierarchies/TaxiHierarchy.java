@@ -58,8 +58,11 @@ public class TaxiHierarchy {
 			l2Gen = new TaxiL2();
 		}else{
 			l0Gen = new Taxi(true, fickleProbability, correctMoveprob);
-			l1Gen = new TaxiL1(true, fickleProbability);
-			l2Gen = new TaxiL2(true, fickleProbability);
+			System.err.println("removing fickle stochasticity from L1 and L2");
+			l1Gen = new TaxiL1();
+			l2Gen = new TaxiL2();
+//			l1Gen = new TaxiL1(true, fickleProbability);
+//			l2Gen = new TaxiL2(true, fickleProbability);
 		}
 
 		//action type domain - not for tasks

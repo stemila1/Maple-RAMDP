@@ -96,7 +96,7 @@ public class TaxiL1 implements DomainGenerator {
 	 * create a non fickle taxi abstraction 1 domain
 	 */
 	public TaxiL1() {
-		this(false, 1);
+		this(false, 0.0);
 	}
 	
 	public OOSADomain generateDomain() {

@@ -37,17 +37,17 @@ public class AMDPPlanTest {
 	
 	public static void main(String[] args) {
 		double correctMoveprob = 1;
-		double fickleProb = 0.9;
+		double fickleProb = 1.0;
 		double gamma = 0.9;
-		double maxDelta = 0.01;
-		int maxRollouts = 1000;
+		double maxDelta = 0.0001;
+		int maxRollouts = 2000;
 		int numEpisodes = 100;
 		
-		RandomFactory.seedMapped(0, 2320942930L);
-				
+		RandomFactory.seedMapped(0, 389L);
+		
 		TaxiState s = TaxiStateFactory.createClassicState();
-		Task RAMDProot = TaxiHierarchy.createAMDPHierarchy(correctMoveprob, fickleProb);
+		Task AMDProot = TaxiHierarchy.createAMDPHierarchy(correctMoveprob, fickleProb);
 		OOSADomain base = TaxiHierarchy.getBaseDomain();
-		plan(RAMDProot, s, new SimpleHashableStateFactory(), base, gamma, maxDelta, maxRollouts, numEpisodes);
+		plan(AMDProot, s, new SimpleHashableStateFactory(), base, gamma, maxDelta, maxRollouts, numEpisodes);
 	}
 }
