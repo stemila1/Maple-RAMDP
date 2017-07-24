@@ -106,8 +106,8 @@ public class AMDPPlanner {
 	public Episode solveTask(GroundedTask task, Episode e, Environment env){
 		if(task.isPrimitive()){
 			Action a = task.getAction();
-			System.out.println(a.actionName());
-			System.out.println(".");
+//			System.out.println(a.actionName());
+//			System.out.println(".");
 			EnvironmentOutcome result = env.executeAction(a);
 			e.transition(result);
 		}else{
@@ -119,30 +119,12 @@ public class AMDPPlanner {
 			Policy taskPolicy = getPolicy(task, currentState);
 			while(!(task.isFailure(currentState) || task.isComplete(currentState))){
 				Action a = taskPolicy.action(currentState);
-//				AMDPModel amdpModel = new AMDPModel(task, (FullModel) task.getDomain().getModel());
-//				double correctProb = 1.0;
-//				double[][] moveDynamics = new double[Taxi.NUM_MOVE_ACTIONS][Taxi.NUM_MOVE_ACTIONS];
-//				for(int choose = 0; choose < Taxi.NUM_MOVE_ACTIONS; choose++){
-//					for(int outcome = 0; outcome < Taxi.NUM_MOVE_ACTIONS; outcome++){
-//						if(choose == outcome){
-//							moveDynamics[choose][outcome] = correctProb;
-//						}
-//						// the two directions which are one away get the rest of prob
-//						else if(Math.abs(choose - outcome) % 2 == 1){
-//							moveDynamics[choose][outcome] = (1 - correctProb) / 2;
-//						}else{
-//							moveDynamics[choose][outcome] = 0;
-//						}
-//					}
-//				}
-//				AMDPModel amdpModel = new AMDPModel(task, task.getDomain().getModel());//(FullModel) new Taxi(false, 0.0, 1.0).generateDomain().getModel());//new FactoredModel(new TaxiModel(moveDynamics)), ); // temp debug
-//				AMDPModel amdpModel = new AMDPModel(task,new FactoredModel(new TaxiModel(moveDynamics))); // temp debug
 				AMDPModel amdpModel = new AMDPModel(task, (FullModel) task.getDomain().getModel());
 				Episode oneStepRollout = PolicyUtils.rollout(taskPolicy, currentState, amdpModel);
 				State expectedState = oneStepRollout.stateSequence.get(oneStepRollout.stateSequence.size() - 1);
 				GroundedTask child = getChildGT(task, a, currentState);
 				
-				System.out.println("---> " +task.getAction().actionName());
+//				System.out.println("---> " +task.getAction().actionName());
 				//recurse to solve the chosen subtask
 				solveTask(child, e, env);
 				
@@ -154,18 +136,18 @@ public class AMDPPlanner {
 				// debug check if state is not what was expected
 				HashableState hExpected = hs.hashState(expectedState);
 				HashableState hNextState = hs.hashState(nextState);
-				System.out.println("<--- " + task.getAction().actionName());
+//				System.out.println("<--- " + task.getAction().actionName());
 				if ("navigate_Location0".equals(task.getAction().actionName())) {
-					System.out.println("Expected\n" + expectedState);
-					System.out.println("got\n" + nextState);
-				}
-				if (hExpected.equals(hNextState)) {
-					System.out.println(".");
-				} else {
-					System.out.println("MISMATCH -- returning.......");
 //					System.out.println("Expected\n" + expectedState);
 //					System.out.println("got\n" + nextState);
-					System.out.println(".");
+				}
+				if (hExpected.equals(hNextState)) {
+//					System.out.println(".");
+				} else {
+//					System.out.println("MISMATCH -- returning.......");
+//					System.out.println("Expected\n" + expectedState);
+//					System.out.println("got\n" + nextState);
+//					System.out.println(".");
 					if (task.getAction().actionName().equals("solve")) { 					// FIX THIS 
 						taskPolicy = getPolicy(task, currentState);
 						continue;
