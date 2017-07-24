@@ -28,6 +28,8 @@ public class TaxiModel implements FullStateModel{
 	 * whether the passengers are fickle
 	 */
 	private boolean fickle;
+	
+	private boolean oneTimeFickle;
 
 	/**
 	 * create a taxi model
@@ -35,10 +37,11 @@ public class TaxiModel implements FullStateModel{
 	 * @param fickle whether passengers are fickle
 	 * @param fickleprob probability the passengers are fickle
 	 */
-	public TaxiModel(double[][] moveprob, boolean fickle, double fickleprob) {
+	public TaxiModel(double[][] moveprob, boolean fickle, double fickleprob, boolean oneTimeFickle) {
 		this.moveProbability = moveprob;
 		this.fickleChangeGoalProbaility = fickleprob;
 		this.fickle = fickle;
+		this.oneTimeFickle = false;
 	}
 	
 	/**
@@ -147,7 +150,7 @@ public class TaxiModel implements FullStateModel{
 					boolean justPickedUp = (boolean) s.getPassengerAtt(passengerName, Taxi.ATT_JUST_PICKED_UP);
 					String passGoal = (String) s.getPassengerAtt(passengerName, 
 							Taxi.ATT_GOAL_LOCATION);					
-					if(inTaxi && justPickedUp){
+					if(inTaxi && (justPickedUp || !oneTimeFickle)){
 						passengerChanged = true;
 						TaxiPassenger np = ns.touchPassenger(passengerName);
 						np.set(Taxi.ATT_JUST_PICKED_UP, false);

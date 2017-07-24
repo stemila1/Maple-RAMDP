@@ -137,10 +137,10 @@ public class AMDPPlanner {
 				HashableState hExpected = hs.hashState(expectedState);
 				HashableState hNextState = hs.hashState(nextState);
 //				System.out.println("<--- " + task.getAction().actionName());
-				if ("navigate_Location0".equals(task.getAction().actionName())) {
+//				if ("navigate_Location0".equals(task.getAction().actionName())) {
 //					System.out.println("Expected\n" + expectedState);
 //					System.out.println("got\n" + nextState);
-				}
+//				}
 				if (hExpected.equals(hNextState)) {
 //					System.out.println(".");
 				} else {

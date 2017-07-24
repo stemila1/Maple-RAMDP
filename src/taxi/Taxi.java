@@ -170,7 +170,9 @@ public class Taxi implements DomainGenerator{
 		domain.addStateClass(CLASS_TAXI, TaxiAgent.class).addStateClass(CLASS_PASSENGER, TaxiPassenger.class)
 				.addStateClass(CLASS_LOCATION, TaxiLocation.class).addStateClass(CLASS_WALL, TaxiWall.class);
 		
-		TaxiModel model = new TaxiModel(moveDynamics, fickle, fickleProbability);
+		boolean fickleChangeOnce = false;
+		
+		TaxiModel model = new TaxiModel(moveDynamics, fickle, fickleProbability, fickleChangeOnce);
 		FactoredModel taxiModel = new FactoredModel(model, rf, tf);
 		domain.setModel(taxiModel);
 		
