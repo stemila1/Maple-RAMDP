@@ -26,6 +26,7 @@ public class AMDPPlanTest {
 		List<Episode> eps = new ArrayList<Episode>();
 
 		for(int i = 0; i < numEpisodes; i++){
+			System.out.println(i);
 			eps.add(amdp.planFromState(init));
 		}
 		
@@ -36,14 +37,14 @@ public class AMDPPlanTest {
 	}
 	
 	public static void main(String[] args) {
-		double correctMoveprob = 1;
-		double fickleProb = 0.5;
+		double correctMoveprob = 0.8;
+		double fickleProb = 0.25;
 		double gamma = 0.9;
-		double maxDelta = 0.0001;
-		int maxRollouts = 2000;
-		int numEpisodes = 1;
+		double maxDelta = 0.001;
+		int maxRollouts = 1000;
+		int numEpisodes = 10;
 		
-		RandomFactory.seedMapped(0, 2222L);
+		RandomFactory.seedMapped(0, 98492L);
 		
 		TaxiState s = TaxiStateFactory.createClassicState();
 		Task AMDProot = TaxiHierarchy.createAMDPHierarchy(correctMoveprob, fickleProb);
