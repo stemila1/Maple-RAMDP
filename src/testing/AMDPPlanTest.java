@@ -37,14 +37,14 @@ public class AMDPPlanTest {
 	}
 	
 	public static void main(String[] args) {
-		double correctMoveprob = 0.8;
-		double fickleProb = 0.25;
-		double gamma = 0.9;
-		double maxDelta = 0.001;
-		int maxRollouts = 1000;
+		double correctMoveprob = 0.99;
+		double fickleProb = 0.40;
+		double gamma = 0.95;
+		double maxDelta = 0.01;
+		int maxRollouts = 100;
 		int numEpisodes = 10;
 		
-		RandomFactory.seedMapped(0, 98492L);
+		RandomFactory.seedMapped(0, 3456543L);
 		
 		TaxiState s = TaxiStateFactory.createClassicState();
 		Task AMDProot = TaxiHierarchy.createAMDPHierarchy(correctMoveprob, fickleProb);
