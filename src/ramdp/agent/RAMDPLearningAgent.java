@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.action.Action;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
@@ -22,27 +24,27 @@ public class RAMDPLearningAgent implements LearningAgent{
 	 * The root of the task hierarchy
 	 */
 	private GroundedTask root;
-	
+
 	/**
 	 * r-max "m" parameter
 	 */
 	private int rmaxThreshold;
-	
+
 	/**
 	 * maximum reward
 	 */
 	private double rmax;
-	
+
 	/**
 	 * collection of models for each task
 	 */
 	private Map<GroundedTask, RAMDPModel> models;
-	
+
 	/**
 	 * Steps currently taken
 	 */
 	private int steps;
-	
+
 	/**
 	 * lookup grounded tasks by name task
 	 */
@@ -52,17 +54,17 @@ public class RAMDPLearningAgent implements LearningAgent{
 	 * the discount factor
 	 */
 	private double gamma;
-	
+
 	/**
 	 * provided state hashing factory
 	 */
 	private HashableStateFactory hashingFactory;
-	
+
 	/**
 	 * the max error allowed for the planner
 	 */
 	private double maxDelta;
-	
+
 	/**
 	 * the current episode
 	 */
@@ -72,13 +74,13 @@ public class RAMDPLearningAgent implements LearningAgent{
 	 * create a RAMDP agent on a given task
 	 * @param root the root of the hierarchy to learn
 	 * @param threshold the rmax sample threshold
-	 * @param discount the discount for the tasks' domains 
+	 * @param discount the discount for the tasks' domains
 	 * @param rmax the max reward
 	 * @param hs a state hashing factory
 	 * @param delta the max error for the planner
 	 */
 	public RAMDPLearningAgent(GroundedTask root, int threshold, double discount, double rmax,
-			HashableStateFactory hs, double delta) {
+							  HashableStateFactory hs, double delta) {
 		this.rmaxThreshold = threshold;
 		this.root = root;
 		this.gamma = discount;
@@ -88,7 +90,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 		this.taskNames = new HashMap<String, GroundedTask>();
 		this.maxDelta = delta;
 	}
-	
+
 	@Override
 	public Episode runLearningEpisode(Environment env) {
 		return runLearningEpisode(env, -1);
@@ -102,12 +104,14 @@ public class RAMDPLearningAgent implements LearningAgent{
 		return e;
 	}
 
+	public static String tabLevel = "";
+
 	/**
 	 * tries to solve a grounded task while creating a model of it
 	 * @param task the grounded task to solve
 	 * @param baseEnv a environment defined by the base domain and at the current base state
 	 * @param maxSteps the max number of primitive actions that can be taken
-	 * @return whether the task was completed 
+	 * @return whether the task was completed
 	 */
 	protected boolean solveTask(GroundedTask task, Environment baseEnv, int maxSteps){
 		State baseState = e.stateSequence.get(e.stateSequence.size() - 1);
@@ -115,19 +119,35 @@ public class RAMDPLearningAgent implements LearningAgent{
 		State pastState = currentState;
 		RAMDPModel model = getModel(task);
 		int actionCount = 0;
-		
-		while(!(task.isFailure(currentState) || task.isComplete(currentState)) && (steps < maxSteps || maxSteps == -1)){
+
+		tabLevel += "\t";
+		System.out.println(tabLevel + ">>> " + task.getAction() + " " + actionCount);
+
+		while(
+				!(task.isFailure(currentState) || task.isComplete(currentState)) // while task still valid
+						&& (steps < maxSteps || maxSteps == -1)  // and still have steps it can take
+						&& !(root.isComplete(root.mapState(baseState))) // and it hasn't solved the root goal, keep planning
+				){
 			actionCount++;
 			boolean subtaskCompleted = false;
 			pastState = currentState;
 			EnvironmentOutcome result;
 
+			System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
+			System.out.println(tabLevel + "    " + task.getGroundedChildTasks(currentState));
 			Action a = nextAction(task, currentState);
-			GroundedTask action = this.taskNames.get(a.actionName());
+			String actionName = a.actionName();
+//			if (a instanceof ObjectParameterizedAction) {
+//				ObjectParameterizedAction opa = (ObjectParameterizedAction)a;
+//				actionName = a.actionName() + "_" + String.join("_",opa.getObjectParameters());
+//			}
+			GroundedTask action = this.taskNames.get(actionName);
 			if(action == null){
 				addChildrenToMap(task, currentState);
-				action = this.taskNames.get(a.actionName());
+				action = this.taskNames.get(actionName);
 			}
+
+			System.out.println(tabLevel + "    " + actionName);
 
 			if(action.isPrimitive()){
 				subtaskCompleted = true;
@@ -148,18 +168,21 @@ public class RAMDPLearningAgent implements LearningAgent{
 				result = new EnvironmentOutcome(pastState, a, currentState,
 						task.getReward(currentState), task.isFailure
 						(currentState));
+
 			}
-			
+			System.out.println(tabLevel + "\treward: " + result.r);
+
 			//update task model if the subtask completed correctly
 			if(subtaskCompleted){
 				model.updateModel(result);
 			}
 		}
-		
-//		System.out.println(task + " " + actionCount);
+
+		System.out.println(tabLevel + "<<< " +task.getAction() + " " + actionCount);
+		tabLevel = tabLevel.substring(0, (tabLevel.length() - 1));
 		return task.isComplete(currentState) || actionCount == 0;
 	}
-	
+
 	/**
 	 * add the children of the given task to the action name lookup
 	 * @param gt the current grounded task
@@ -171,7 +194,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 			taskNames.put(child.toString(), child);
 		}
 	}
-	
+
 	/**
 	 * plan over the given task's model and pick the best action to do next favoring unmodeled actions
 	 * @param task the current task
@@ -184,8 +207,14 @@ public class RAMDPLearningAgent implements LearningAgent{
 		ValueIteration plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, 1000);
 		Policy viPolicy = plan.planFromState(s);
 		Policy rmaxPolicy = new RMAXPolicy(model, viPolicy, domain.getActionTypes(), hashingFactory);
-		
-		return rmaxPolicy.action(s);
+		Action action = rmaxPolicy.action(s);
+//		try {
+//            Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
+//            System.out.println(tabLevel + e.actionSequence);
+//        } catch (Exception e) {
+//		    // ignore, temp debug to assess ramdp
+//        }
+		return action;
 	}
 
 	/**
