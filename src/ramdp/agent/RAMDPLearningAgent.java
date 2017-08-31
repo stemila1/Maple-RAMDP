@@ -134,7 +134,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 			EnvironmentOutcome result;
 
             System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
-			System.out.println(tabLevel + "    " + task.getGroundedChildTasks(currentState));
+			System.out.println(tabLevel + "    Possible Actions: " + task.getGroundedChildTasks(currentState));
 			Action a = nextAction(task, currentState);
 			String actionName = a.actionName();
             if (a instanceof ObjectParameterizedAction) {
@@ -158,10 +158,11 @@ public class RAMDPLearningAgent implements LearningAgent{
 				result.o = pastState;
 				result.op = currentState;
 				result.a = a;
-				result.r = action.getReward(pastState, a, currentState);
+				result.r = task.getReward(pastState, a, currentState);
 				steps++;
 			}else{
 				subtaskCompleted = solveTask(action, baseEnv, maxSteps);
+				System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
 				baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 				currentState = task.mapState(baseState);
 
@@ -170,7 +171,8 @@ public class RAMDPLearningAgent implements LearningAgent{
 						(currentState));
 //                System.out.println(tabLevel + " " + a + " " + result.r);
 			}
-			
+			System.out.println(tabLevel + "\treward: " + result.r);
+
 			//update task model if the subtask completed correctly
 			if(subtaskCompleted){
 				model.updateModel(result);
@@ -208,11 +210,11 @@ public class RAMDPLearningAgent implements LearningAgent{
 		Policy rmaxPolicy = new RMAXPolicy(model, viPolicy, domain.getActionTypes(), hashingFactory);
 		Action action = rmaxPolicy.action(s);
 //		try {
-//            Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
-//            System.out.println(tabLevel + e.actionSequence);
-//        } catch (Exception e) {
-//		    // ignore, temp debug to assess ramdp
-//        }
+//			Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
+//			System.out.println(tabLevel + "    Debug rollout: " + e.actionSequence);
+//		} catch (Exception e) {
+//			// ignore, temp debug to assess ramdp
+//		}
 		return action;
 	}
 

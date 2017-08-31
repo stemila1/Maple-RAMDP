@@ -127,9 +127,10 @@ public class GroundedTask {
 //		}
 		if(!t.isPrimitive()) {
 			NonprimitiveTask npt = (NonprimitiveTask) t;
-			return npt.reward(s, a, sPrime);
+			return npt.reward(s, action, sPrime);
 		} else {
-			return ((FactoredModel)getDomain().getModel()).getRf().reward(s, a, sPrime);
+//			return ((FactoredModel)getDomain().getModel()).getRf().reward(s, a, sPrime);
+			throw new RuntimeException("not implemented");
 		}
 	}
 
