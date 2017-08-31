@@ -53,7 +53,7 @@ public class HierarchicalCharts {
 
 		VisualActionObserver obs;
 		if(conf.output.visualizer.enabled) {
-			obs = new VisualActionObserver(domain, TaxiVisualizer.getVisualizer(conf.output.visualizer.width, conf.output.visualizer.height));
+			obs = new VisualActionObserver(domain, TaxiVisualizer.getVisualizer(conf.output.visualizer.width, conf.output.visualizer.height), 300, 300);
 			obs.initGUI();
 			obs.setDefaultCloseOperation(obs.EXIT_ON_CLOSE);
 			env.addObservers(obs);

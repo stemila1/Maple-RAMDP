@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.action.Action;
@@ -102,6 +103,8 @@ public class RAMDPLearningAgent implements LearningAgent{
 		return e;
 	}
 
+    public static String tabLevel = "";
+
 	/**
 	 * tries to solve a grounded task while creating a model of it
 	 * @param task the grounded task to solve
@@ -115,19 +118,30 @@ public class RAMDPLearningAgent implements LearningAgent{
 		State pastState = currentState;
 		RAMDPModel model = getModel(task);
 		int actionCount = 0;
-		
-		while(!(task.isFailure(currentState) || task.isComplete(currentState)) && (steps < maxSteps || maxSteps == -1)){
-			actionCount++;
+
+        tabLevel += "\t";
+        System.out.println(tabLevel + ">>> " + task.getAction() + " " + actionCount);
+
+        while(
+                !(task.isFailure(currentState) || task.isComplete(currentState)) // while task still valid
+                        && (steps < maxSteps || maxSteps == -1)  // and still have steps it can take
+                        && !(root.isComplete(root.mapState(baseState))) // and it hasn't solved the root goal, keep planning
+                ){
+            actionCount++;
 			boolean subtaskCompleted = false;
 			pastState = currentState;
 			EnvironmentOutcome result;
 
-			Action a = nextAction(task, currentState);
+            System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
+            System.out.println(tabLevel + "    Possible Actions: " + task.getGroundedChildTasks(currentState));
+            Action a = nextAction(task, currentState);
 			GroundedTask action = this.taskNames.get(a.actionName());
 			if(action == null){
 				addChildrenToMap(task, currentState);
 				action = this.taskNames.get(a.actionName());
 			}
+
+            System.out.println(tabLevel + "    " + a.actionName());
 
 			if(action.isPrimitive()){
 				subtaskCompleted = true;
@@ -138,25 +152,28 @@ public class RAMDPLearningAgent implements LearningAgent{
 				result.o = pastState;
 				result.op = currentState;
 				result.a = a;
-				result.r = task.getReward(currentState);
+				result.r = task.getReward(pastState, currentState);
 				steps++;
 			}else{
 				subtaskCompleted = solveTask(action, baseEnv, maxSteps);
-				baseState = e.stateSequence.get(e.stateSequence.size() - 1);
+                System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
+                baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 				currentState = task.mapState(baseState);
 
 				result = new EnvironmentOutcome(pastState, a, currentState,
-						task.getReward(currentState), task.isFailure
+						task.getReward(pastState, currentState), task.isFailure
 						(currentState));
 			}
+            System.out.println(tabLevel + "\treward: " + result.r);
 			
 			//update task model if the subtask completed correctly
 			if(subtaskCompleted){
 				model.updateModel(result);
 			}
 		}
-		
-//		System.out.println(task + " " + actionCount);
+
+        System.out.println(tabLevel + "<<< " +task.getAction() + " " + actionCount);
+        tabLevel = tabLevel.substring(0, (tabLevel.length() - 1));
 		return task.isComplete(currentState) || actionCount == 0;
 	}
 	
@@ -184,9 +201,15 @@ public class RAMDPLearningAgent implements LearningAgent{
 		ValueIteration plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, 1000);
 		Policy viPolicy = plan.planFromState(s);
 		Policy rmaxPolicy = new RMAXPolicy(model, viPolicy, domain.getActionTypes(), hashingFactory);
-		
-		return rmaxPolicy.action(s);
-	}
+        Action action = rmaxPolicy.action(s);
+        try {
+            Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
+            System.out.println(tabLevel + "    Debug rollout: " + e.actionSequence);
+        } catch (Exception e) {
+            // ignore, temp debug to assess ramdp
+        }
+        return action;
+    }
 
 	/**
 	 * get the rmax model of the given task

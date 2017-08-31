@@ -11,17 +11,17 @@ import burlap.mdp.singleagent.oo.OOSADomain;
 
 public class NonprimitiveTask extends Task{
 	//tasks which are not at the base of the hierarchy
-	
+
 	/**
-	 * the function which assigns rewards for transitions in the task 
+	 * the function which assigns rewards for transitions in the task
 	 */
 	private RewardFunction rf;
-	
+
 	/**
 	 * the functions that test states for completion and failure
 	 */
 	private PropositionalFunction failure, completed;
-	
+
 	//used for hierarchies with abstractions
 	/**
 	 * create a nunprimitive taks
@@ -29,7 +29,7 @@ public class NonprimitiveTask extends Task{
 	 * @param aType the set of actions this task represents in its parent task's domain
 	 * @param abstractDomain the domain this task executes actions in
 	 * @param map the state abstraction function into the domain
-	 * @param fail the failure PF 
+	 * @param fail the failure PF
 	 * @param compl the completion PF
 	 */
 	public NonprimitiveTask(Task[] children, ActionType aType, OOSADomain abstractDomain, StateMapping map,
@@ -37,7 +37,7 @@ public class NonprimitiveTask extends Task{
 		super(children, aType, abstractDomain, map);
 		this.rf = new NonprimitiveRewardFunction(this);
 		this.failure = fail;
-		this.completed = compl; 
+		this.completed = compl;
 	}
 
 	//used for hierarchies with no abstraction
@@ -45,7 +45,7 @@ public class NonprimitiveTask extends Task{
 	 * create a nunprimitive taks
 	 * @param children the subtasks
 	 * @param aType the set of actions this task represents in its parent task's domain
-	 * @param fail the failure PF 
+	 * @param term the failure PF
 	 * @param compl the completion PF
 	 */
 	public NonprimitiveTask(Task[] children, ActionType aType,
@@ -55,16 +55,16 @@ public class NonprimitiveTask extends Task{
 		this.failure = term;
 		this.completed = compl;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * create a nunprimitive taks
 	 * @param children the subtasks
 	 * @param aType the set of actions this task represents in its parent task's domain
 	 * @param abstractDomain the domain this task executes actions in
 	 * @param map the state abstraction function into the domain
 	 * @param taskrf the custom reward function for the task
-	 * @param fail the failure PF 
+	 * @param term the failure PF
 	 * @param compl the completion PF
 	 */
 	public NonprimitiveTask(Task[] children, ActionType aType, OOSADomain abstractDomain, StateMapping map,
@@ -74,22 +74,23 @@ public class NonprimitiveTask extends Task{
 		this.failure = term;
 		this.completed = compl;
 	}
-	
+
 	@Override
 	public boolean isPrimitive() {
 		return false;
 	}
-	
+
 	/**
 	 * uses the defined reward function to assign reward to states
-	 * @param s the state that is being transitioned into
+	 * @param s the original state that is being transitioned from
 	 * @param a the action associated with the grounded version of this task
+	 * @param sPrime the next state that is being transitioned into
 	 * @return the reward assigned to s by the reward function
 	 */
-	public double reward(State s, Action a){
-		return rf.reward(s, a, s);
+	public double reward(State s, Action a, State sPrime){
+		return rf.reward(s, a, sPrime);
 	}
-	
+
 	/**
 	 * customise the reward function
 	 * @param rf the reward function which should take in a state and
@@ -100,15 +101,15 @@ public class NonprimitiveTask extends Task{
 	}
 
 	//these functions use the two propositional function provided
-	//to test states for completion and failure of the grounded 
+	//to test states for completion and failure of the grounded
 	//task's action give by a
 	@Override
 	public boolean isFailure(State s, Action a) {
 		return failure.isTrue((OOState) s, a.actionName());
 	}
-	
+
 	@Override
 	public boolean isComplete(State s, Action a){
-		return completed.isTrue((OOState) s, a.actionName()); 
+		return completed.isTrue((OOState) s, a.actionName());
 	}
 }

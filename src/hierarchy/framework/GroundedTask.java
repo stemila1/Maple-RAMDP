@@ -113,13 +113,14 @@ public class GroundedTask {
 	/**
 	 * each grounded task has a specific reward function
 	 * this returns the reward of a transition into the given state 
-	 * @param s the result of the transition
+	 * @param s the source of the transition
+	 * @param sPrime the result of the transition
 	 * @return the grounded task's reward of a transition to s
 	 */
-	public double getReward(State s){
+	public double getReward(State s, State sPrime){
 		if(!t.isPrimitive()){
 			NonprimitiveTask npt = (NonprimitiveTask) t;
-			return npt.reward(s, action);
+			return npt.reward(s, action, sPrime);
 		}
 		throw new RuntimeException("Only applicable for nonprimitive tasks");
 	}
