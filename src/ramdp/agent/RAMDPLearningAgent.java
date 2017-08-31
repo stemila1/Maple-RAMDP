@@ -24,27 +24,27 @@ public class RAMDPLearningAgent implements LearningAgent{
 	 * The root of the task hierarchy
 	 */
 	private GroundedTask root;
-	
+
 	/**
 	 * r-max "m" parameter
 	 */
 	private int rmaxThreshold;
-	
+
 	/**
 	 * maximum reward
 	 */
 	private double rmax;
-	
+
 	/**
 	 * collection of models for each task
 	 */
 	private Map<GroundedTask, RAMDPModel> models;
-	
+
 	/**
 	 * Steps currently taken
 	 */
 	private int steps;
-	
+
 	/**
 	 * lookup grounded tasks by name task
 	 */
@@ -54,22 +54,22 @@ public class RAMDPLearningAgent implements LearningAgent{
 	 * the discount factor
 	 */
 	private double gamma;
-	
+
 	/**
 	 * provided state hashing factory
 	 */
 	private HashableStateFactory hashingFactory;
-	
+
 	/**
 	 * the max error allowed for the planner
 	 */
 	private double maxDelta;
-	
+
 	/**
 	 * the current episode
 	 */
 	private Episode e;
-	
+
 	/**
 	 * create a RAMDP agent on a given task
 	 * @param root the root of the hierarchy to learn
@@ -90,7 +90,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 		this.taskNames = new HashMap<String, GroundedTask>();
 		this.maxDelta = delta;
 	}
-	
+
 	@Override
 	public Episode runLearningEpisode(Environment env) {
 		return runLearningEpisode(env, -1);
@@ -134,7 +134,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 			EnvironmentOutcome result;
 
             System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
-			System.out.println(tabLevel + "    " + task.getGroundedChildTasks(currentState));
+			System.out.println(tabLevel + "    Possible Actions: " + task.getGroundedChildTasks(currentState));
 			Action a = nextAction(task, currentState);
 			String actionName = a.actionName();
             if (a instanceof ObjectParameterizedAction) {
@@ -158,19 +158,20 @@ public class RAMDPLearningAgent implements LearningAgent{
 				result.o = pastState;
 				result.op = currentState;
 				result.a = a;
-				result.r = action.getReward(pastState, a, currentState);
+				result.r = task.getReward(pastState, a, currentState);
 				steps++;
 			}else{
 				subtaskCompleted = solveTask(action, baseEnv, maxSteps);
+				System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
 				baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 				currentState = task.mapState(baseState);
 
 				result = new EnvironmentOutcome(pastState, a, currentState,
 						task.getReward(pastState, a, currentState), task.isFailure
 						(currentState));
-//                System.out.println(tabLevel + " " + a + " " + result.r);
 			}
-			
+			System.out.println(tabLevel + "\treward: " + result.r);
+
 			//update task model if the subtask completed correctly
 			if(subtaskCompleted){
 				model.updateModel(result);
@@ -181,7 +182,7 @@ public class RAMDPLearningAgent implements LearningAgent{
         tabLevel = tabLevel.substring(0, (tabLevel.length() - 1));
 		return task.isComplete(currentState) || actionCount == 0;
 	}
-	
+
 	/**
 	 * add the children of the given task to the action name lookup
 	 * @param gt the current grounded task
@@ -193,7 +194,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 			taskNames.put(child.toString(), child);
 		}
 	}
-	
+
 	/**
 	 * plan over the given task's model and pick the best action to do next favoring unmodeled actions
 	 * @param task the current task
@@ -207,12 +208,12 @@ public class RAMDPLearningAgent implements LearningAgent{
 		Policy viPolicy = plan.planFromState(s);
 		Policy rmaxPolicy = new RMAXPolicy(model, viPolicy, domain.getActionTypes(), hashingFactory);
 		Action action = rmaxPolicy.action(s);
-//		try {
-//            Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
-//            System.out.println(tabLevel + e.actionSequence);
-//        } catch (Exception e) {
-//		    // ignore, temp debug to assess ramdp
-//        }
+		try {
+			Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
+			System.out.println(tabLevel + "    Debug rollout: " + e.actionSequence);
+		} catch (Exception e) {
+			// ignore, temp debug to assess ramdp
+		}
 		return action;
 	}
 

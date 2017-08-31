@@ -30,6 +30,7 @@ import utilities.LearningAlgorithmExperimenter;
 
 public class CleanupHierarchicalCharts {
 
+
     public static void createCharts(final State s, OOSADomain domain, final Task RAMDPRoot,
                                     final double rmax, final int threshold, final double maxDelta, final double discount,
                                     int numEpisode, int maxSteps, int numTrial, int width, int height){
@@ -37,7 +38,7 @@ public class CleanupHierarchicalCharts {
         final GroundedTask RAMDPGroot = RAMDPRoot.getAllGroundedTasks(s).get(0);
 
         SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
-        VisualActionObserver obs = new VisualActionObserver(domain, CleanupVisualizer.getVisualizer(width, height));
+        VisualActionObserver obs = new VisualActionObserver(domain, CleanupVisualizer.getVisualizer(width, height), 400, 300);
         obs.initGUI();
         obs.setDefaultCloseOperation(obs.EXIT_ON_CLOSE);
         env.addObservers(obs);
@@ -56,7 +57,7 @@ public class CleanupHierarchicalCharts {
         };
 
         LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, numTrial, numEpisode, maxSteps, ramdp);
-        exp.setUpPlottingConfiguration(500, 300, 2, 1000,
+        exp.setUpPlottingConfiguration(450, 200, 2, 700,
                 TrialMode.MOST_RECENT_AND_AVERAGE,
                 PerformanceMetric.STEPS_PER_EPISODE,
                 PerformanceMetric.CUMULATIVE_REWARD_PER_STEP,

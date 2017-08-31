@@ -29,6 +29,12 @@ public class ObjectInRegionGoalPF extends PropositionalFunction {
         int bottom = (int) region.get(ATT_BOTTOM);
         int top = (int) region.get(ATT_TOP);
 
-        return x >= left && x <= right && y >= bottom && y <= top;
+        //special case, 1-cell region
+        if (x == left && x == right && y == bottom && y == top) {
+            return true;
+        } else {
+            //otherwise, must fit within the bounds
+            return x > left && x < right && y > bottom && y < top;
+        }
     }
 }
