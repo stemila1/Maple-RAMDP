@@ -1,6 +1,7 @@
 package ramdp.agent;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.action.Action;
@@ -102,6 +103,8 @@ public class RAMDPLearningAgent implements LearningAgent{
 		return e;
 	}
 
+	public static String tabLevel = "";
+
 	/**
 	 * tries to solve a grounded task while creating a model of it
 	 * @param task the grounded task to solve
@@ -115,12 +118,18 @@ public class RAMDPLearningAgent implements LearningAgent{
 		State pastState = currentState;
 		RAMDPModel model = getModel(task);
 		int actionCount = 0;
+
+		tabLevel += "\t";
+		//System.out.println(tabLevel + ">>> " + task.getAction() + " " + actionCount);
 		
 		while(!(task.isFailure(currentState) || task.isComplete(currentState)) && (steps < maxSteps || maxSteps == -1)){
 			actionCount++;
 			boolean subtaskCompleted = false;
 			pastState = currentState;
 			EnvironmentOutcome result;
+
+			//System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
+			//System.out.println(tabLevel + "    Possible Actions: " + task.getGroundedChildTasks(currentState));
 
 			Action a = nextAction(task, currentState);
 //			System.out.println("Picking " + a.toString() + " \t" + task.getGroundedChildTasks(currentState));
@@ -130,6 +139,8 @@ public class RAMDPLearningAgent implements LearningAgent{
 				addChildrenToMap(task, currentState);
 				action = this.taskNames.get(a.actionName());
 			}
+
+			//System.out.println(tabLevel + "    " + a.actionName());
 
 			if(action.isPrimitive()){
 				subtaskCompleted = true;
@@ -144,6 +155,7 @@ public class RAMDPLearningAgent implements LearningAgent{
 				steps++;
 			}else{
 				subtaskCompleted = solveTask(action, baseEnv, maxSteps);
+				//System.out.println(tabLevel + "+++ " + task.getAction() + " " + actionCount);
 				baseState = e.stateSequence.get(e.stateSequence.size() - 1);
 				currentState = task.mapState(baseState);
 
@@ -151,14 +163,16 @@ public class RAMDPLearningAgent implements LearningAgent{
 						task.getReward(currentState), task.isFailure
 						(currentState));
 			}
-			
+			//System.out.println(tabLevel + "\treward: " + result.r);
+
 			//update task model if the subtask completed correctly
 			if(subtaskCompleted){
 				model.updateModel(result);
 			}
 		}
-		
-//		System.out.println(task + " " + actionCount);
+
+		//System.out.println(tabLevel + "<<< " +task.getAction() + " " + actionCount);
+		tabLevel = tabLevel.substring(0, (tabLevel.length() - 1));
 		return task.isComplete(currentState) || actionCount == 0;
 	}
 	
@@ -186,8 +200,14 @@ public class RAMDPLearningAgent implements LearningAgent{
 		ValueIteration plan = new ValueIteration(domain, gamma, hashingFactory, maxDelta, 1000);
 		Policy viPolicy = plan.planFromState(s);
 		Policy rmaxPolicy = new RMAXPolicy(model, viPolicy, domain.getActionTypes(), hashingFactory);
-		
-		return rmaxPolicy.action(s);
+		Action action = rmaxPolicy.action(s);
+		try {
+			Episode e = PolicyUtils.rollout(rmaxPolicy, s, model, 100);
+//			System.out.println(tabLevel + "    Debug rollout: " + e.actionSequence);
+		} catch (Exception e) {
+			// ignore, temp debug to assess ramdp
+		}
+		return action;
 	}
 
 	/**

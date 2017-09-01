@@ -94,7 +94,7 @@ public class HierarchicalLearnerTest {
 		double rmax = 20;
 		double maxDelta = 0.01;
 		boolean randomStart = true;
-		RandomFactory.seedMapped(0,3320942930L);
+		RandomFactory.seedMapped(0,3777742930L);
 		TaxiState s = TaxiStateFactory.createClassicState();
 		Task RAMDProot = TaxiHierarchy.createAMDPHierarchy(correctMoveprob, fickleProb, false);
 		OOSADomain base = TaxiHierarchy.getBaseDomain();
