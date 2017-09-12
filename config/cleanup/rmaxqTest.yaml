@@ -16,7 +16,6 @@ rewardPull: 0.0
 
 agents:
   - rmaxq
-  - ramdp
 
 episodes: 100
 max_steps: 200

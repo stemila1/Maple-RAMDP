@@ -78,13 +78,13 @@ public class QProviderRmaxQ implements QProvider, MDPSolverInterface{
 		}
 		List<QValue> qValues = stateToQValues.get(hs);
 
-		String taskNameNew = RmaxQLearningAgent.getActionNameSafe(a);
-		for(QValue q : qValues){
-			String taskNameThis = RmaxQLearningAgent.getActionNameSafe(q.a);
-			if(taskNameNew.equals(taskNameThis)) {
-				return q.q;
-			}
-		}
+//		String taskNameNew = RmaxQLearningAgent.getActionNameSafe(a);
+//		for(QValue q : qValues){
+//			String taskNameThis = RmaxQLearningAgent.getActionNameSafe(q.a);
+//			if(taskNameNew.equals(taskNameThis)) {
+//				return q.q;
+//			}
+//		}
 		return qInit;
 	}
 
@@ -105,14 +105,14 @@ public class QProviderRmaxQ implements QProvider, MDPSolverInterface{
 	 */
 	public void update(State s, Action a, double val){
 		List<QValue> qvalsins = stateToQValues.get(hashingFactory.hashState(s));
-		String taskNameNew = RmaxQLearningAgent.getActionNameSafe(a);
-		for(QValue q : qvalsins){
-			String taskNameThis = RmaxQLearningAgent.getActionNameSafe(q.a);
-			if(taskNameNew.equals(taskNameThis)) {
-				q.q = val;
-				return;
-			}
-		}
+//		String taskNameNew = RmaxQLearningAgent.getActionNameSafe(a);
+//		for(QValue q : qvalsins){
+//			String taskNameThis = RmaxQLearningAgent.getActionNameSafe(q.a);
+//			if(taskNameNew.equals(taskNameThis)) {
+//				q.q = val;
+//				return;
+//			}
+//		}
 		qvalsins.add(new QValue(s, a, qInit));
 	}
 
