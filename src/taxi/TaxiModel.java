@@ -9,7 +9,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
-import taxi.state.TaxiAgent;
+import taxi.state.RoverAgent;
 import taxi.state.TaxiPassenger;
 import taxi.state.TaxiState;
 
@@ -124,7 +124,7 @@ public class TaxiModel implements FullStateModel{
 			
 			int nx = tx + dx;
 			int ny = ty + dy;
-			TaxiAgent ntaxi = ns.touchTaxi();
+			RoverAgent ntaxi = ns.touchTaxi();
 			ntaxi.set(Taxi.ATT_X, nx);
 			ntaxi.set(Taxi.ATT_Y, ny);
 			
@@ -200,7 +200,7 @@ public class TaxiModel implements FullStateModel{
 			TaxiPassenger np = ns.touchPassenger(p);
 			np.set(Taxi.ATT_IN_TAXI, true);
 
-			TaxiAgent ntaxi = ns.touchTaxi();
+			RoverAgent ntaxi = ns.touchTaxi();
 			ntaxi.set(Taxi.ATT_TAXI_OCCUPIED, true);
 		}
 		tps.add(new StateTransitionProb(ns, 1.));
@@ -237,7 +237,7 @@ public class TaxiModel implements FullStateModel{
 					}
 
 					if (!passengersInTaxi) {
-						TaxiAgent ntaxi = ns.touchTaxi();
+						RoverAgent ntaxi = ns.touchTaxi();
 						ntaxi.set(Taxi.ATT_TAXI_OCCUPIED, false);
 					}
 

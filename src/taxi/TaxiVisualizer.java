@@ -13,7 +13,7 @@ import burlap.visualizer.OOStatePainter;
 import burlap.visualizer.ObjectPainter;
 import burlap.visualizer.StateRenderLayer;
 import burlap.visualizer.Visualizer;
-import taxi.state.TaxiAgent;
+import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
 import taxi.state.TaxiState;
@@ -69,7 +69,7 @@ public class TaxiVisualizer {
 			float taxiWidth = (float) cWidth / cellsWide;
 			float taxiHeight = (float) cHeight / cellsTall;
 			
-			TaxiAgent taxi = (TaxiAgent) ob;
+			RoverAgent taxi = (RoverAgent) ob;
 			int tx = (int) taxi.get(Taxi.ATT_X);
 			int ty = (int) taxi.get(Taxi.ATT_Y);
 			float taxix = tx * taxiWidth - cellsWide;

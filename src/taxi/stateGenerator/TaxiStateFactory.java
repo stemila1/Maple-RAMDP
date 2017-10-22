@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import taxi.Taxi;
-import taxi.state.TaxiAgent;
+import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
 import taxi.state.TaxiState;
@@ -15,7 +15,7 @@ public class TaxiStateFactory {
 	//generates taxi states
 	
 	public static TaxiState createClassicState(){
-		TaxiAgent taxi = new TaxiAgent(Taxi.CLASS_TAXI + 0, 0, 3);
+		RoverAgent taxi = new RoverAgent(Taxi.CLASS_TAXI + 0, 0, 3);
 		
 		List<TaxiLocation> locations = new ArrayList<TaxiLocation>();
 		locations.add(new TaxiLocation(Taxi.CLASS_LOCATION + 0, 0, 4, Taxi.COLOR_RED));
@@ -40,7 +40,7 @@ public class TaxiStateFactory {
 	}
 	
 	public static TaxiState createSmallState(){
-		TaxiAgent taxi = new TaxiAgent(Taxi.CLASS_TAXI + 0, 0, 4);
+		RoverAgent taxi = new RoverAgent(Taxi.CLASS_TAXI + 0, 0, 4);
 		
 		List<TaxiLocation> locations = new ArrayList<TaxiLocation>();
 		locations.add(new TaxiLocation(Taxi.CLASS_LOCATION + 0, 0, 2, Taxi.COLOR_RED));
@@ -61,7 +61,7 @@ public class TaxiStateFactory {
 	}
 	
 	public static TaxiState createTinyState(){
-		TaxiAgent taxi = new TaxiAgent(Taxi.CLASS_TAXI + 0, 0, 1);
+		RoverAgent taxi = new RoverAgent(Taxi.CLASS_TAXI + 0, 0, 1);
 		
 		List<TaxiLocation> locations = new ArrayList<TaxiLocation>();
 		locations.add(new TaxiLocation(Taxi.CLASS_LOCATION + 0, 0, 0, Taxi.COLOR_RED));
