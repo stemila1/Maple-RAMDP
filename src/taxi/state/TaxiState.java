@@ -230,7 +230,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 //			if(lx == tx && ly == ty)
 //				return loc;
 //		}
-//		return "Not a deot";
+//		return "Not a depot";
 //	}
 
 	public String[] getLocations(){

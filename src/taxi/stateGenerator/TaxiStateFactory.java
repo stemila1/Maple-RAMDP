@@ -32,9 +32,6 @@ public class TaxiStateFactory {
 		walls.add(new TaxiWall(Taxi.CLASS_WALL + 1, 0, 0, 5, true));
 		walls.add(new TaxiWall(Taxi.CLASS_WALL + 2, 5, 0, 5, false));
 		walls.add(new TaxiWall(Taxi.CLASS_WALL + 3, 0, 5, 5, true));
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 4, 1, 0, 2, false));
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 5, 3, 0, 2, false));
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 6, 2, 3, 2, false));
 		
 		return new TaxiState(taxi, passengers, locations, walls);
 	}
