@@ -113,8 +113,8 @@ public class Taxi implements DomainGenerator{
 		this.fickle = fickle;
 		this.fickleProbability = fickleprob;
 		setMoveDynamics(correctMoveprob);
-		this.rf = new TaxiRewardFunction();
-		this.tf = new TaxiTerminalFunction();
+		this.rf = new RockSampleRewardFunction();
+		this.tf = new RockSampleTerminalFunction();
 	}
 	
 	/**
@@ -128,8 +128,8 @@ public class Taxi implements DomainGenerator{
 		this.fickle = fickle;
 		this.fickleProbability = fickleprob;
 		this.moveDynamics = movement;
-		this.rf = new TaxiRewardFunction();
-		this.tf = new TaxiTerminalFunction();
+		this.rf = new RockSampleRewardFunction();
+		this.tf = new RockSampleTerminalFunction();
 	}
 	
 	/**
@@ -170,7 +170,7 @@ public class Taxi implements DomainGenerator{
 		domain.addStateClass(CLASS_TAXI, RoverAgent.class).addStateClass(CLASS_PASSENGER, TaxiPassenger.class)
 				.addStateClass(CLASS_LOCATION, TaxiLocation.class).addStateClass(CLASS_WALL, TaxiWall.class);
 		
-		TaxiModel model = new TaxiModel(moveDynamics, fickle, fickleProbability);
+		RockSampleModel model = new RockSampleModel(moveDynamics, fickle, fickleProbability);
 		FactoredModel taxiModel = new FactoredModel(model, rf, tf);
 		domain.setModel(taxiModel);
 		
@@ -232,7 +232,7 @@ public class Taxi implements DomainGenerator{
 			env.resetEnvironment();
 		}
 		
-		EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(TaxiVisualizer.getVisualizer(5, 5),
+		EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(RockSampleVisualizer.getVisualizer(5, 5),
 				domain, eps);
 		v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
 		v.initGUI();
