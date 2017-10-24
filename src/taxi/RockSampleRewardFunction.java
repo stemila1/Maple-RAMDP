@@ -4,6 +4,7 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
+import taxi.state.RoverAgent;
 import taxi.state.TaxiState;
 
 public class RockSampleRewardFunction implements RewardFunction{
@@ -22,6 +23,9 @@ public class RockSampleRewardFunction implements RewardFunction{
 	 * the reward for completing the goal
 	 */
 	private double goalReward;
+	private double goodRockReward;
+	private double badRockReward;
+	private double exitAreaReward;
 	
 	/**
 	 * the taxi terminal function
@@ -32,9 +36,12 @@ public class RockSampleRewardFunction implements RewardFunction{
 	 * use the default rewards
 	 */
 	public RockSampleRewardFunction() {
-		stepReward = -1;
-		illegalActionReward = -10;
-		goalReward = 20;
+		goodRockReward = 10;
+		badRockReward = -10;
+		exitAreaReward = 10;
+		//stepReward = -1;
+		//illegalActionReward = -10;
+		//goalReward = 20;
 		tf = new RockSampleTerminalFunction();
 	}
 	
@@ -53,8 +60,19 @@ public class RockSampleRewardFunction implements RewardFunction{
 	
 	@Override
 	public double reward(State s, Action a, State sprime) {
-		TaxiState state = (TaxiState) s;
+		//TaxiState state = (TaxiState) s;
 
+
+		TaxiState state = (TaxiState) sprime;
+		RoverAgent rover = state.getTaxi();
+		int roverX = (int) rover.get(Taxi.ATT_X);
+		int roverY = (int) rover.get(Taxi.ATT_Y);
+
+		if(roverX == 4 && roverY == 4){
+			return exitAreaReward;
+		}
+		return 0;
+		/*
 		//goal reward when state is terminal
 		if(tf.isTerminal(sprime))
 			return goalReward + stepReward;
@@ -99,6 +117,6 @@ public class RockSampleRewardFunction implements RewardFunction{
 				return stepReward + illegalActionReward;
 		}
 		
-		return stepReward;
+		return stepReward; */
 	}
 }

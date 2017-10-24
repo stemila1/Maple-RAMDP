@@ -26,7 +26,8 @@ public class RoverAgent extends MutableObject {
 	public RoverAgent(String name, int x, int y, boolean taxiOccupied) {
 		this(name, (Object) x, (Object) y, (Object) taxiOccupied);
 	}
-	
+
+	/* later: change the object, to an actual type...*/
 	private RoverAgent(String name, Object x, Object y, Object taxiOccupied) {
 		this.set(Taxi.ATT_X, x);
 		this.set(Taxi.ATT_Y, y);

@@ -12,6 +12,26 @@ import java.util.*;
 
 public class TaxiState implements MutableOOState, PassengerParameterizable{
 
+	public RoverAgent getTaxi() {
+		return taxi;
+	}
+
+	public void setTaxi(RoverAgent taxi) {
+		this.taxi = taxi;
+	}
+
+	public void setPassengers(Map<String, TaxiPassenger> passengers) {
+		this.passengers = passengers;
+	}
+
+	public void setLocations(Map<String, TaxiLocation> locations) {
+		this.locations = locations;
+	}
+
+	public void setWalls(Map<String, TaxiWall> walls) {
+		this.walls = walls;
+	}
+
 	//contains a taxi, passengers, locations and walls
 	private RoverAgent taxi;
 	private Map<String, TaxiPassenger> passengers;

@@ -224,10 +224,11 @@ public class Taxi implements DomainGenerator{
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
 
 		List<Episode> eps = new ArrayList<Episode>();
-		QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.1);
+		QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.01);
 		
 		for(int i = 0; i < 1000; i++){
 			Episode e = qagent.runLearningEpisode(env, 5000);
+			System.out.println(e.rewardSequence);
 			eps.add(e);
 			env.resetEnvironment();
 		}
