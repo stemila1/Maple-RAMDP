@@ -2,8 +2,8 @@ package taxi;
 
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
+import taxi.state.RockSampleState;
 import taxi.state.RoverAgent;
-import taxi.state.TaxiState;
 
 public class RockSampleTerminalFunction implements TerminalFunction{
 	//the taxi domain is terminal when all passengers are at their goal
@@ -12,7 +12,7 @@ public class RockSampleTerminalFunction implements TerminalFunction{
 	@Override
 
 	public boolean isTerminal(State s) {
-		TaxiState state = (TaxiState) s;
+		RockSampleState state = (RockSampleState) s;
 		RoverAgent rover = state.getTaxi();
 		int roverX = (int) rover.get(Taxi.ATT_X);
 		int roverY = (int) rover.get(Taxi.ATT_Y);
@@ -25,7 +25,7 @@ public class RockSampleTerminalFunction implements TerminalFunction{
 		String [] passengerName = state.getPassengers();
 		String passengerGoal = (String) state.getPassengerAtt(passengerName[0], Taxi.ATT_GOAL_LOCATION);
 		//String passengerGoal = (String) Taxi.
-		int px = (int) TaxiState.getTaxi.get(Taxi.ATT_X);
+		int px = (int) RockSampleState.getTaxi.get(Taxi.ATT_X);
 		int py = (int) Taxi.get(Taxi.ATT_Y);
 
 

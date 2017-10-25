@@ -16,8 +16,7 @@ import burlap.visualizer.Visualizer;
 import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
-import taxi.state.TaxiState;
-import taxi.state.RockSampleWall;
+import taxi.state.RockSampleState;
 
 public class RockSampleVisualizer {
 	//this code creates painter and a visualizer for the base taxi domain
@@ -52,7 +51,6 @@ public class RockSampleVisualizer {
         oopainter.addObjectClassPainter(Taxi.CLASS_LOCATION, new LocationPainter());
         oopainter.addObjectClassPainter(Taxi.CLASS_ROVER, new TaxiPainter());
         oopainter.addObjectClassPainter(Taxi.CLASS_PASSENGER, new PassengerPainter());
-        oopainter.addObjectClassPainter(Taxi.CLASS_WALL, new WallPainter());
 
         rl.addStatePainter(oopainter);
         
@@ -89,7 +87,7 @@ public class RockSampleVisualizer {
 
 		@Override
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
-			TaxiState state = (TaxiState) s;
+			RockSampleState state = (RockSampleState) s;
 			TaxiPassenger p = (TaxiPassenger) ob;
 			String goalLoc = (String) state.getPassengerAtt(p.name(), Taxi.ATT_GOAL_LOCATION);
 			String color = (String) state.getLocationAtt(goalLoc, Taxi.ATT_COLOR);
@@ -141,37 +139,6 @@ public class RockSampleVisualizer {
 			float locy = cHeight - (1 + ly) * locHeight;
 			
 			g2.fill(new Ellipse2D.Float(locx, locy, locWidth, locHeight));
-		}
-	}
-	
-	public static class WallPainter implements ObjectPainter{
-
-		@Override
-		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
-			g2.setColor(Color.BLACK);
-			g2.setStroke(new BasicStroke(10));
-			
-			float wallWidth = (float) cWidth / cellsWide;
-			float wallHeight = (float) cHeight / cellsTall;
-			
-			RockSampleWall w = (RockSampleWall) ob;
-			int startx = (int) w.get(Taxi.ATT_START_X);
-			int starty = (int) w.get(Taxi.ATT_START_Y);
-			float wx1 = startx * wallWidth;
-			float wy1 = cHeight - starty * wallHeight;
-			float wx2, wy2;
-			
-			int length = (int) w.get(Taxi.ATT_LENGTH);
-			boolean isHorizontal = (boolean) w.get(Taxi.ATT_IS_HORIZONTAL);
-			if(isHorizontal){
-				wx2 = wx1 + length * wallWidth;
-				wy2 = wy1;
-			}else{
-				wx2 = wx1;
-				wy2 = wy1 - length * wallHeight;
-			}
-			
-			g2.drawLine((int) wx1, (int) wy1, (int) wx2, (int) wy2);
 		}
 	}
 }

@@ -9,9 +9,9 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
+import taxi.state.RockSampleState;
 import taxi.state.RoverAgent;
 import taxi.state.TaxiPassenger;
-import taxi.state.TaxiState;
 
 public class RockSampleModel implements FullStateModel{
 
@@ -70,7 +70,7 @@ public class RockSampleModel implements FullStateModel{
 	public List<StateTransitionProb> stateTransitions(State s, Action a) {
 		List<StateTransitionProb> tps = new ArrayList<StateTransitionProb>();
 		int action = actionInd(a);
-		TaxiState taxiS = (TaxiState) s;
+		RockSampleState taxiS = (RockSampleState) s;
 		
 		if(action <= Taxi.IND_WEST){
 			movement(taxiS, action, tps);
@@ -89,7 +89,7 @@ public class RockSampleModel implements FullStateModel{
 	 * @param action the index of the selected movement action
 	 * @param tps a list of state transition probabilities to add to
 	 */
-	public void movement(TaxiState s, int action, List<StateTransitionProb> tps){
+	public void movement(RockSampleState s, int action, List<StateTransitionProb> tps){
 		double[] moveProbabilities = this.moveProbability[action];
 		
 		int tx = (int) s.getTaxiAtt(Taxi.ATT_X);
@@ -101,26 +101,9 @@ public class RockSampleModel implements FullStateModel{
 				continue;
 			
 			int dx = 0, dy = 0;
-			TaxiState ns = s.copy();
+			RockSampleState ns = s.copy();
 			
 			//move in the given direction unless there are walls in the way
-			if(outcome == Taxi.IND_NORTH){
-				if(!ns.wallNorth()){
-					dy = +1;
-				}
-			}else if(outcome == Taxi.IND_EAST){
-				if(!ns.wallEast()){
-					dx = +1;
-				}
-			}else if(outcome == Taxi.IND_SOUTH){
-				if(!ns.wallSouth()){
-					dy = -1;
-				}
-			}else if(outcome == Taxi.IND_WEST){
-				if(!ns.wallWest()){
-					dx = -1;
-				}
-			}
 			
 			int nx = tx + dx;
 			int ny = ty + dy;
@@ -153,7 +136,7 @@ public class RockSampleModel implements FullStateModel{
 						//np.set(Taxi.ATT_JUST_PICKED_UP, false);
 						// may change goal
 						for(String locName : s.getLocations()){
-							TaxiState nfickles = ns.copy();
+							RockSampleState nfickles = ns.copy();
 							
 							//check if goal is the same as loc
 							if(passGoal.equals(locName)){
@@ -185,9 +168,9 @@ public class RockSampleModel implements FullStateModel{
 	 * @param a the passenger parameterized pickup action
 	 * @param tps a list of state transition probabilities to add to
 	 */
-	public void pickup(TaxiState s, ObjectParameterizedAction a, List<StateTransitionProb> tps) {
+	public void pickup(RockSampleState s, ObjectParameterizedAction a, List<StateTransitionProb> tps) {
 	    String p = a.getObjectParameters()[0];
-		TaxiState ns = s.copy();
+		RockSampleState ns = s.copy();
 
 		int tx = (int) s.getTaxiAtt(Taxi.ATT_X);
 		int ty = (int) s.getTaxiAtt(Taxi.ATT_Y);
@@ -212,9 +195,9 @@ public class RockSampleModel implements FullStateModel{
 	 * @param a the passenger parameterized putdown action
 	 * @param tps a list of state transition probabilities to add to
 	 */
-	public void putdown(TaxiState s, ObjectParameterizedAction a, List<StateTransitionProb> tps){
+	public void putdown(RockSampleState s, ObjectParameterizedAction a, List<StateTransitionProb> tps){
 	    String p = a.getObjectParameters()[0];
-		TaxiState ns = s.copy();
+		RockSampleState ns = s.copy();
 		int tx = (int) s.getTaxiAtt(Taxi.ATT_X);
 		int ty = (int) s.getTaxiAtt(Taxi.ATT_Y);
 

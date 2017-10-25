@@ -16,26 +16,20 @@ import taxi.hierarchies.tasks.nav.TaxiNavDomain;
 public class TaxiNavState implements MutableOOState{
 	private TaxiNavAgent taxi;
 	private Map<String, TaxiNavLocation> locations;
-	private Map<String, TaxiNavWall> walls;
 
-	public TaxiNavState(TaxiNavAgent taxi, List<TaxiNavLocation> locations, List<TaxiNavWall> walls) {
+	public TaxiNavState(TaxiNavAgent taxi, List<TaxiNavLocation> locations) {
 		this.taxi = taxi;
 		
 		this.locations = new HashMap<String, TaxiNavLocation>();
 		for(TaxiNavLocation l : locations){
 			this.locations.put(l.name(), l);
 		}
-		
-		this.walls = new HashMap<String, TaxiNavWall>();
-		for(TaxiNavWall w : walls){
-			this.walls.put(w.name(), w);
-		}
+
 	}
 	
-	public TaxiNavState(TaxiNavAgent t, Map<String, TaxiNavLocation> locs, Map<String, TaxiNavWall> walls) {
+	public TaxiNavState(TaxiNavAgent t, Map<String, TaxiNavLocation> locs) {
 		this.taxi = t;
 		this.locations = locs;
-		this.walls = walls;
 	}
 
 	public TaxiNavAgent touchTaxi(){
@@ -45,7 +39,7 @@ public class TaxiNavState implements MutableOOState{
 
 	@Override
 	public int numObjects() {
-		return 1 + locations.size() + walls.size();
+		return 1 + locations.size();
 	}
 
 	@Override
@@ -56,11 +50,7 @@ public class TaxiNavState implements MutableOOState{
 		ObjectInstance o = locations.get(oname);
 		if(o != null)
 			return o;
-		
-		o = walls.get(oname);
-		if(o != null)
-			return o;
-		
+
 		return null;
 	}
 
@@ -69,7 +59,7 @@ public class TaxiNavState implements MutableOOState{
 		List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
 		objs.add(taxi);
 		objs.addAll(locations.values());
-		objs.addAll(walls.values());
+
 		return objs;
 	}
 
@@ -79,8 +69,6 @@ public class TaxiNavState implements MutableOOState{
 			return Arrays.<ObjectInstance>asList(taxi);
 		else if(oclass.equals(Taxi.CLASS_LOCATION))
 			return new ArrayList<ObjectInstance>(locations.values());
-		else if(oclass.equals(Taxi.CLASS_WALL))
-			return new ArrayList<ObjectInstance>(walls.values());
 		throw new RuntimeException("No object class " + oclass);
 	}
 
@@ -96,7 +84,7 @@ public class TaxiNavState implements MutableOOState{
 
 	@Override
 	public TaxiNavState copy() {
-		return new TaxiNavState(taxi, locations, walls);
+		return new TaxiNavState(taxi, locations);
 	}
 
 	@Override
@@ -127,24 +115,12 @@ public class TaxiNavState implements MutableOOState{
 		return ret;
 	}
 
-	public String[] getWalls(){
-		String[] ret = new String[walls.size()];
-		int i = 0;
-		for(String name: walls.keySet())
-			ret[i++] = name;
-		return ret;
-	}
-
 	public Object getTaxiAtt(String attName){
 		return taxi.get(attName);
 	}
 
 	public Object getLocationAtt(String locName, String attName){
 		return locations.get(locName).get(attName);
-	}
-
-	public Object getWallAtt(String wallName, String attName){
-		return walls.get(wallName).get(attName);
 	}
 
 }

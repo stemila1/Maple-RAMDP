@@ -10,7 +10,7 @@ import taxi.hierarchies.interfaces.PassengerParameterizable;
 
 import java.util.*;
 
-public class TaxiState implements MutableOOState, PassengerParameterizable{
+public class RockSampleState implements MutableOOState, PassengerParameterizable{
 
 	public RoverAgent getTaxi() {
 		return taxi;
@@ -28,18 +28,12 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		this.locations = locations;
 	}
 
-	public void setWalls(Map<String, RockSampleWall> walls) {
-		this.walls = walls;
-	}
-
 	//contains a taxi, passengers, locations and walls
 	private RoverAgent taxi;
 	private Map<String, TaxiPassenger> passengers;
 	private Map<String, TaxiLocation> locations;
-	private Map<String, RockSampleWall> walls;
 	
-	public TaxiState(RoverAgent taxi, List<TaxiPassenger> passengers, List<TaxiLocation> locations,
-                     List<RockSampleWall> walls) {
+	public RockSampleState(RoverAgent taxi, List<TaxiPassenger> passengers, List<TaxiLocation> locations) {
 		this.taxi = taxi;
 		
 		this.passengers = new HashMap<String, TaxiPassenger>();
@@ -51,24 +45,17 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		for(TaxiLocation l : locations){
 			this.locations.put(l.name(), l);
 		}
-		
-		this.walls = new HashMap<String, RockSampleWall>();
-		for(RockSampleWall w : walls){
-			this.walls.put(w.name(), w);
-		}
 	}
 	
-	public TaxiState(RoverAgent t, Map<String, TaxiPassenger> pass, Map<String, TaxiLocation> locs,
-                     Map<String, RockSampleWall> walls) {
+	public RockSampleState(RoverAgent t, Map<String, TaxiPassenger> pass, Map<String, TaxiLocation> locs) {
 		this.taxi = t;
 		this.passengers = pass;
 		this.locations = locs;
-		this.walls = walls;
 	}
 	
 	@Override
 	public int numObjects() {
-		return 1 + passengers.size() + locations.size() + walls.size();
+		return 1 + passengers.size() + locations.size();
 	}
 
 	@Override
@@ -83,10 +70,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		o = locations.get(oname);
 		if(o != null)
 			return o;
-		
-		o = walls.get(oname);
-		if(o != null)
-			return o;
+
 		
 		return null;
 	}
@@ -97,7 +81,6 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		objs.add(taxi);
 		objs.addAll(passengers.values());
 		objs.addAll(locations.values());
-		objs.addAll(walls.values());
 		return objs;
 	}
 
@@ -109,8 +92,6 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 			return new ArrayList<ObjectInstance>(passengers.values());
 		else if(oclass.equals(Taxi.CLASS_LOCATION))
 			return new ArrayList<ObjectInstance>(locations.values());
-		else if(oclass.equals(Taxi.CLASS_WALL))
-			return new ArrayList<ObjectInstance>(walls.values());
 		throw new RuntimeException("No object class " + oclass);
 	}
 
@@ -125,8 +106,8 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 	}
 
 	@Override
-	public TaxiState copy() {
-		return new TaxiState(taxi, passengers, locations, walls);
+	public RockSampleState copy() {
+		return new RockSampleState(taxi, passengers, locations);
 	}
 
 	@Override
@@ -139,8 +120,6 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 			touchPassenger(key.obName).set(variableKey, value);
 		}else if(locations.get(key.obName) != null){
 			touchLocation(key.obName).set(variableKey, value);
-		}else if(walls.get(key.obName) != null){
-			touchWall(key.obName).set(variableKey, value);
 		} else {
 			throw new RuntimeException("ERROR: unable to set value for " + variableKey);
 		}
@@ -156,8 +135,6 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 			touchPassengers().put(o.name(), (TaxiPassenger) o);			
 		}else if(o instanceof TaxiLocation || o.className().equals(Taxi.CLASS_LOCATION)){
 			touchLocations().put(o.name(), (TaxiLocation) o);
-		}else if(o instanceof RockSampleWall || o.className().equals(Taxi.CLASS_WALL)){
-			touchWalls().put(o.name(), (RockSampleWall) o);
 		}else{
 			throw new RuntimeException("Can only add certain objects to state.");
 		}
@@ -193,13 +170,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		locations.put(locName, l);
 		return l;
 	}
-	
-	public RockSampleWall touchWall(String wallName){
-		RockSampleWall w = walls.get(wallName).copy();
-		touchWalls().remove(wallName);
-		walls.put(wallName, w);
-		return w;
-	}
+
 	
 	public Map<String, TaxiPassenger> touchPassengers(){
 		this.passengers = new HashMap<String, TaxiPassenger>(passengers);
@@ -210,11 +181,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		this.locations = new HashMap<String, TaxiLocation>(locations);
 		return locations;
 	}
-	
-	public Map<String, RockSampleWall> touchWalls(){
-		this.walls = new HashMap<String, RockSampleWall>(walls);
-		return walls;
-	}
+
 	
 	//get values from objects
 	public String[] getPassengers(){
@@ -261,13 +228,6 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		return ret;
 	}
 
-	public String[] getWalls(){
-		String[] ret = new String[walls.size()];
-		int i = 0;
-		for(String name: walls.keySet())
-			ret[i++] = name;
-		return ret;
-	}
 	
 	public Object getTaxiAtt(String attName){
 		return taxi.get(attName);
@@ -285,10 +245,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		return locations.get(locName).get(attName);
 	}
 
-	public Object getWallAtt(String wallName, String attName){
-		return walls.get(wallName).get(attName);
-	}
-	
+		/** commenting out because it might be useful in the future
 	//test to see if there is a wall on either side of the taxi
 	public boolean wallNorth(){
 		int tx = (int) taxi.get(Taxi.ATT_X);
@@ -370,7 +327,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		}
 		return false;
 	}
-	
+	*/
 	@Override
 	public String toString(){
 //		String out = "{\n";

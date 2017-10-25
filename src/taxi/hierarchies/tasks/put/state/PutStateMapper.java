@@ -3,12 +3,11 @@ package taxi.hierarchies.tasks.put.state;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.core.state.State;
 import taxi.Taxi;
 import taxi.hierarchies.interfaces.ParameterizedStateMapping;
 import taxi.hierarchies.tasks.put.TaxiPutDomain;
-import taxi.state.TaxiState;
+import taxi.state.RockSampleState;
 
 public class PutStateMapper implements ParameterizedStateMapping {
 
@@ -18,7 +17,7 @@ public class PutStateMapper implements ParameterizedStateMapping {
 		List<TaxiPutPassenger> passengers = new ArrayList<TaxiPutPassenger>();
 		List<TaxiPutLocation> locations = new ArrayList<>();
 
-		TaxiState st = (TaxiState) s;
+		RockSampleState st = (RockSampleState) s;
 
 		// Get Taxi
 		String taxiLocation = TaxiPutDomain.ON_ROAD;
