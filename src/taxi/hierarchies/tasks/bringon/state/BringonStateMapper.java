@@ -30,7 +30,7 @@ public class BringonStateMapper implements StateMapping {
 				break;
 			}
 		}
-		TaxiBringonAgent taxi = new TaxiBringonAgent(Taxi.CLASS_TAXI, taxiLocation);
+		TaxiBringonAgent taxi = new TaxiBringonAgent(Taxi.CLASS_ROVER, taxiLocation);
 
 		// Get Passengers
 		for(String passengerName : st.getPassengers()){

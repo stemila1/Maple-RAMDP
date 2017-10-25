@@ -17,7 +17,7 @@ public class NavStateMapper implements StateMapping {
 		
 		int tx = (int) st.getTaxiAtt(TaxiNavDomain.ATT_X);
 		int ty = (int) st.getTaxiAtt(TaxiNavDomain.ATT_Y);
-		TaxiNavAgent taxi = new TaxiNavAgent(Taxi.CLASS_TAXI, tx, ty);
+		TaxiNavAgent taxi = new TaxiNavAgent(Taxi.CLASS_ROVER, tx, ty);
 		
 		List<TaxiNavLocation> locations = new ArrayList<>();
 		for(String locName : st.getLocations()){

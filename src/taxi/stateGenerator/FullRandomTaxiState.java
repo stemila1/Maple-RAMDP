@@ -12,7 +12,7 @@ import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
 import taxi.state.TaxiState;
-import taxi.state.TaxiWall;
+import taxi.state.RockSampleWall;
 
 public class FullRandomTaxiState implements StateGenerator {
 
@@ -46,13 +46,13 @@ public class FullRandomTaxiState implements StateGenerator {
 		
 		int tx = (int)(RandomFactory.getMapped(0).nextDouble() * width);
 		int ty = (int)(RandomFactory.getMapped(0).nextDouble() * hieght);
-		RoverAgent taxi = new RoverAgent(Taxi.CLASS_TAXI + 0, tx, ty);
+		RoverAgent taxi = new RoverAgent(Taxi.CLASS_ROVER + 0, tx, ty);
 		
-		List<TaxiWall> walls = new ArrayList<TaxiWall>();
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 0, 0, 0, width, true));
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 1, 0, 0, hieght, false));
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 2, 0, hieght, width, true));
-		walls.add(new TaxiWall(Taxi.CLASS_WALL + 3, width, 0, hieght, false));
+		List<RockSampleWall> walls = new ArrayList<RockSampleWall>();
+		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 0, 0, 0, width, true));
+		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 1, 0, 0, hieght, false));
+		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 2, 0, hieght, width, true));
+		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 3, width, 0, hieght, false));
 		
 		return new TaxiState(taxi, passengers, locations, walls);
 	}

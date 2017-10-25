@@ -34,7 +34,7 @@ public class PutStateMapper implements ParameterizedStateMapping {
 				taxiLocation = locName;
 			}
 		}
-		TaxiPutAgent taxi = new TaxiPutAgent(Taxi.CLASS_TAXI, taxiLocation);
+		TaxiPutAgent taxi = new TaxiPutAgent(Taxi.CLASS_ROVER, taxiLocation);
 
 		for(String passengerName : params){
 			String goal = (String) st.getPassengerAtt(passengerName, Taxi.ATT_GOAL_LOCATION);

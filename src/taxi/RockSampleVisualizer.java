@@ -17,7 +17,7 @@ import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
 import taxi.state.TaxiState;
-import taxi.state.TaxiWall;
+import taxi.state.RockSampleWall;
 
 public class RockSampleVisualizer {
 	//this code creates painter and a visualizer for the base taxi domain
@@ -50,7 +50,7 @@ public class RockSampleVisualizer {
         cellsTall = h;
         
         oopainter.addObjectClassPainter(Taxi.CLASS_LOCATION, new LocationPainter());
-        oopainter.addObjectClassPainter(Taxi.CLASS_TAXI, new TaxiPainter());
+        oopainter.addObjectClassPainter(Taxi.CLASS_ROVER, new TaxiPainter());
         oopainter.addObjectClassPainter(Taxi.CLASS_PASSENGER, new PassengerPainter());
         oopainter.addObjectClassPainter(Taxi.CLASS_WALL, new WallPainter());
 
@@ -154,7 +154,7 @@ public class RockSampleVisualizer {
 			float wallWidth = (float) cWidth / cellsWide;
 			float wallHeight = (float) cHeight / cellsTall;
 			
-			TaxiWall w = (TaxiWall) ob;
+			RockSampleWall w = (RockSampleWall) ob;
 			int startx = (int) w.get(Taxi.ATT_START_X);
 			int starty = (int) w.get(Taxi.ATT_START_Y);
 			float wx1 = startx * wallWidth;
