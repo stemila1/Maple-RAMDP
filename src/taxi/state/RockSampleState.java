@@ -10,7 +10,7 @@ import taxi.hierarchies.interfaces.PassengerParameterizable;
 
 import java.util.*;
 
-public class TaxiState implements MutableOOState, PassengerParameterizable{
+public class RockSampleState implements MutableOOState, PassengerParameterizable{
 
 	public RoverAgent getTaxi() {
 		return taxi;
@@ -38,7 +38,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 	private Map<String, TaxiLocation> locations;
 	private Map<String, RockSampleWall> walls;
 	
-	public TaxiState(RoverAgent taxi, List<TaxiPassenger> passengers, List<TaxiLocation> locations,
+	public RockSampleState(RoverAgent taxi, List<TaxiPassenger> passengers, List<TaxiLocation> locations,
                      List<RockSampleWall> walls) {
 		this.taxi = taxi;
 		
@@ -58,7 +58,7 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 		}
 	}
 	
-	public TaxiState(RoverAgent t, Map<String, TaxiPassenger> pass, Map<String, TaxiLocation> locs,
+	public RockSampleState(RoverAgent t, Map<String, TaxiPassenger> pass, Map<String, TaxiLocation> locs,
                      Map<String, RockSampleWall> walls) {
 		this.taxi = t;
 		this.passengers = pass;
@@ -125,8 +125,8 @@ public class TaxiState implements MutableOOState, PassengerParameterizable{
 	}
 
 	@Override
-	public TaxiState copy() {
-		return new TaxiState(taxi, passengers, locations, walls);
+	public RockSampleState copy() {
+		return new RockSampleState(taxi, passengers, locations, walls);
 	}
 
 	@Override

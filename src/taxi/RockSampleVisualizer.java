@@ -16,7 +16,7 @@ import burlap.visualizer.Visualizer;
 import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
-import taxi.state.TaxiState;
+import taxi.state.RockSampleState;
 import taxi.state.RockSampleWall;
 
 public class RockSampleVisualizer {
@@ -89,7 +89,7 @@ public class RockSampleVisualizer {
 
 		@Override
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
-			TaxiState state = (TaxiState) s;
+			RockSampleState state = (RockSampleState) s;
 			TaxiPassenger p = (TaxiPassenger) ob;
 			String goalLoc = (String) state.getPassengerAtt(p.name(), Taxi.ATT_GOAL_LOCATION);
 			String color = (String) state.getLocationAtt(goalLoc, Taxi.ATT_COLOR);

@@ -10,7 +10,7 @@ import taxi.Taxi;
 import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
-import taxi.state.TaxiState;
+import taxi.state.RockSampleState;
 import taxi.state.RockSampleWall;
 
 public class RandomPassengerTaxiState implements StateGenerator{
@@ -53,7 +53,7 @@ public class RandomPassengerTaxiState implements StateGenerator{
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 5, 3, 0, 2, false));
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 6, 2, 3, 2, false));
 		
-		return new TaxiState(taxi, passengers, locations, walls);
+		return new RockSampleState(taxi, passengers, locations, walls);
 	}
 
 }

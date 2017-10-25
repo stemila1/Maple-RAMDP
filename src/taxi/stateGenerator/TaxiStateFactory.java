@@ -8,13 +8,13 @@ import taxi.Taxi;
 import taxi.state.RoverAgent;
 import taxi.state.TaxiLocation;
 import taxi.state.TaxiPassenger;
-import taxi.state.TaxiState;
+import taxi.state.RockSampleState;
 import taxi.state.RockSampleWall;
 
 public class TaxiStateFactory {
 	//generates taxi states
 	
-	public static TaxiState createClassicState(){
+	public static RockSampleState createClassicState(){
 		RoverAgent taxi = new RoverAgent(Taxi.CLASS_ROVER + 0, 0, 3);
 		
 		List<TaxiLocation> locations = new ArrayList<TaxiLocation>();
@@ -33,10 +33,10 @@ public class TaxiStateFactory {
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 2, 5, 0, 5, false));
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 3, 0, 5, 5, true));
 		
-		return new TaxiState(taxi, passengers, locations, walls);
+		return new RockSampleState(taxi, passengers, locations, walls);
 	}
 	
-	public static TaxiState createSmallState(){
+	public static RockSampleState createSmallState(){
 		RoverAgent taxi = new RoverAgent(Taxi.CLASS_ROVER + 0, 0, 4);
 		
 		List<TaxiLocation> locations = new ArrayList<TaxiLocation>();
@@ -54,10 +54,10 @@ public class TaxiStateFactory {
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 2, 0, 0, 1, true));
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 3, 0, 5, 1, true));
 			
-		return new TaxiState(taxi, passengers, locations, walls);
+		return new RockSampleState(taxi, passengers, locations, walls);
 	}
 	
-	public static TaxiState createTinyState(){
+	public static RockSampleState createTinyState(){
 		RoverAgent taxi = new RoverAgent(Taxi.CLASS_ROVER + 0, 0, 1);
 		
 		List<TaxiLocation> locations = new ArrayList<TaxiLocation>();
@@ -73,6 +73,6 @@ public class TaxiStateFactory {
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 2, 0, 2, 1, true));
 		walls.add(new RockSampleWall(Taxi.CLASS_WALL + 3, 1, 0, 2, false));
 		
-		return new TaxiState(taxi, passenger, locations, walls);
+		return new RockSampleState(taxi, passenger, locations, walls);
 	}
 }
