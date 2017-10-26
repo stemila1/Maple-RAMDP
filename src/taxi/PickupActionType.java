@@ -6,7 +6,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
 import taxi.state.RockSampleState;
 
-public class PickupActionType extends ObjectParameterizedActionType {
+/*public class PickupActionType extends ObjectParameterizedActionType {
     public PickupActionType(String name, String[] parameterClasses) {
         super(name, parameterClasses);
     }
@@ -26,5 +26,5 @@ public class PickupActionType extends ObjectParameterizedActionType {
         }
         return false;
     }
-}
+}*/
 
