@@ -30,6 +30,7 @@ public class Taxi implements DomainGenerator{
 	public static final String CLASS_PASSENGER =			"Passenger";
 	public static final String CLASS_LOCATION = 			"Location";
 	public static final String CLASS_WALL = 				"Wall";
+	public static final String CLASS_ROCK = 				"Rock";
 	
 	//common attributes
 	public static final String ATT_X =						"x";
@@ -37,14 +38,18 @@ public class Taxi implements DomainGenerator{
 	
 	//taxi attributes
 	public static final String ATT_TAXI_OCCUPIED = 			"taxiOccupied";
-	
+
+	//rock attributes
+	public static final String ATT_QUALITY = 				"quality";
+
 	//passenger attributes
 	public static final String ATT_GOAL_LOCATION = 			"goalLocation";
 	public static final String ATT_IN_TAXI = 				"inTaxi";
 	public static final String ATT_PICKED_UP_AT_LEAST_ONCE ="pickedUpAtLeastOnce";
 	public static final String ATT_JUST_PICKED_UP =			"justPickedUp";
 	public static final String ON_ROAD =				"onRoad";
-	//location attributes 
+
+	//location attributes
 	public static final String ATT_COLOR =					"color";
 	
 	//wall attributes
@@ -70,6 +75,8 @@ public class Taxi implements DomainGenerator{
 	public static final String ACTION_WEST = 				"west";
 	public static final String ACTION_PICKUP = 				"pickup";
 	public static final String ACTION_PUTDOWN = 			"putdown";
+	public static final String ACTION_SAMPLE =				"sample";
+	public static final String ACTION_CHECK_ROCK0 =			"checkRock0"; // make sure this is named properly
 
 	//action indexes
 	public static int IND_NORTH = 							0;
@@ -78,6 +85,7 @@ public class Taxi implements DomainGenerator{
 	public static int IND_WEST = 							3;
 	public static int IND_PICKUP = 							4;
 	public static int IND_PUTDOWN = 						5;
+	//public static int IND_SAMPLE = 							4;
 	
 	//parameters dictating probabilities of the model
 	private RewardFunction rf;
@@ -85,6 +93,8 @@ public class Taxi implements DomainGenerator{
 	private boolean fickle;
 	private double fickleProbability;
 	private double[][] moveDynamics;
+	private boolean noisy;
+	private double noisyProbability; // can rename if necessary
 	
 	/**
 	 * create a taxi domain generator
@@ -178,22 +188,23 @@ public class Taxi implements DomainGenerator{
                 new UniversalActionType(ACTION_NORTH),
                 new UniversalActionType(ACTION_SOUTH),
                 new UniversalActionType(ACTION_EAST),
-                new UniversalActionType(ACTION_WEST),
-                new PutdownActionType(ACTION_PUTDOWN, new String[]{CLASS_PASSENGER}),
-                new PickupActionType(ACTION_PICKUP, new String[]{CLASS_PASSENGER}));
+                new UniversalActionType(ACTION_WEST));
+		//,
+         //       new PutdownActionType(ACTION_PUTDOWN, new String[]{CLASS_PASSENGER}),
+         //       new PickupActionType(ACTION_PICKUP, new String[]{CLASS_PASSENGER}));
 		
 		return domain;
 	}
 	
 	//for the taxi hierarchy, each node has a different set of actions, 
 	//these mothods remove all actions besides the subtask for each task  
-	public OOSADomain generateBringOnDomain(){
+	/*public OOSADomain generateBringOnDomain(){
 		OOSADomain d = generateDomain();
 		d.clearActionTypes();
 		d.addActionType(new PickupActionType(ACTION_PICKUP, new String[]{CLASS_PASSENGER}));
 		return d;
-	}
-	
+	}*/
+
 	public OOSADomain generateNavigateDomain(){
 		OOSADomain d = generateDomain();
 		d.clearActionTypes();
@@ -205,19 +216,19 @@ public class Taxi implements DomainGenerator{
                 );
 		return d;
 	}
-	
-	public OOSADomain generateDropOffDomain(){
+
+	/*public OOSADomain generateDropOffDomain(){
 		OOSADomain d = generateDomain();
 		d.clearActionTypes();
 		d.addActionType(new PutdownActionType(ACTION_PUTDOWN, new String[]{CLASS_PASSENGER}));
 		return d;
-	}
-				
+	}*/
+
 	public static void main(String[] args) {
-		
+
 		Taxi taxiBuild = new Taxi();
 		OOSADomain domain = taxiBuild.generateDomain();
-				
+
 		HashableStateFactory hs = new SimpleHashableStateFactory();
 
 		State s = TaxiStateFactory.createClassicState();
@@ -225,14 +236,14 @@ public class Taxi implements DomainGenerator{
 
 		List<Episode> eps = new ArrayList<Episode>();
 		QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.01);
-		
+
 		for(int i = 0; i < 1000; i++){
 			Episode e = qagent.runLearningEpisode(env, 5000);
 			System.out.println(e.rewardSequence);
 			eps.add(e);
 			env.resetEnvironment();
 		}
-		
+
 		EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(RockSampleVisualizer.getVisualizer(5, 5),
 				domain, eps);
 		v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
