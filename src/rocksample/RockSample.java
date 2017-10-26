@@ -13,6 +13,7 @@ import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import rocksample.state.RockSamplePt;
 import rocksample.state.RoverAgent;
 import rocksample.state.RockSampleWall;
 import rocksample.stateGenerator.RockSampleStateFactory;
@@ -25,21 +26,28 @@ import java.util.List;
  */
 public class RockSample implements DomainGenerator {
 
-    //object classes
+    // object classes
     public static final String CLASS_ROVER = 				"Rover";
+    public static final String CLASS_LOCATION = 			"Location";
     public static final String CLASS_WALL =                 "Wall";
 
-    //common attributes
+    // abstract class
+    public static final String CLASS_PT =                   "Point";
+
+    // common attributes
     public static final String ATT_X =                      "x";
     public static final String ATT_Y =                      "y";
 
-    //wall attributes
+    // location attributes
+    public static final String ATT_COLOR =					"color";
+
+    // wall attributes
     public static final String ATT_START_X = 				"startX";
     public static final String ATT_START_Y = 				"startY";
     public static final String ATT_LENGTH = 				"length";
     public static final String ATT_IS_HORIZONTAL =			"isHorizontal";
 
-    //colors
+    // colors
     public static final String COLOR_RED = 					"red";
     public static final String COLOR_YELLOW = 				"yellow";
     public static final String COLOR_GREEN = 				"green";
@@ -48,20 +56,20 @@ public class RockSample implements DomainGenerator {
     public static final String COLOR_BLACK = 				"black";
     public static final String COLOR_GRAY =					"gray";
 
-    //actions
+    // actions
     public static final int NUM_MOVE_ACTIONS = 				4;
     public static final String ACTION_NORTH = 				"north";
     public static final String ACTION_EAST =				"east";
     public static final String ACTION_SOUTH =				"south";
     public static final String ACTION_WEST = 				"west";
 
-    //action indexes
+    // action indexes
     public static int IND_NORTH = 							0;
     public static int IND_EAST = 							1;
     public static int IND_SOUTH = 							2;
     public static int IND_WEST = 							3;
 
-    //parameters dictating probabilities of the model
+    // parameters dictating probabilities of the model
     private RewardFunction rf;
     private TerminalFunction tf;
     private double[][] moveDynamics;
@@ -108,7 +116,9 @@ public class RockSample implements DomainGenerator {
     public OOSADomain generateDomain() {
         OOSADomain domain = new OOSADomain();
 
-        domain.addStateClass(CLASS_ROVER, RoverAgent.class).addStateClass(CLASS_WALL, RockSampleWall.class);
+        domain.addStateClass(CLASS_ROVER, RoverAgent.class)
+                .addStateClass(CLASS_LOCATION, RockSamplePt.class)
+                .addStateClass(CLASS_WALL, RockSampleWall.class);
 
         RockSampleModel model = new RockSampleModel(moveDynamics);
         FactoredModel taxiModel = new FactoredModel(model, rf, tf);
