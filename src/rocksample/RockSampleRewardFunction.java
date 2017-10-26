@@ -26,9 +26,8 @@ public class RockSampleRewardFunction implements RewardFunction {
         RockSampleState state = (RockSampleState) sprime;
         RoverAgent rover = state.getRover();
         int roverX = (int) rover.get(RockSample.ATT_X);
-        int roverY = (int) rover.get(RockSample.ATT_Y);
 
-        if (roverX == 4 && roverY == 4) {
+        if (roverX == 4) {
             return exitAreaReward;
         }
         return 0;

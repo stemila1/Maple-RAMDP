@@ -15,7 +15,7 @@ import java.util.List;
 public class RockSampleStateFactory {
 
     public static RockSampleState createClassicState(){
-        RoverAgent rover = new RoverAgent(RockSample.CLASS_ROVER + 0, 0, 3);
+        RoverAgent rover = new RoverAgent(RockSample.CLASS_ROVER + 0, 0, 2);
 
         List<RockSampleRock> rocks = new ArrayList();
         rocks.add(new RockSampleRock(RockSample.CLASS_ROCK + 0, 0, 1, "Good"));
