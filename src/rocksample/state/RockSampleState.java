@@ -14,15 +14,71 @@ import java.util.*;
  */
 public class RockSampleState implements MutableOOState {
 
+    /**
+     *      Getters & setters for RockSampleState
+     */
+
+    // get
+    // Given a variable key, returns the object that corresponds to that key
+    @Override
+    public Object get(Object variableKey) {
+        return OOStateUtilities.get(this, variableKey);
+    }
+
+    // set
+    // Given a variable key and a value, sets the value of the object corresponding to the key and returns
+    @Override
+    public MutableState set(Object variableKey, Object value) {
+        OOVariableKey key = OOStateUtilities.generateKey(variableKey);
+
+        if(key.obName.equals(rover.name())){
+            touchRover().set(variableKey, value);
+        }else if(walls.get(key.obName) != null){
+            touchWall(key.obName).set(variableKey, value);
+        } else {
+            throw new RuntimeException("ERROR: unable to set value for " + variableKey);
+        }
+        return this;
+    }
+
+    // getRover
+    // Returns the rover agent
     public RoverAgent getRover() { return rover; }
 
+    // setRover
+    // Given a rover agent, sets the rover
     public void setRover (RoverAgent rover) { this.rover = rover; }
 
+    // getRoverAtt
+    // Given an attribute name, returns the corresponding rover attribute
+    public Object getRoverAtt(String attName){
+        return rover.get(attName);
+    }
+
+    // getRoverName
+    // Returns the name of the rover
+    public String getRoverName(){
+        return rover.name();
+    }
+
+    // setWalls
+    // Given a map of walls, sets the walls
     public void setWalls(Map<String, RockSampleWall> walls) { this.walls = walls; }
 
-    private RoverAgent rover;
-    private Map<String, RockSampleWall> walls;
 
+    /**
+     *     Private variables
+     */
+    private RoverAgent rover;                       // the agent operating in the domain
+    private Map<String, RockSampleWall> walls;      // the walls of the domain
+
+
+    /**
+     *      Constructors
+     */
+
+    // RockSampleState
+    // Given a rover agent and a list of walls, constructs a RockSampleState
     public RockSampleState(RoverAgent rover,
                            List<RockSampleWall> walls) {
         this.rover = rover;
@@ -33,15 +89,28 @@ public class RockSampleState implements MutableOOState {
         }
     }
 
+    // RockSampleState
+    // Given a rover agent and a map of walls, constructs a rocksample state
     public RockSampleState(RoverAgent r,
                            Map<String, RockSampleWall> walls) {
         this.rover = r;
         this.walls = walls;
     }
 
+    // copy
+    // Makes a copy of the state
+    @Override
+    public RockSampleState copy() {
+        return new RockSampleState(rover, walls);
+    }
+
+    // numObjects
+    // Returns the number of objects in the domain
     @Override
     public int numObjects() { return 1 + walls.size(); }
 
+    // object
+    // If object name matches object in domain, return that object. Return null otherwise
     @Override
     public ObjectInstance object(String oname) {
         if(rover.name().equals(oname))
@@ -57,6 +126,8 @@ public class RockSampleState implements MutableOOState {
         return null;
     }
 
+    // objects
+    // Aggregates all objects in domain and returns the aggregation
     @Override
     public List<ObjectInstance> objects() {
         List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
@@ -65,6 +136,8 @@ public class RockSampleState implements MutableOOState {
         return objs;
     }
 
+    // objectsOfClass
+    // Given an object class, returns the objects in the domain of that class. Otherwise, throws exception
     @Override
     public List<ObjectInstance> objectsOfClass(String oclass) {
         if(oclass.equals(RockSample.CLASS_ROVER))
@@ -74,35 +147,14 @@ public class RockSampleState implements MutableOOState {
         throw new RuntimeException("No object class " + oclass);
     }
 
+    // variableKeys
     @Override
     public List<Object> variableKeys() {
         return OOStateUtilities.flatStateKeys(this);
     }
 
-    @Override
-    public Object get(Object variableKey) {
-        return OOStateUtilities.get(this, variableKey);
-    }
-
-    @Override
-    public RockSampleState copy() {
-        return new RockSampleState(rover, walls);
-    }
-
-    @Override
-    public MutableState set(Object variableKey, Object value) {
-        OOVariableKey key = OOStateUtilities.generateKey(variableKey);
-
-        if(key.obName.equals(rover.name())){
-            touchRover().set(variableKey, value);
-        }else if(walls.get(key.obName) != null){
-            touchWall(key.obName).set(variableKey, value);
-        } else {
-            throw new RuntimeException("ERROR: unable to set value for " + variableKey);
-        }
-        return this;
-    }
-
+    // addObject
+    // Given an object instance, adds the object to the state. Otherwise, throws exception
     @Override
     public MutableOOState addObject(ObjectInstance o) {
         if(o instanceof RoverAgent || o.className().equals(RockSample.CLASS_ROVER)){
@@ -116,17 +168,27 @@ public class RockSampleState implements MutableOOState {
         return this;
     }
 
+    // removeObject
+    // Throws exception
     @Override
     public MutableOOState removeObject(String oname) {
         throw new RuntimeException("Remove not implemented");
     }
 
+    // renameObject
+    // Throws exception
     @Override
     public MutableOOState renameObject(String objectName, String newName) {
         throw new RuntimeException("Rename not implemented");
     }
 
-    //touch methods allow a shallow copy of states and a copy of objects only when modified
+
+    /**
+     *      Touch methods - allow shallow copy of states and copy of objects only when modified
+     */
+
+    // touchRover
+    // Returns a shallow copy of the rover agent
     public RoverAgent touchRover(){
         this.rover = rover.copy();
         return rover;
@@ -150,14 +212,6 @@ public class RockSampleState implements MutableOOState {
         for(String name: walls.keySet())
             ret[i++] = name;
         return ret;
-    }
-
-    public Object getRoverAtt(String attName){
-        return rover.get(attName);
-    }
-
-    public String getRoverName(){
-        return rover.name();
     }
 
     //test to see if there is a wall on either side of the taxi
@@ -242,6 +296,7 @@ public class RockSampleState implements MutableOOState {
         return false;
     }
 
+    // toString
     @Override
     public String toString(){
         return OOStateUtilities.ooStateToString(this);
