@@ -31,8 +31,10 @@ public class RockSampleState implements MutableOOState {
     public MutableState set(Object variableKey, Object value) {
         OOVariableKey key = OOStateUtilities.generateKey(variableKey);
 
-        if(key.obName.equals(rover.name())){
+        if(key.obName.equals(rover.name())) {
             touchRover().set(variableKey, value);
+        }else if(rocks.get(key.obName) != null) {
+            touchRock(key.obName).set(variableKey, value);
         }else if(walls.get(key.obName) != null){
             touchWall(key.obName).set(variableKey, value);
         } else {
@@ -65,13 +67,12 @@ public class RockSampleState implements MutableOOState {
     // Given a map of walls, sets the walls
     public void setWalls(Map<String, RockSampleWall> walls) { this.walls = walls; }
 
-
     /**
      *     Private variables
      */
     private RoverAgent rover;                       // the agent operating in the domain
     private Map<String, RockSampleWall> walls;      // the walls of the domain
-
+    private Map<String, RockSampleRock> rocks;      // the rocks in the domain
 
     /**
      *      Constructors
@@ -80,8 +81,14 @@ public class RockSampleState implements MutableOOState {
     // RockSampleState
     // Given a rover agent and a list of walls, constructs a RockSampleState
     public RockSampleState(RoverAgent rover,
+                           List<RockSampleRock> rocks,
                            List<RockSampleWall> walls) {
         this.rover = rover;
+
+        this.rocks = new HashMap<String, RockSampleRock>();
+        for(RockSampleRock r : rocks) {
+            this.rocks.put(r.name(), r);
+        }
 
         this.walls = new HashMap<String, RockSampleWall>();
         for(RockSampleWall w : walls) {
@@ -92,8 +99,10 @@ public class RockSampleState implements MutableOOState {
     // RockSampleState
     // Given a rover agent and a map of walls, constructs a rocksample state
     public RockSampleState(RoverAgent r,
+                           Map<String, RockSampleRock> rocks,
                            Map<String, RockSampleWall> walls) {
         this.rover = r;
+        this.rocks = rocks;
         this.walls = walls;
     }
 
@@ -101,13 +110,13 @@ public class RockSampleState implements MutableOOState {
     // Makes a copy of the state
     @Override
     public RockSampleState copy() {
-        return new RockSampleState(rover, walls);
+        return new RockSampleState(rover, rocks, walls);
     }
 
     // numObjects
     // Returns the number of objects in the domain
     @Override
-    public int numObjects() { return 1 + walls.size(); }
+    public int numObjects() { return 1 + rocks.size() + walls.size(); }
 
     // object
     // If object name matches object in domain, return that object. Return null otherwise
@@ -117,7 +126,9 @@ public class RockSampleState implements MutableOOState {
             return rover;
 
         // change this ordering once more stuff is added
-        ObjectInstance o = walls.get(oname);
+        ObjectInstance o = rocks.get(oname);
+        if(o != null)
+            return o;
 
         o = walls.get(oname);
         if(o != null)
@@ -132,6 +143,7 @@ public class RockSampleState implements MutableOOState {
     public List<ObjectInstance> objects() {
         List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
         objs.add(rover);
+        objs.addAll(rocks.values());
         objs.addAll(walls.values());
         return objs;
     }
@@ -142,6 +154,8 @@ public class RockSampleState implements MutableOOState {
     public List<ObjectInstance> objectsOfClass(String oclass) {
         if(oclass.equals(RockSample.CLASS_ROVER))
             return Arrays.<ObjectInstance>asList(rover);
+        else if(oclass.equals(RockSample.CLASS_ROCK))
+            return new ArrayList<ObjectInstance>(rocks.values());
        else if(oclass.equals(RockSample.CLASS_WALL))
             return new ArrayList<ObjectInstance>(walls.values());
         throw new RuntimeException("No object class " + oclass);
@@ -157,9 +171,11 @@ public class RockSampleState implements MutableOOState {
     // Given an object instance, adds the object to the state. Otherwise, throws exception
     @Override
     public MutableOOState addObject(ObjectInstance o) {
-        if(o instanceof RoverAgent || o.className().equals(RockSample.CLASS_ROVER)){
+        if(o instanceof RoverAgent || o.className().equals(RockSample.CLASS_ROVER)) {
             touchRover();
             rover = (RoverAgent) o;
+        }else if(o instanceof RockSampleRock || o.className().equals(RockSample.CLASS_ROCK)){
+            touchRocks().put(o.name(), (RockSampleRock) o);
         }else if(o instanceof RockSampleWall || o.className().equals(RockSample.CLASS_WALL)){
             touchWalls().put(o.name(), (RockSampleWall) o);
         }else{
@@ -204,6 +220,18 @@ public class RockSampleState implements MutableOOState {
     public Map<String, RockSampleWall> touchWalls(){
         this.walls = new HashMap<String, RockSampleWall>(walls);
         return walls;
+    }
+
+    public RockSampleRock touchRock(String rockName){
+        RockSampleRock r = rocks.get(rockName).copy();
+        touchRocks().remove(rockName);
+        rocks.put(rockName, r);
+        return r;
+    }
+
+    public Map<String, RockSampleRock> touchRocks(){
+        this.rocks = new HashMap<String, RockSampleRock>(rocks);
+        return rocks;
     }
 
     public String[] getWalls(){

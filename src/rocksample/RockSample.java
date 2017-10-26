@@ -13,9 +13,9 @@ import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rocksample.state.RockSamplePt;
 import rocksample.state.RoverAgent;
 import rocksample.state.RockSampleWall;
+import rocksample.state.RockSampleRock;
 import rocksample.stateGenerator.RockSampleStateFactory;
 
 import java.util.ArrayList;
@@ -24,11 +24,12 @@ import java.util.List;
 /**
  * Created by steph on 10/26/2017.
  */
+
 public class RockSample implements DomainGenerator {
 
     // object classes
     public static final String CLASS_ROVER = 				"Rover";
-    public static final String CLASS_LOCATION = 			"Location";
+    public static final String CLASS_ROCK =                 "Rock";
     public static final String CLASS_WALL =                 "Wall";
 
     // abstract class
@@ -38,8 +39,8 @@ public class RockSample implements DomainGenerator {
     public static final String ATT_X =                      "x";
     public static final String ATT_Y =                      "y";
 
-    // location attributes
-    public static final String ATT_COLOR =					"color";
+    // rock attributes
+    public static final String ATT_QUALITY =                "quality";
 
     // wall attributes
     public static final String ATT_START_X = 				"startX";
@@ -117,7 +118,7 @@ public class RockSample implements DomainGenerator {
         OOSADomain domain = new OOSADomain();
 
         domain.addStateClass(CLASS_ROVER, RoverAgent.class)
-                .addStateClass(CLASS_LOCATION, RockSamplePt.class)
+                .addStateClass(CLASS_ROCK, RockSampleRock.class)
                 .addStateClass(CLASS_WALL, RockSampleWall.class);
 
         RockSampleModel model = new RockSampleModel(moveDynamics);

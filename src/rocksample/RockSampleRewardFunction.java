@@ -5,6 +5,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
 
+import rocksample.state.RockSampleRock;
 import rocksample.state.RockSampleState;
 import rocksample.state.RoverAgent;
 /**
