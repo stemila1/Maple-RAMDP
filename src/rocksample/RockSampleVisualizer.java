@@ -14,6 +14,7 @@ import java.util.Map;
 
 import rocksample.state.RoverAgent;
 import rocksample.state.RockSampleWall;
+import rocksample.state.RockSampleRock;
 
 /**
  * Created by steph on 10/26/2017.
@@ -48,6 +49,7 @@ public class RockSampleVisualizer {
         cellsTall = h;
 
         oopainter.addObjectClassPainter(RockSample.CLASS_ROVER, new RoverPainter());
+        oopainter.addObjectClassPainter(RockSample.CLASS_ROCK, new RockPainter());
         oopainter.addObjectClassPainter(RockSample.CLASS_WALL, new WallPainter());
 
         rl.addStatePainter(oopainter);
@@ -66,16 +68,41 @@ public class RockSampleVisualizer {
             float roverHeight = (float) cHeight / cellsTall;
 
             RoverAgent rover = (RoverAgent) ob;
-            int tx = (int) rover.get(RockSample.ATT_X);
-            int ty = (int) rover.get(RockSample.ATT_Y);
-            float taxix = tx * roverWidth - cellsWide;
-            float taxiy = cHeight - (1 + ty) * roverHeight;
+            int rx = (int) rover.get(RockSample.ATT_X);
+            int ry = (int) rover.get(RockSample.ATT_Y);
+            float roverx = rx * roverWidth - cellsWide;
+            float rovery = cHeight - (1 + ry) * roverHeight;
 
             float scale = 0.9f;
             float realWidth = roverWidth * scale;
             float realHeight = roverHeight * scale;
-            float realX = taxix + 0.08f * roverWidth;
-            float realy = taxiy + 0.05f * roverHeight;
+            float realX = roverx + 0.08f * roverWidth;
+            float realy = rovery + 0.05f * roverHeight;
+
+            g2.fill(new Ellipse2D.Float(realX, realy, realWidth, realHeight));
+        }
+    }
+
+    public static class RockPainter implements ObjectPainter {
+
+        @Override
+        public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
+            g2.setColor(Color.GRAY);
+
+            float rockWidth = (float) cWidth / cellsWide;
+            float rockHeight = (float) cHeight / cellsTall;
+
+            RockSampleRock rock = (RockSampleRock) ob;
+            int rx = (int) rock.get(RockSample.ATT_X);
+            int ry = (int) rock.get(RockSample.ATT_Y);
+            float rockx = rx * rockWidth - cellsWide;
+            float rocky = cHeight - (1 + ry) * rockHeight;
+
+            float scale = 0.9f;
+            float realWidth = rockWidth * scale;
+            float realHeight = rockHeight * scale;
+            float realX = rockx + 0.08f * rockWidth;
+            float realy = rocky + 0.05f * rockHeight;
 
             g2.fill(new Ellipse2D.Float(realX, realy, realWidth, realHeight));
         }
