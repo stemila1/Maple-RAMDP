@@ -18,32 +18,6 @@ import rocksample.state.RoverAgent;
  * Created by steph on 10/26/2017.
  */
 public class RockSampleModel implements FullStateModel {
-   /* protected double[][] transitionProbability;
-
-    public RockSampleModel(int numActions){
-        this.transitionProbability = new double[numActions][numActions];
-        for(int i = 0; i < numActions; i++){
-            for(int j = 0; j < numActions; j++){
-                double p = i != j ? 0 : 1;
-                transitionProbability[i][j] = p;
-            }
-        }
-    }
-
-    @Override
-    public List<StateTransitionProb> stateTransitions(State s, Action a){
-        return FullStateModel.Helper.deterministicTransition(this, s, a);
-    }
-
-    @Override
-    public State sample(State s, Action a){
-        s = s.copy();
-
-    }
-
-*/
-
-
     /**
      * the array saying how the probabilities are distributed
      */
