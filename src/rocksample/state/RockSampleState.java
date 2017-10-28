@@ -254,6 +254,10 @@ public class RockSampleState implements MutableOOState {
         return null;
     }
 
+    public Object getRockAtt(String name, String attName) {
+        return rocks.get(name).get(attName);
+    }
+
     //test to see if there is a wall on either side of the taxi
     public boolean wallNorth(){
         int tx = (int) rover.get(RockSample.ATT_X);
