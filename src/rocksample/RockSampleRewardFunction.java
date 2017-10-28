@@ -34,7 +34,8 @@ public class RockSampleRewardFunction implements RewardFunction {
         int roverY = (int) rover.get(RockSample.ATT_Y);
 
         if(a.actionName().equals(RockSample.ACTION_SAMPLE)){
-            RockSampleRock rock = state.getRockAtPoint(roverX, roverY);
+            RockSampleState prevstate = (RockSampleState) s;
+            RockSampleRock rock = prevstate.getRockAtPoint(roverX, roverY);
 
             if (rock != null) {
                 if (rock.get(RockSample.ATT_QUALITY) == "Good") {
