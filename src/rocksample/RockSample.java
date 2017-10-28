@@ -71,33 +71,53 @@ public class RockSample implements DomainGenerator {
     public static int IND_SOUTH = 							2;
     public static int IND_WEST = 							3;
     public static int IND_SAMPLE =                          4;
+    public static int IND_CHECK =                           5;
 
     // parameters dictating probabilities of the model
     private RewardFunction rf;
     private TerminalFunction tf;
     private double[][] moveDynamics;
+    private boolean noisy;              // whether the sensor is noisy or not
+    private double noisyProbability;   // prob sensor is accurate
 
-    public RockSample(RewardFunction r, TerminalFunction t, double correctMoveProb) {
+
+    /**
+     * RockSample
+     * A RockSample domain generator
+     * @param r reward function
+     * @param t terminal function
+     * @param correctMoveProb probability that the rover will move in selected
+     *                        direction
+     * @param
+     */
+    public RockSample(RewardFunction r, TerminalFunction t,
+                      double correctMoveProb, boolean n, double noisyProb) {
         rf = r;
         tf = t;
+        this.noisy = n;
+        this.noisyProbability = noisyProb;
         setMoveDynamics(correctMoveProb);
     }
 
-    public RockSample(double correctMoveprob) {
-        setMoveDynamics(correctMoveprob);
+    public RockSample(double correctMoveProb, boolean n, double noisyProb) {
+        this.noisy = n;
+        this.noisyProbability = noisyProb;
+        setMoveDynamics(correctMoveProb);
         this.rf = new RockSampleRewardFunction();
         this.tf = new RockSampleTerminalFunction();
     }
 
-    public RockSample(double[][] movement) {
+    public RockSample(double[][] movement, boolean n, double noisyProb) {
+        this.noisy = n;
+        this.noisyProbability = noisyProb;
         this.moveDynamics = movement;
         this.rf = new RockSampleRewardFunction();
         this.tf = new RockSampleTerminalFunction();
     }
 
-    public RockSample() { this(1); }
+    public RockSample() { this(1, false, 0); }
 
-    private void setMoveDynamics(double correctProb){
+    private void setMoveDynamics(double correctProb) {
         moveDynamics = new double[NUM_MOVE_ACTIONS][NUM_MOVE_ACTIONS];
 
         for(int choose = 0; choose < NUM_MOVE_ACTIONS; choose++){
