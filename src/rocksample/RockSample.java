@@ -155,10 +155,10 @@ public class RockSample implements DomainGenerator {
                 new UniversalActionType(ACTION_SOUTH),
                 new UniversalActionType(ACTION_EAST),
                 new UniversalActionType(ACTION_WEST),
-                new UniversalActionType(ACTION_SAMPLE));
+                new UniversalActionType(ACTION_SAMPLE),
 
                 // check would be object parameterized action
-                new CheckActionType(ACTION_CHECK, new String[]{CLASS_ROCK});
+                new CheckActionType(ACTION_CHECK, new String[]{CLASS_ROCK}));
         return domain;
     }
 
@@ -188,4 +188,3 @@ public class RockSample implements DomainGenerator {
         v.initGUI();
     }
 }
-

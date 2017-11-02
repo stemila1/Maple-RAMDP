@@ -124,7 +124,6 @@ public class RockSampleModel implements FullStateModel {
             int ry = (int) rock.get(RockSample.ATT_Y);
             RockSampleRock nRock = ns.touchRock(rock.name());
             nRock.set(RockSample.ATT_QUALITY, "Bad");
-
         }
 
         tps.add(new StateTransitionProb(ns, 1.));
@@ -137,8 +136,12 @@ public class RockSampleModel implements FullStateModel {
 
         int rockX = (int) s.getRockAtt(n, RockSample.ATT_X);
         int rockY = (int) s.getRockAtt(n, RockSample.ATT_Y);
-        double rockQuality = (double) s.getRockAtt(n, RockSample.ATT_QUALITY);
+        String rockQuality = (String) s.getRockAtt(n, RockSample.ATT_QUALITY);
 
+        /*
+         1. Cast rockquality to boolean
+         2. P
+         */
 
         tps.add(new StateTransitionProb(ns, 1.));
     }
