@@ -84,6 +84,8 @@ public class RockSample implements DomainGenerator {
     private double noisyProbability;   // prob sensor is accurate
 
 
+    //observations
+    public String[] observations;
     /**
      * RockSample
      * A RockSample domain generator
@@ -109,6 +111,7 @@ public class RockSample implements DomainGenerator {
         this.rf = new RockSampleRewardFunction();
         this.tf = new RockSampleTerminalFunction();
     }
+
 
     public RockSample(double[][] movement, boolean n, double noisyProb) {
         this.noisy = n;

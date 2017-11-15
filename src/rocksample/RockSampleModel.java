@@ -140,11 +140,12 @@ public class RockSampleModel implements FullStateModel {
 
         /*
          1. Cast rockquality to boolean
-         2. P
+         2.
          */
 
         tps.add(new StateTransitionProb(ns, 1.));
     }
+
 
     public int actionInd(Action a){
         String aname = a.actionName();
