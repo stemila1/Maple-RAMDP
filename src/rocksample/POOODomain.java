@@ -1,5 +1,6 @@
 package rocksample;
 
+import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.singleagent.pomdp.PODomain;
@@ -64,4 +65,19 @@ public class POOODomain extends PODomain implements OODomain
        this.obsevationFunction = observationFunction;
     }
 
+    public boolean providesStateEnumerator(){return this.stateEnumerator != null;}
+
+    @Override
+    public StateEnumerator getStateEnumerator() {
+        if(this.stateEnumerator == null){
+            throw new RuntimeException("This domain cannot return a StateEnumerator because one is not defined for it. " +
+                    "Use the providesStateEnumerator() method to check if one is provided in advance.");
+        }
+        return stateEnumerator;
+    }
+
+    @Override
+    public void setStateEnumerator(StateEnumerator stateEnumerator) {
+        this.stateEnumerator = stateEnumerator;
+    }
 }
