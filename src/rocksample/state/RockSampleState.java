@@ -17,6 +17,11 @@ public class RockSampleState implements MutableOOState {
     /**
      *      Getters & setters for RockSampleState
      */
+    public double checkAccuracy;
+
+    public RockSampleState(double checkAcc){
+        this.checkAccuracy = checkAcc;
+    }
 
     // get
     // Given a variable key, returns the object that corresponds to that key

@@ -6,28 +6,26 @@ import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.UniversalActionType;
-import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rocksample.state.RoverAgent;
-import rocksample.state.RockSampleWall;
 import rocksample.state.RockSampleRock;
+import rocksample.state.RockSampleWall;
+import rocksample.state.RoverAgent;
+import rocksample.POOODomain;
 import rocksample.stateGenerator.RockSampleStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by steph on 10/26/2017.
+ * Created by steph on 11/9/2017.
  */
-
-public class RockSample implements DomainGenerator {
+public class RockSamplePO implements DomainGenerator {
 
     // object classes
     public static final String CLASS_ROVER = 				"Rover";
@@ -84,18 +82,7 @@ public class RockSample implements DomainGenerator {
     private double noisyProbability;   // prob sensor is accurate
 
 
-    //observations
-    public String[] observations;
-    /**
-     * RockSample
-     * A RockSample domain generator
-     * @param r reward function
-     * @param t terminal function
-     * @param correctMoveProb probability that the rover will move in selected
-     *                        direction
-     * @param
-     */
-    public RockSample(RewardFunction r, TerminalFunction t,
+    public RockSamplePO(RewardFunction r, TerminalFunction t,
                       double correctMoveProb, boolean n, double noisyProb) {
         rf = r;
         tf = t;
@@ -104,7 +91,7 @@ public class RockSample implements DomainGenerator {
         setMoveDynamics(correctMoveProb);
     }
 
-    public RockSample(double correctMoveProb, boolean n, double noisyProb) {
+    public RockSamplePO(double correctMoveProb, boolean n, double noisyProb) {
         this.noisy = n;
         this.noisyProbability = noisyProb;
         setMoveDynamics(correctMoveProb);
@@ -112,8 +99,7 @@ public class RockSample implements DomainGenerator {
         this.tf = new RockSampleTerminalFunction();
     }
 
-
-    public RockSample(double[][] movement, boolean n, double noisyProb) {
+    public RockSamplePO(double[][] movement, boolean n, double noisyProb) {
         this.noisy = n;
         this.noisyProbability = noisyProb;
         this.moveDynamics = movement;
@@ -121,7 +107,7 @@ public class RockSample implements DomainGenerator {
         this.tf = new RockSampleTerminalFunction();
     }
 
-    public RockSample() { this(1, false, 0); }
+    public RockSamplePO() { this(1, false, 0); }
 
     private void setMoveDynamics(double correctProb) {
         moveDynamics = new double[NUM_MOVE_ACTIONS][NUM_MOVE_ACTIONS];
@@ -141,17 +127,17 @@ public class RockSample implements DomainGenerator {
         }
     }
 
-    @Override
-    public OOSADomain generateDomain() {
-        OOSADomain domain = new OOSADomain();
-
+    public POOODomain generateDomain(){
+        POOODomain domain = new POOODomain();
+        // add the state classes to the domain
         domain.addStateClass(CLASS_ROVER, RoverAgent.class)
                 .addStateClass(CLASS_ROCK, RockSampleRock.class)
                 .addStateClass(CLASS_WALL, RockSampleWall.class);
 
+        // make a new rocksample model
         RockSampleModel model = new RockSampleModel(moveDynamics);
-        FactoredModel taxiModel = new FactoredModel(model, rf, tf);
-        domain.setModel(taxiModel);
+        FactoredModel rockSampleModel = new FactoredModel(model, rf, tf);
+        domain.setModel(rockSampleModel);
 
         domain.addActionTypes(
                 new UniversalActionType(ACTION_NORTH),
@@ -160,15 +146,15 @@ public class RockSample implements DomainGenerator {
                 new UniversalActionType(ACTION_WEST),
                 new UniversalActionType(ACTION_SAMPLE),
 
-                // check would be object parameterized action
+                // check is object parameterized action
                 new CheckActionType(ACTION_CHECK, new String[]{CLASS_ROCK}));
+
         return domain;
     }
 
-
-   /* public static void main(String[] args) {
-        RockSample rocksampleBuild = new RockSample();
-        OOSADomain domain = rocksampleBuild.generateDomain();
+    public static void main(String[] args) {
+        RockSamplePO rocksampleBuild = new RockSamplePO();
+        POOODomain domain = rocksampleBuild.generateDomain();
 
         HashableStateFactory hs = new SimpleHashableStateFactory();
 
@@ -189,5 +175,6 @@ public class RockSample implements DomainGenerator {
                 domain, eps);
         v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
         v.initGUI();
-    }*/
+    }
+
 }
