@@ -91,7 +91,7 @@ public class RockSampleObservationFunction implements ObservationFunction {
     protected State observationRock(String rockQual){
 
         /* Go into RockSampleDomain, get the rock value */
-        RockSampleState checkRock = new RockSampleState();
+        RockSampleState checkRock = new RockSampleState(1);
         //String qual = (String) checkRock.getRockAtt(rock, RockSample.ATT_QUALITY);
 
         // Now have to do the randomness mask

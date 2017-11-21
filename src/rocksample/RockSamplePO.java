@@ -1,15 +1,26 @@
 package rocksample;
 
+import burlap.behavior.singleagent.Episode;
+import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
+import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.UniversalActionType;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rocksample.state.RockSampleRock;
 import rocksample.state.RockSampleWall;
 import rocksample.state.RoverAgent;
 import rocksample.POOODomain;
+import rocksample.stateGenerator.RockSampleStateFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by steph on 11/9/2017.
@@ -118,13 +129,15 @@ public class RockSamplePO implements DomainGenerator {
 
     public POOODomain generateDomain(){
         POOODomain domain = new POOODomain();
-
+        // add the state classes to the domain
         domain.addStateClass(CLASS_ROVER, RoverAgent.class)
                 .addStateClass(CLASS_ROCK, RockSampleRock.class)
                 .addStateClass(CLASS_WALL, RockSampleWall.class);
+
+        // make a new rocksample model
         RockSampleModel model = new RockSampleModel(moveDynamics);
-        FactoredModel taxiModel = new FactoredModel(model, rf, tf);
-        domain.setModel(taxiModel);
+        FactoredModel rockSampleModel = new FactoredModel(model, rf, tf);
+        domain.setModel(rockSampleModel);
 
         domain.addActionTypes(
                 new UniversalActionType(ACTION_NORTH),
@@ -133,10 +146,35 @@ public class RockSamplePO implements DomainGenerator {
                 new UniversalActionType(ACTION_WEST),
                 new UniversalActionType(ACTION_SAMPLE),
 
-                // check would be object parameterized action
+                // check is object parameterized action
                 new CheckActionType(ACTION_CHECK, new String[]{CLASS_ROCK}));
 
         return domain;
+    }
+
+    public static void main(String[] args) {
+        RockSamplePO rocksampleBuild = new RockSamplePO();
+        POOODomain domain = rocksampleBuild.generateDomain();
+
+        HashableStateFactory hs = new SimpleHashableStateFactory();
+
+        State s = RockSampleStateFactory.createClassicState();
+        SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
+
+        List<Episode> eps = new ArrayList<Episode>();
+        QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.01);
+
+        for(int i = 0; i < 1000; i++){
+            Episode e = qagent.runLearningEpisode(env, 5000);
+            System.out.println(e.rewardSequence);
+            eps.add(e);
+            env.resetEnvironment();
+        }
+
+        EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(RockSampleVisualizer.getVisualizer(5, 5),
+                domain, eps);
+        v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
+        v.initGUI();
     }
 
 }

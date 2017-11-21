@@ -166,7 +166,7 @@ public class RockSample implements DomainGenerator {
     }
 
 
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
         RockSample rocksampleBuild = new RockSample();
         OOSADomain domain = rocksampleBuild.generateDomain();
 
@@ -189,5 +189,5 @@ public class RockSample implements DomainGenerator {
                 domain, eps);
         v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
         v.initGUI();
-    }
+    }*/
 }
