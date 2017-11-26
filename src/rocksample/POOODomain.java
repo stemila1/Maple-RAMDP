@@ -13,71 +13,104 @@ import java.util.Map;
 
 /**
  * Created by steph on 11/9/2017.
- * Basically reimplement OOSADomain but using things that
- * are partially observable -- taking place of OOSA Domain
  */
 
 public class POOODomain extends PODomain implements OODomain
 {
-    protected Map<String, Class<?>> stateClassesMap = new HashMap<String, Class<?>>();
+    protected Map<String, Class<?>> stateClassesMap =
+            new HashMap<String, Class<?>>();
 
-    protected Map<String, PropositionalFunction> propFunctionMap = new HashMap<String, PropositionalFunction>();
+    protected Map<String, PropositionalFunction> propFunctionMap =
+            new HashMap<String, PropositionalFunction>();
 
+    /**
+     *      getters & setters
+     */
+
+    // stateClasses
+    // Returns the list of state classes
     @Override
     public List<Class<?>> stateClasses(){
         return new ArrayList<Class<?>>(stateClassesMap.values());
     }
 
+    // stateClass
+    // Given the name of a class, returns the class
     @Override
-    public Class<?> stateClass(String className) {
+    public Class<?> stateClass(String className){
         return stateClassesMap.get(className);
     }
 
+    // addStateClass
+    // Given the name of a class and a class, adds the state class to the
+    // domain and returns
     @Override
-    public POOODomain addStateClass(String className, Class<?> stateClass) {
+    public POOODomain addStateClass(String className, Class<?> stateClass){
         this.stateClassesMap.put(className, stateClass);
         return this;
     }
 
+    // propFunctions
+    // Returns the list of propositional functions
     @Override
-    public List<PropositionalFunction> propFunctions() {
-        return new ArrayList<PropositionalFunction>(this.propFunctionMap.values());
+    public List<PropositionalFunction> propFunctions(){
+        return new ArrayList<PropositionalFunction>(
+                this.propFunctionMap.values());
     }
 
+    // propFunction
+    // Given the name of a propositional function, returns the
+    // propositional function
     @Override
-    public PropositionalFunction propFunction(String name) {
+    public PropositionalFunction propFunction(String name){
         return this.propFunctionMap.get(name);
     }
 
+    // addPropFunction
+    // Given a propositional function, adds the propositional function
+    // to the domain and returns
     @Override
-    public POOODomain addPropFunction(PropositionalFunction prop) {
+    public POOODomain addPropFunction(PropositionalFunction prop){
         this.propFunctionMap.put(prop.getName(), prop);
         return this;
     }
 
-
+    // getObserationFunction
+    // Returns the observation function
     public ObservationFunction getObserationFunction(){
-        return this.obsevationFunction ;
+        return this.obsevationFunction;
     }
 
+    // setObservationFunction
+    // Given an observation function, sets the observation function
     @Override
-    public void setObservationFunction(ObservationFunction observationFunction){
-       this.obsevationFunction = observationFunction;
+    public void setObservationFunction(ObservationFunction obsFn){
+       this.obsevationFunction = obsFn;
     }
 
-    public boolean providesStateEnumerator(){return this.stateEnumerator != null;}
+    // providesStateEnumerator
+    // Returns true if provides a state enumerator, false otherwise
+    public boolean providesStateEnumerator(){
+        return this.stateEnumerator != null;
+    }
 
+    // getStateEnumerator
+    // Return state enumerator if it exists; otherwise, throw exception
     @Override
-    public StateEnumerator getStateEnumerator() {
+    public StateEnumerator getStateEnumerator(){
         if(this.stateEnumerator == null){
-            throw new RuntimeException("This domain cannot return a StateEnumerator because one is not defined for it. " +
-                    "Use the providesStateEnumerator() method to check if one is provided in advance.");
+            throw new RuntimeException("This domain cannot return a " +
+                    "StateEnumerator because one is not defined for it. " +
+                    "Use the providesStateEnumerator() method to check " +
+                    "if one is provided in advance.");
         }
         return stateEnumerator;
     }
 
+    // setStateEnumerator
+    // Given a state enumerator, sets the state enumerator
     @Override
-    public void setStateEnumerator(StateEnumerator stateEnumerator) {
+    public void setStateEnumerator(StateEnumerator stateEnumerator){
         this.stateEnumerator = stateEnumerator;
     }
 }

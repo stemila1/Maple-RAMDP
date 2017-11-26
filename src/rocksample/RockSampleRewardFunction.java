@@ -5,7 +5,6 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
 
-import org.apache.commons.lang3.ObjectUtils;
 import rocksample.state.RockSampleRock;
 import rocksample.state.RockSampleState;
 import rocksample.state.RoverAgent;
@@ -27,6 +26,9 @@ public class RockSampleRewardFunction implements RewardFunction {
         tf = new RockSampleTerminalFunction();
     }
 
+    // reward
+    // Given a state, action, and subsequent state, return the corresponding
+    // reward
     public double reward(State s, Action a, State sprime) {
         RockSampleState state = (RockSampleState) sprime;
         RoverAgent rover = state.getRover();
@@ -38,6 +40,7 @@ public class RockSampleRewardFunction implements RewardFunction {
             RockSampleState prevstate = (RockSampleState) s;
             RockSampleRock rock = prevstate.getRockAtPoint(roverX, roverY);
 
+            // if the rock exists
             if (rock != null) {
                 if (rock.get(RockSample.ATT_QUALITY) == "Good") {
                     return goodRockReward;
@@ -47,6 +50,7 @@ public class RockSampleRewardFunction implements RewardFunction {
             }
         }
 
+        // if the rover is in the terminal zone
         if (roverX == 4) {
             return exitAreaReward;
         }

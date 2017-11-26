@@ -10,9 +10,9 @@ import rocksample.RockSample;
 /**
  * Created by steph on 10/26/2017.
  */
-public class RockSampleRock extends RockSamplePt {
+public class RockSampleRock extends RockSamplePt{
     /**
-     * x, y
+     *      x, y
      */
     private final static List<Object> keys = Arrays.<Object>asList(
             RockSample.ATT_X,
@@ -21,13 +21,13 @@ public class RockSampleRock extends RockSamplePt {
     );
 
     /**
-     * Constructors
+     *      Constructors
      */
-    public RockSampleRock(String name, int x, int y, String quality) {
+    public RockSampleRock(String name, int x, int y, String quality){
         this(name, (Object) x, (Object) y, (Object) quality);
     }
 
-    private RockSampleRock(String name, Object x, Object y, Object quality) {
+    private RockSampleRock(String name, Object x, Object y, Object quality){
         this.set(RockSample.ATT_X, x);
         this.set(RockSample.ATT_Y, y);
         this.set(RockSample.ATT_QUALITY, quality);
@@ -35,17 +35,17 @@ public class RockSampleRock extends RockSamplePt {
     }
 
     @Override
-    public String className() {
+    public String className(){
         return RockSample.CLASS_ROCK;
     }
 
     @Override
-    public RockSampleRock copy() {
+    public RockSampleRock copy(){
         return (RockSampleRock) copyWithName(name());
     }
 
     @Override
-    public ObjectInstance copyWithName(String objectName) {
+    public ObjectInstance copyWithName(String objectName){
         return new RockSampleRock(
                 objectName,
                 get(RockSample.ATT_X),
@@ -55,7 +55,7 @@ public class RockSampleRock extends RockSamplePt {
     }
 
     @Override
-    public List<Object> variableKeys() {
+    public List<Object> variableKeys(){
         return keys;
     }
 }
