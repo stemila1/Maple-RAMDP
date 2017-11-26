@@ -35,7 +35,7 @@ import rocksample.POOODomain;
 import rocksample.stateGenerator.RockSampleStateFactory;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-
+import rocksample.SimulatedPOOOEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +101,7 @@ public class RockSamplePO implements DomainGenerator {
 
 
     public RockSamplePO(RewardFunction r, TerminalFunction t,
-                      double correctMoveProb, boolean n, double noisyProb) {
+                      double correctMoveProb, boolean n, double noisyProb){
         rf = r;
         tf = t;
         this.noisy = n;
@@ -109,7 +109,7 @@ public class RockSamplePO implements DomainGenerator {
         setMoveDynamics(correctMoveProb);
     }
 
-    public RockSamplePO(double correctMoveProb, boolean n, double noisyProb) {
+    public RockSamplePO(double correctMoveProb, boolean n, double noisyProb){
         this.noisy = n;
         this.noisyProbability = noisyProb;
         setMoveDynamics(correctMoveProb);
@@ -117,7 +117,7 @@ public class RockSamplePO implements DomainGenerator {
         this.tf = new RockSampleTerminalFunction();
     }
 
-    public RockSamplePO(double[][] movement, boolean n, double noisyProb) {
+    public RockSamplePO(double[][] movement, boolean n, double noisyProb){
         this.noisy = n;
         this.noisyProbability = noisyProb;
         this.moveDynamics = movement;
@@ -188,14 +188,18 @@ public class RockSamplePO implements DomainGenerator {
         HashableStateFactory hs = new SimpleHashableStateFactory();
 
         // TODO: change hardcoded values
-        BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, hs, 10, -1);
+        BeliefSparseSampling bss = new BeliefSparseSampling(domain,
+                                                            0.99,
+                                                            hs,
+                                                            10,
+                                                            -1);
 
         State s = RockSampleStateFactory.createClassicState();
 
         SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
-        SimulatedEnvironment poEnv = new SimulatedPOEnvironment(domain, s);
+        SimulatedEnvironment poooEnv = new SimulatedPOOOEnvironment(domain, s);
 
-        SimulatedEnvironment envToUse = poEnv;
+        SimulatedEnvironment envToUse = poooEnv;
 
         List<Episode> eps = new ArrayList<Episode>();
         //QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.01);
