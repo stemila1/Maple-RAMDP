@@ -100,6 +100,8 @@ public class RockSamplePO implements DomainGenerator {
     private double noisyProbability;   // prob sensor is accurate
 
 
+    public String[] observations = new String[4];
+
     public RockSamplePO(RewardFunction r, TerminalFunction t,
                       double correctMoveProb, boolean n, double noisyProb){
         rf = r;
@@ -171,13 +173,39 @@ public class RockSamplePO implements DomainGenerator {
         FactoredModel rockSampleModel = new FactoredModel(model, rf, tf);
         domain.setModel(rockSampleModel);
 
+        StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
+
+        RockSampleStateFactory rs_statefactory = new RockSampleStateFactory();
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Good", "Good", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Good", "Good", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Bad", "Good", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Good", "Bad", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Good", "Good", "Bad"));
+
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Bad", "Good", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Good", "Bad", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Good", "Good", "Bad"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Bad", "Bad", "Good"));
+
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Bad", "Good", "Bad"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Good", "Bad", "Bad"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Bad", "Bad", "Good"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Good", "Bad", "Bad"));
+
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Bad", "Good", "Bad"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Bad", "Bad", "Bad"));
+        senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Bad", "Bad", "Bad"));
+
+        domain.setStateEnumerator(senum);
+
         return domain;
     }
 
     // just returns a random ass state casted to a belief state but ok
-    public static BeliefState getInitialBeliefState(POOODomain domain){
-        State bs = new RockSampleState(1);
-        return (BeliefState) bs;
+    public static POOOBeliefState getInitialBeliefState(POOODomain domain){
+        POOOBeliefState bs = new POOOBeliefState(domain, domain.getStateEnumerator());
+        bs.initializeBeliefsUniformly();
+        return bs;
     }
 
     public static void main(String[] args) {
@@ -205,18 +233,18 @@ public class RockSamplePO implements DomainGenerator {
         //QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.01);
 
         // commented out to implement SimulatedPOEnvironment to run agent from shell before implementing solver
-        /*Planner planner = new ValueIteration(domain, 0.99, hs, 0.001, 100);
+        Planner planner = new ValueIteration(domain, 0.99, hs, 0.001, 100);
         QProvider planner_2 = (QProvider) new ValueIteration(domain, 0.99, hs, 0.001, 100);
         QMDP qagent = new QMDP(domain, planner_2);
-        qagent.forceMDPPlanningFromAllStates();*/
+        qagent.forceMDPPlanningFromAllStates();
 
         Visualizer v = RockSampleVisualizer.getVisualizer(5,5);
-        //EnvironmentShell shell = new EnvironmentShell(domain, envToUse);
-        //shell.start();
+        EnvironmentShell shell = new EnvironmentShell(domain, envToUse);
+        shell.start();
 
 
         // make the visualizer interactive. check action doesn't work
-        /*VisualExplorer exp = new VisualExplorer(domain, env, v);
+        VisualExplorer exp = new VisualExplorer(domain, env, v);
 
         exp.addKeyAction("w", ACTION_NORTH, "");
         exp.addKeyAction("s", ACTION_SOUTH, "");
@@ -225,7 +253,7 @@ public class RockSamplePO implements DomainGenerator {
         exp.addKeyAction("x", ACTION_CHECK, "");
         exp.addKeyAction("q", ACTION_SAMPLE, "");
 
-        exp.initGUI();*/
+        exp.initGUI();
         /*
         for(int i = 0; i < 1000; i++){
             Episode e = qagent.runLearningEpisode(envToUse, 5000);
