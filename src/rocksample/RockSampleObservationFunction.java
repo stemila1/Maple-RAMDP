@@ -20,11 +20,12 @@ import java.util.List;
 import java.util.Random;
 
 import static rocksample.RockSamplePO.ACTION_CHECK;
+import static rocksample.RockSamplePO.CLASS_ROCK;
 
 /**
  * Created by steph on 11/9/2017.
  */
-public class RockSampleObservationFunction implements ObservationFunction{
+public class RockSampleObservationFunction implements DiscreteObservationFunction{
 
     protected double checkAccuracy;
 
@@ -112,7 +113,7 @@ public class RockSampleObservationFunction implements ObservationFunction{
                     rockQual = "Good";
                 }
             }
-
+            this.checkAccuracy = sensor_efficiency;
             /* have applied the mask */
 
             /* this is stupid code, b/c I don't want to use a map */
@@ -267,15 +268,19 @@ public class RockSampleObservationFunction implements ObservationFunction{
             /* this is stupid code, b/c I don't want to use a map */
         int indx;
         if(n.equals("Rock0")){
+            rs_state.set("Rock0",rockQual);
             indx = 0;
         }
         else if(n.equals("Rock1")){
+            rs_state.set("Rock1",rockQual);
             indx=1;
         }
         else if(n.equals("Rock2")){
+            rs_state.set("Rock2",rockQual);
             indx = 2;
         }
         else if(n.equals("Rock3")){
+            rs_state.set("Rock3",rockQual);
             indx=3;
         }
         else{
@@ -283,10 +288,12 @@ public class RockSampleObservationFunction implements ObservationFunction{
             System.out.println("ERROR FOOL");
             indx = 0;
         }
-        return this.observationRock(indx, rockQual);
+        return rs_state;
 
     }
-        throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
+    return state;
+    //throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
+
 }
 
 
@@ -294,10 +301,6 @@ public class RockSampleObservationFunction implements ObservationFunction{
 
     public List<ObservationProbability> probabilities(State state, Action action) {
         return ObservationUtilities.probabilitiesByEnumeration((DiscreteObservationFunction) this, state, action);
-
-        throw new RuntimeException("Unknown action " +
-                                   action.actionName() +
-                                   "; cannot return observation sample.");
     }
 
     @Override
@@ -311,10 +314,16 @@ public class RockSampleObservationFunction implements ObservationFunction{
         //  return the accuracy
         // otherwise return 0
 
-
-        throw new RuntimeException("Unknown action " +
+        if(action.actionName().equals(RockSamplePO.ACTION_CHECK)) {
+            return this.checkAccuracy;
+        }
+        else{
+            return 1.0;
+        }
+        /*throw new RuntimeException("Unknown action " +
                                    action.actionName() +
-                                   "; cannot return observation probability.");
+                                   "; cannot return observation probability."); */
+
     }
 
 }

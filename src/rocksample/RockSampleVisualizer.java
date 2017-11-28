@@ -19,9 +19,8 @@ import rocksample.state.RockSampleRock;
 /**
  * Created by steph on 10/26/2017.
  *
- * TODO: Need to not "extend Visualizer" when actually running a learning/planning alg
  */
-public class RockSampleVisualizer extends Visualizer {
+public class RockSampleVisualizer {
 
     private static Map<String, Color> colors;
     private static int cellsWide, cellsTall;
