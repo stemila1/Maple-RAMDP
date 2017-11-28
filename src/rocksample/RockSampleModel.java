@@ -30,7 +30,8 @@ public class RockSampleModel implements FullStateModel {
     // RockSampleModel
     // Given the movement probablity, whether or not the sensor is noisy, and
     // the noisy probability of the sensor, creates a new RockSampleModel
-    public RockSampleModel(double[][] moveprob, boolean noisy,
+    public RockSampleModel(double[][] moveprob,
+                           boolean noisy,
                            double noisyProb){
         this.moveProbability = moveprob;
         this.noisyProbability = noisyProb;
@@ -47,7 +48,7 @@ public class RockSampleModel implements FullStateModel {
     // sample
     // Given a state and an action, returns the next state
     @Override
-    public State sample(State s, Action a) {
+    public State sample(State s, Action a){
         List<StateTransitionProb> stpList = this.stateTransitions(s,a);
 
         // get a random number

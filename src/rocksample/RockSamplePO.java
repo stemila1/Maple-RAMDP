@@ -1,9 +1,12 @@
 package rocksample;
 
 import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
+import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.artdp.ARTDP;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.planning.Planner;
@@ -127,7 +130,7 @@ public class RockSamplePO implements DomainGenerator {
         this.tf = new RockSampleTerminalFunction();
     }
 
-    public RockSamplePO() { this(1, false, 0); }
+    public RockSamplePO(){ this(1, false, 0); }
 
     private void setMoveDynamics(double correctProb) {
         moveDynamics = new double[NUM_MOVE_ACTIONS][NUM_MOVE_ACTIONS];
@@ -168,10 +171,13 @@ public class RockSamplePO implements DomainGenerator {
         ObservationFunction of = new RockSampleObservationFunction(this.noisyProbability);
         domain.setObservationFunction(of);
 
+        StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
+
         // make a new rocksample model
         RockSampleModel model = new RockSampleModel(moveDynamics);
         FactoredModel rockSampleModel = new FactoredModel(model, rf, tf);
         domain.setModel(rockSampleModel);
+        domain.setStateEnumerator(senum);
 
         StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
 
@@ -207,8 +213,20 @@ public class RockSamplePO implements DomainGenerator {
         bs.initializeBeliefsUniformly();
         return bs;
     }
+   // public static BeliefState getInitialBeliefState(POOODomain domain){
+   //     State bs = new RockSampleState(1);
+    //    return (BeliefState) bs;
+   // }
 
-    public static void main(String[] args) {
+    public static QMDP getQMDPagent(POOODomain domain, HashableStateFactory hs,
+                                    RockSampleRewardFunction rf,
+                                    RockSampleTerminalFunction tf){
+        QMDP qagent = new QMDP(domain, rf, tf, 0.99, hs, 0.001, 1000);
+        return qagent;
+
+    }
+
+    public static void main(String[] args){
         RockSamplePO rocksampleBuild = new RockSamplePO();
         POOODomain domain = rocksampleBuild.generateDomain();
 
@@ -216,11 +234,8 @@ public class RockSamplePO implements DomainGenerator {
         HashableStateFactory hs = new SimpleHashableStateFactory();
 
         // TODO: change hardcoded values
-        BeliefSparseSampling bss = new BeliefSparseSampling(domain,
-                                                            0.99,
-                                                            hs,
-                                                            10,
-                                                            -1);
+        BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99,
+                                                            hs, 10, -1);
 
         State s = RockSampleStateFactory.createClassicState();
 
@@ -230,10 +245,11 @@ public class RockSamplePO implements DomainGenerator {
         SimulatedEnvironment envToUse = poooEnv;
 
         List<Episode> eps = new ArrayList<Episode>();
+
         //QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.01);
 
         // commented out to implement SimulatedPOEnvironment to run agent from shell before implementing solver
-        Planner planner = new ValueIteration(domain, 0.99, hs, 0.001, 100);
+        /*Planner planner = new ValueIteration(domain, 0.99, hs, 0.001, 100);
         QProvider planner_2 = (QProvider) new ValueIteration(domain, 0.99, hs, 0.001, 100);
         QMDP qagent = new QMDP(domain, planner_2);
         qagent.forceMDPPlanningFromAllStates();
@@ -241,7 +257,7 @@ public class RockSamplePO implements DomainGenerator {
         Visualizer v = RockSampleVisualizer.getVisualizer(5,5);
         EnvironmentShell shell = new EnvironmentShell(domain, envToUse);
         shell.start();
-
+        
 
         // make the visualizer interactive. check action doesn't work
         VisualExplorer exp = new VisualExplorer(domain, env, v);
@@ -254,6 +270,7 @@ public class RockSamplePO implements DomainGenerator {
         exp.addKeyAction("q", ACTION_SAMPLE, "");
 
         exp.initGUI();
+        */
         /*
         for(int i = 0; i < 1000; i++){
             Episode e = qagent.runLearningEpisode(envToUse, 5000);
@@ -262,10 +279,30 @@ public class RockSamplePO implements DomainGenerator {
             envToUse.resetEnvironment();
         }
 
-        EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(RockSampleVisualizer.getVisualizer(5, 5),
-                domain, eps);
-        v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
-        v.initGUI(); */
+        */
+        RockSampleRewardFunction rf = new RockSampleRewardFunction();
+        RockSampleTerminalFunction tf = new RockSampleTerminalFunction();
+
+        // initial state needs to be an EnumerableBeliefState
+        String outputPath = "output/";
+        QMDP agent = getQMDPagent(domain, hs, rf, tf);
+        Policy p = agent.planFromState(s);
+        PolicyUtils.rollout(p, s, domain.getModel()).write(outputPath + "bfs");
+       // agent.forceMDPPlanningFromAllStates();
+       // agent.resetSolver();
+
+        //for(int i = 0; i < 1000; i++){
+         //   Policy p = agent.planFromState(s);
+           // System.out.println(p.rewardSequence);
+          //  eps.add(e);
+
+  //          envToUse.resetEnvironment();
+//        }
+
+        EpisodeSequenceVisualizer vis = new EpisodeSequenceVisualizer(RockSampleVisualizer.getVisualizer(5, 5),
+                domain, outputPath);
+        vis.setDefaultCloseOperation(vis.EXIT_ON_CLOSE);
+        vis.initGUI();
     }
 
 }

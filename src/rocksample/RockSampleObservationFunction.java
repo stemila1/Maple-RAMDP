@@ -24,12 +24,13 @@ import static rocksample.RockSamplePO.ACTION_CHECK;
 /**
  * Created by steph on 11/9/2017.
  */
-public class RockSampleObservationFunction implements ObservationFunction {
+public class RockSampleObservationFunction implements ObservationFunction{
 
     protected double checkAccuracy;
 
     public void RockSampleState(){
     }
+
     public RockSampleObservationFunction(double checkAccuracy){
         this.checkAccuracy = checkAccuracy;
     }
@@ -285,7 +286,6 @@ public class RockSampleObservationFunction implements ObservationFunction {
         return this.observationRock(indx, rockQual);
 
     }
-
         throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
 }
 
@@ -294,10 +294,14 @@ public class RockSampleObservationFunction implements ObservationFunction {
 
     public List<ObservationProbability> probabilities(State state, Action action) {
         return ObservationUtilities.probabilitiesByEnumeration((DiscreteObservationFunction) this, state, action);
+
+        throw new RuntimeException("Unknown action " +
+                                   action.actionName() +
+                                   "; cannot return observation sample.");
     }
 
     @Override
-    public double probability(State observation, State state, Action action) {
+    public double probability(State observation, State state, Action action){
         String oVal = (String)observation.get(RockSamplePO.ACTION_CHECK);
         String rockVal = (String)state.get(RockSample.CLASS_ROCK);
 
@@ -308,7 +312,9 @@ public class RockSampleObservationFunction implements ObservationFunction {
         // otherwise return 0
 
 
-        throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation probability.");
+        throw new RuntimeException("Unknown action " +
+                                   action.actionName() +
+                                   "; cannot return observation probability.");
     }
 
 }
