@@ -4,9 +4,14 @@ package tiger;
  * Created by steph on 11/27/2017.
  */
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
 import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
+import burlap.behavior.singleagent.pomdp.wrappedmdpalgs.BeliefSparseSampling;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.StateGenerator;
@@ -17,11 +22,14 @@ import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.shell.EnvironmentShell;
 import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.ReflectiveHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import burlap.domain.singleagent.pomdp.tiger.TigerState;
 
 /**
  * An implementation of the classic Tiger domain. In this problem an agent is faced with two closed doors side by side:
@@ -298,27 +306,36 @@ public class TigerDomain implements DomainGenerator {
      *             underlying fully observable tiger MDP.
      */
     public static void main(String [] args){
+        TigerDomain tiger = new TigerDomain(true);
+        PODomain domain = (PODomain)tiger.generateDomain();
+        BeliefState initialBelief = TigerDomain.getInitialBeliefState(domain);
+
+        BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new ReflectiveHashableStateFactory(), 10, -1);
+        Policy p = new GreedyQPolicy(bss);
+
+        SimulatedPOEnvironment env = new SimulatedPOEnvironment(domain);
+        env.setCurStateTo(new TigerState(TigerDomain.VAL_LEFT));
+
+        BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, env, p);
+        agent.setBeliefState(initialBelief);
 
 
-        TigerDomain dgen = new TigerDomain(false);
-        PODomain domain = (PODomain)dgen.generateDomain();
 
-        StateGenerator tigerGenerator = TigerDomain.randomSideStateGenerator(0.5);
+        agent.setEnvironment(env);
 
-        Environment observableEnv = new SimulatedEnvironment(domain, tigerGenerator);
-        Environment poEnv = new SimulatedPOEnvironment(domain, tigerGenerator);
+		/*
+		State initialBeliefStateOb = BeliefMDPGenerator.getBeliefMDPState(bss.getBeliefMDP(), initialBelief);
+		List<QValue> qs = bss.getQs(initialBeliefStateOb);
+		for(QValue q : qs){
+			System.out.println(q.a.toString() + ": " + q.q);
+		}
+		*/
 
-        Environment envTouse = poEnv;
-        if(args.length > 0 && args[0].equals("h")){
-            envTouse = observableEnv;
+        Episode ea = agent.actUntilTerminalOrMaxSteps(30);
+
+        for(int i = 0; i < ea.numTimeSteps()-1; i++){
+            System.out.println(ea.action(i) + " " + ea.reward(i+1));
         }
-
-
-        //QMDP qagent = new QMDP(domain, rf, tf,0.99,hs, 0.001, 1000);
-       // LearningAgent qagent = QMDP(domain, rf, tf, 0.99, hashingfactory, delta, iterations);
-       // EnvironmentShell shell = new EnvironmentShell(domain, envTouse);
-       // shell.start();
-
 
 
     }
