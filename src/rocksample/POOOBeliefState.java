@@ -339,7 +339,9 @@ public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefSt
                 int key = Integer.parseInt((String)variableKey);
                 return this.belief(key);
             }catch(Exception e){
-                throw new RuntimeException("Could not return belief for POOOBeliefState because the key is a String, but does not parse into an int; it is " + variableKey);
+                throw new RuntimeException("Could not return belief for " +
+                        "POOOBeliefState because the key is a String, but " +
+                        "does not parse into an int; it is " + variableKey);
             }
         }
 
@@ -408,7 +410,12 @@ public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefSt
 
     @Override
     public List<ObjectInstance> objects() {
-        return null;
+      //  List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
+      //  objs.add(rover);
+      //  objs.addAll(rocks.values());
+      //  objs.addAll(walls.values());
+       // return objs;
+        throw new RuntimeException("no objects little bad");
     }
 
     @Override

@@ -27,10 +27,12 @@ import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.ReflectiveHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 import rocksample.state.RockSampleRock;
@@ -49,7 +51,7 @@ import java.util.List;
 /**
  * Created by steph on 11/9/2017.
  */
-public class RockSamplePO implements DomainGenerator {
+public class RockSamplePO implements DomainGenerator{
 
     // object classes
     public static final String CLASS_ROVER = 				"Rover";
@@ -211,8 +213,8 @@ public class RockSamplePO implements DomainGenerator {
     }
 
     // just returns a random ass state casted to a belief state but ok
-    public static POOOBeliefState getInitialBeliefState(POOODomain domain){
-        POOOBeliefState bs = new POOOBeliefState(domain, domain.getStateEnumerator());
+    public static BeliefState getInitialBeliefState(POOODomain domain){
+        TabularBeliefState bs = new TabularBeliefState(domain, domain.getStateEnumerator());
         bs.initializeBeliefsUniformly();
         return bs;
     }
@@ -229,36 +231,28 @@ public class RockSamplePO implements DomainGenerator {
         RockSamplePO rocksampleBuild = new RockSamplePO();
         POOODomain domain = rocksampleBuild.generateDomain();
 
-        POOOBeliefState initialBelief = RockSamplePO.getInitialBeliefState(domain);
+        BeliefState initialBelief = RockSamplePO.getInitialBeliefState(domain);
         if(initialBelief == null){
             System.out.println("Null Belief State\n");
         }
-        HashableStateFactory hs = new SimpleHashableStateFactory();
+        HashableStateFactory rs = new ReflectiveHashableStateFactory();
 
         // TODO: change hardcoded values
         BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99,
-                                                            hs, 10, -1);
+                                                           rs, 10, -1);
 
         State s = RockSampleStateFactory.createClassicState();
 
         SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
-        SimulatedEnvironment poooEnv = new SimulatedPOOOEnvironment(domain, s);
+        SimulatedEnvironment poooEnv = new SimulatedPOOOEnvironment(domain,s);
 
         poooEnv.setCurStateTo(s);
         SimulatedEnvironment envToUse = poooEnv;
 
-        List<Episode> eps = new ArrayList<Episode>();
-
-        RockSampleRewardFunction rf = new RockSampleRewardFunction();
-        RockSampleTerminalFunction tf = new RockSampleTerminalFunction();
-
-        // initial state needs to be an EnumerableBeliefState
-        String outputPath = "output/";
-
         Policy p = new GreedyQPolicy(bss);
         BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, envToUse, p);
         agent.setBeliefState(initialBelief);
-        agent.setEnvironment(envToUse);
+        agent.setEnvironment(poooEnv);
 
         Episode ea = agent.actUntilTerminalOrMaxSteps(100);
         for(int i = 0; i < ea.numTimeSteps()-1; i++){
