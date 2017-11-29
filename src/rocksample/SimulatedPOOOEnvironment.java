@@ -12,6 +12,7 @@ import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
  * Created by steph on 11/24/2017.
  * TODO: make sure there aren't more aspects of an OO environment that need to
  *       be included
+ *       why are you bad
  */
 
 public class SimulatedPOOOEnvironment extends SimulatedPOEnvironment {
@@ -37,6 +38,13 @@ public class SimulatedPOOOEnvironment extends SimulatedPOEnvironment {
     public SimulatedPOOOEnvironment(POOODomain domain,
                                     State initialHiddenState){
         super(domain, initialHiddenState);
+        if(domain.getModel() == null)
+        {
+            throw new RuntimeException("u dont have a model");
+        }
+        if(domain == null){
+            throw new RuntimeException("no domain");
+        }
         this.poooDomain = domain;
     }
 

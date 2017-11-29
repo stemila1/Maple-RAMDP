@@ -6,6 +6,7 @@ package tiger;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.StateGenerator;
@@ -19,6 +20,7 @@ import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.shell.EnvironmentShell;
+import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 /**
@@ -311,6 +313,8 @@ public class TigerDomain implements DomainGenerator {
             envTouse = observableEnv;
         }
 
+
+        //QMDP qagent = new QMDP(domain, rf, tf,0.99,hs, 0.001, 1000);
        // LearningAgent qagent = QMDP(domain, rf, tf, 0.99, hashingfactory, delta, iterations);
        // EnvironmentShell shell = new EnvironmentShell(domain, envTouse);
        // shell.start();

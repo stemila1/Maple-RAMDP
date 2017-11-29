@@ -19,6 +19,7 @@ public class RockSampleState implements MutableOOState {
 
     public String[] checkValues = new String[4];
 
+    public RockSampleState(){};
     public RockSampleState(int indx, String rockQual){
         checkValues[indx]= rockQual;
     };

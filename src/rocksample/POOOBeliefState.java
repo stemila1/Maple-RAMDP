@@ -1,6 +1,8 @@
 package rocksample;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.pomdp.PODomain;
@@ -9,6 +11,7 @@ import burlap.mdp.singleagent.pomdp.beliefstate.DenseBeliefVector;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.statehashing.HashableState;
+import rocksample.state.RockSampleState;
 
 import java.util.*;
 
@@ -21,7 +24,7 @@ import java.util.*;
  * it is recommended that you use the {@link burlap.statehashing.ReflectiveHashableStateFactory}, since {@link POOOBeliefState}
  * implements {@link HashableState} and since you probably do not want to do abstraction of the belief state.
  */
-public class POOOBeliefState implements BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
+public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
 
 
     /**
@@ -57,8 +60,6 @@ public class POOOBeliefState implements BeliefState, EnumerableBeliefState, Dens
             this.beliefValues.put(e.getKey(), e.getValue());
         }
     }
-
-
 
     public POOOBeliefState(POOODomain domain){
         if(!domain.providesStateEnumerator()){
@@ -97,7 +98,7 @@ public class POOOBeliefState implements BeliefState, EnumerableBeliefState, Dens
         this.beliefValues = beliefValues;
     }
 
-    public POOODomain getDomain() {
+    public PODomain getDomain() {
         return domain;
     }
 
@@ -346,7 +347,7 @@ public class POOOBeliefState implements BeliefState, EnumerableBeliefState, Dens
     }
 
     @Override
-    public State copy() {
+    public POOOBeliefState copy() {
         return new POOOBeliefState(this);
     }
 
@@ -393,5 +394,25 @@ public class POOOBeliefState implements BeliefState, EnumerableBeliefState, Dens
     @Override
     public String toString() {
         return this.beliefValues.toString();
+    }
+
+    @Override
+    public int numObjects() {
+        return 0;
+    }
+
+    @Override
+    public ObjectInstance object(String s) {
+        return null;
+    }
+
+    @Override
+    public List<ObjectInstance> objects() {
+        return null;
+    }
+
+    @Override
+    public List<ObjectInstance> objectsOfClass(String s) {
+        return null;
     }
 }

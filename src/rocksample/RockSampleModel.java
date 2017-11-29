@@ -28,7 +28,7 @@ public class RockSampleModel implements FullStateModel {
     private double noisyProbability;
 
     // RockSampleModel
-    // Given the movement probablity, whether or not the sensor is noisy, and
+    // Given the movement probability, whether or not the sensor is noisy, and
     // the noisy probability of the sensor, creates a new RockSampleModel
     public RockSampleModel(double[][] moveprob,
                            boolean noisy,
