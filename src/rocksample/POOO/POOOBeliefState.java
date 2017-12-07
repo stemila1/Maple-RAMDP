@@ -1,4 +1,4 @@
-package rocksample;
+package rocksample.POOO;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.oo.state.OOState;
@@ -11,7 +11,6 @@ import burlap.mdp.singleagent.pomdp.beliefstate.DenseBeliefVector;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.statehashing.HashableState;
-import rocksample.state.RockSampleState;
 
 import java.util.*;
 
@@ -24,7 +23,7 @@ import java.util.*;
  * it is recommended that you use the {@link burlap.statehashing.ReflectiveHashableStateFactory}, since {@link POOOBeliefState}
  * implements {@link HashableState} and since you probably do not want to do abstraction of the belief state.
  */
-public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
+public abstract class POOOBeliefState extends OOTabularBeliefState implements OOState, BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
 
 
     /**
@@ -348,10 +347,7 @@ public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefSt
         throw new RuntimeException("Cound not return belief value for key, because it is a " + variableKey.getClass().getName() + " rather than an Integer, State, or String representation of an integer");
     }
 
-    @Override
-    public POOOBeliefState copy() {
-        return new POOOBeliefState(this);
-    }
+
 
     @Override
     public State s() {
@@ -398,28 +394,4 @@ public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefSt
         return this.beliefValues.toString();
     }
 
-    @Override
-    public int numObjects() {
-        return 0;
-    }
-
-    @Override
-    public ObjectInstance object(String s) {
-        return null;
-    }
-
-    @Override
-    public List<ObjectInstance> objects() {
-      //  List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
-      //  objs.add(rover);
-      //  objs.addAll(rocks.values());
-      //  objs.addAll(walls.values());
-       // return objs;
-        throw new RuntimeException("no objects little bad");
-    }
-
-    @Override
-    public List<ObjectInstance> objectsOfClass(String s) {
-        return null;
-    }
 }

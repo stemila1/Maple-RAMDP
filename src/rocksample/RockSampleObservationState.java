@@ -1,22 +1,33 @@
-package rocksample.state;
+package rocksample;
 
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+
 import rocksample.RockSample;
+import rocksample.state.RockSampleRock;
+import rocksample.state.RockSampleState;
+import rocksample.state.RockSampleWall;
+import rocksample.state.RoverAgent;
 
 import java.util.*;
 
+import static rocksample.RockSamplePO.ATT_QUALITY;
+
 /**
- * Created by steph on 10/26/2017.
+ * Created by steph on 11/29/2017. AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+ *
  */
-public class RockSampleState implements MutableOOState {
+public class RockSampleObservationState extends RockSampleState implements MutableOOState {
 
     /**
      *     Private variables
      */
+
+
 
     private RoverAgent rover;                       // the agent in the domain
     private Map<String, RockSampleWall> walls;      // the walls of the domain
@@ -35,7 +46,7 @@ public class RockSampleState implements MutableOOState {
 
     // RockSampleState
     // Given a rover agent and a list of walls, constructs a RockSampleState
-    public RockSampleState(RoverAgent rover,
+    public RockSampleObservationState(RoverAgent rover,
                            List<RockSampleRock> rocks,
                            List<RockSampleWall> walls){
         this.rover = rover;
@@ -53,7 +64,7 @@ public class RockSampleState implements MutableOOState {
 
     // RockSampleState
     // Given a rover agent and a map of walls, constructs a rocksample state
-    public RockSampleState(RoverAgent r,
+    public RockSampleObservationState(RoverAgent r,
                            Map<String, RockSampleRock> rocks,
                            Map<String, RockSampleWall> walls){
         this.rover = r;
@@ -61,11 +72,11 @@ public class RockSampleState implements MutableOOState {
         this.walls = walls;
     }
 
-    public RockSampleState(){};
-    public RockSampleState(int indx, String rockQual){
+    public RockSampleObservationState(){};
+    public RockSampleObservationState(int indx, String rockQual){
         checkValues[indx]= rockQual;
     };
-    public RockSampleState(double checkAcc){
+    public RockSampleObservationState(double checkAcc){
         this.checkAccuracy = checkAcc;
     }
 
@@ -184,7 +195,7 @@ public class RockSampleState implements MutableOOState {
             return Arrays.<ObjectInstance>asList(rover);
         else if(oclass.equals(RockSample.CLASS_ROCK))
             return new ArrayList<ObjectInstance>(rocks.values());
-       else if(oclass.equals(RockSample.CLASS_WALL))
+        else if(oclass.equals(RockSample.CLASS_WALL))
             return new ArrayList<ObjectInstance>(walls.values());
         throw new RuntimeException("No object class " + oclass);
     }
@@ -395,4 +406,44 @@ public class RockSampleState implements MutableOOState {
     public String toString(){
         return OOStateUtilities.ooStateToString(this);
     }
+
 }
+    /**
+    public String quality;
+
+    public RockSampleObservationState(){
+        this.quality = null;
+    }
+
+    public RockSampleObservationState(String qual){
+        this.quality = qual;
+    }
+
+    @Override
+    public MutableState set(Object variableKey, Object value) {
+        if(!(value instanceof String)){
+            throw new RuntimeException("Value must be a String");
+        }
+
+        String qual = (String)value;
+        this.quality = qual;
+
+        return this;
+    }
+
+    @Override
+    public List<Object> variableKeys() {
+        return Arrays.<Object>asList(ATT_QUALITY);
+    }
+
+    @Override
+    public Object get(Object variableKey) {
+        return quality;
+    }
+
+    @Override
+    public State copy() {
+        return new RockSampleObservationState(quality);
+    }
+}
+**/

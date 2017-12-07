@@ -1,4 +1,4 @@
-package rocksample;
+package rocksample.POOO;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.datastructures.HashedAggregator;
@@ -6,7 +6,6 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefUpdate;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
