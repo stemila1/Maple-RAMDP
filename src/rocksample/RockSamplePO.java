@@ -1,57 +1,40 @@
 package rocksample;
 
-import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
-import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.modellearning.artdp.ARTDP;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
 import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
 import burlap.behavior.singleagent.pomdp.wrappedmdpalgs.BeliefSparseSampling;
-import burlap.behavior.valuefunction.QProvider;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
-import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.singleagent.pomdp.PODomain;
-import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
-import burlap.shell.EnvironmentShell;
 import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.ReflectiveHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
+import rocksample.POOO.POOOBeliefAgent;
 import rocksample.state.RockSampleRock;
-import rocksample.state.RockSampleState;
 import rocksample.state.RockSampleWall;
 import rocksample.state.RoverAgent;
-import rocksample.POOODomain;
+import rocksample.POOO.POOODomain;
 import rocksample.stateGenerator.RockSampleStateFactory;
-import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import rocksample.SimulatedPOOOEnvironment;
-
-import java.util.ArrayList;
-import java.util.List;
+import rocksample.POOO.SimulatedPOOOEnvironment;
 
 /**
  * Created by steph on 11/9/2017.
  */
-public class RockSamplePO implements DomainGenerator{
+
+public class RockSamplePO implements DomainGenerator {
 
     // object classes
     public static final String CLASS_ROVER = 				"Rover";
@@ -67,6 +50,9 @@ public class RockSamplePO implements DomainGenerator{
 
     // rock attributes
     public static final String ATT_QUALITY =                "quality";
+    public static final String ATT_GOOD =                   "Good";
+    public static final String ATT_BAD =                    "Bad";
+    public static final int NUM_ROCKS =                     4;
 
     // wall attributes
     public static final String ATT_START_X = 				"startX";
@@ -100,62 +86,38 @@ public class RockSamplePO implements DomainGenerator{
     public static int IND_SAMPLE =                          4;
     public static int IND_CHECK =                           5;
 
+    // rewards
+    private double exitAreaReward =                         10.;
+    private double goodRockReward =                         10.;
+    private double badRockReward =                          -10.;
+    private double noReward =                               0;
+
     // parameters dictating probabilities of the model
     private RewardFunction rf;
     private TerminalFunction tf;
-    private double[][] moveDynamics;
     private boolean noisy;             // whether the sensor is noisy or not
     private double noisyProbability;   // prob sensor is accurate
 
 
-    public String[] observations = new String[4];
+    public String[] observations = new String[NUM_ROCKS];
 
-    public RockSamplePO(RewardFunction r, TerminalFunction t,
-                      double correctMoveProb, boolean n, double noisyProb){
+    public RockSamplePO(RewardFunction r, TerminalFunction t, boolean n, double noisyProb) {
         rf = r;
         tf = t;
         this.noisy = n;
         this.noisyProbability = noisyProb;
-        setMoveDynamics(correctMoveProb);
     }
 
-    public RockSamplePO(double correctMoveProb, boolean n, double noisyProb){
+    public RockSamplePO(boolean n, double noisyProb) {
         this.noisy = n;
         this.noisyProbability = noisyProb;
-        setMoveDynamics(correctMoveProb);
         this.rf = new RockSampleRewardFunction();
         this.tf = new RockSampleTerminalFunction();
     }
 
-    public RockSamplePO(double[][] movement, boolean n, double noisyProb){
-        this.noisy = n;
-        this.noisyProbability = noisyProb;
-        this.moveDynamics = movement;
-        this.rf = new RockSampleRewardFunction();
-        this.tf = new RockSampleTerminalFunction();
-    }
+    public RockSamplePO() { this(false, 0); }
 
-    public RockSamplePO(){ this(1, false, 0); }
-
-    private void setMoveDynamics(double correctProb) {
-        moveDynamics = new double[NUM_MOVE_ACTIONS][NUM_MOVE_ACTIONS];
-
-        for(int choose = 0; choose < NUM_MOVE_ACTIONS; choose++){
-            for(int outcome = 0; outcome < NUM_MOVE_ACTIONS; outcome++){
-                if(choose == outcome){
-                    moveDynamics[choose][outcome] = correctProb;
-                }
-                // the two directions which are one away get the rest of prob
-                else if(Math.abs(choose - outcome) % 2 == 1){
-                    moveDynamics[choose][outcome] = (1 - correctProb) / 2;
-                }else{
-                    moveDynamics[choose][outcome] = 0;
-                }
-            }
-        }
-    }
-
-    public POOODomain generateDomain(){
+    public POOODomain generateDomain() {
         POOODomain domain = new POOODomain();
         // add the state classes to the domain
         domain.addStateClass(CLASS_ROVER, RoverAgent.class)
@@ -179,14 +141,12 @@ public class RockSamplePO implements DomainGenerator{
         StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
 
         // make a new rocksample model
-        RockSampleModel model = new RockSampleModel(moveDynamics);
-        FactoredModel rockSampleModel = new FactoredModel(model, rf, tf);
-        domain.setModel(rockSampleModel);
-        //domain.setStateEnumerator(senum);
-
-        //StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
+        RockSamplePOModel model = new RockSamplePOModel(exitAreaReward, goodRockReward, badRockReward, noReward);
+        domain.setModel(model);
 
         RockSampleStateFactory rs_statefactory = new RockSampleStateFactory();
+
+        // TODO: seems excessive. can we make this simpler to add in new rocks?
         senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Good", "Good", "Good"));
         senum.getEnumeratedID(rs_statefactory.createCustomState("Bad", "Good", "Good", "Good"));
         senum.getEnumeratedID(rs_statefactory.createCustomState("Good", "Bad", "Good", "Good"));
@@ -213,7 +173,7 @@ public class RockSamplePO implements DomainGenerator{
     }
 
     // just returns a random ass state casted to a belief state but ok
-    public static BeliefState getInitialBeliefState(POOODomain domain){
+    public static BeliefState getInitialBeliefState(POOODomain domain) {
         TabularBeliefState bs = new TabularBeliefState(domain, domain.getStateEnumerator());
         bs.initializeBeliefsUniformly();
         return bs;
@@ -227,30 +187,23 @@ public class RockSamplePO implements DomainGenerator{
 
     }
 
-    public static void main(String[] args){
-        RockSamplePO rocksampleBuild = new RockSamplePO();
-        POOODomain domain = rocksampleBuild.generateDomain();
-
+    public static void main(String[] args) {
+        RockSamplePO rsBuild = new RockSamplePO();
+        POOODomain domain = rsBuild.generateDomain();
         BeliefState initialBelief = RockSamplePO.getInitialBeliefState(domain);
-        if(initialBelief == null){
-            System.out.println("Null Belief State\n");
-        }
         HashableStateFactory rs = new ReflectiveHashableStateFactory();
-
         // TODO: change hardcoded values
-        BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99,
-                                                           rs, 10, -1);
-
+        BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, rs, 10, -1);
+        Policy p = new GreedyQPolicy(bss);
         State s = RockSampleStateFactory.createClassicState();
 
-        SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
-        SimulatedEnvironment poooEnv = new SimulatedPOOOEnvironment(domain,s);
-
+        SimulatedEnvironment poooEnv = new SimulatedPOOOEnvironment(domain, s);
         poooEnv.setCurStateTo(s);
         SimulatedEnvironment envToUse = poooEnv;
 
-        Policy p = new GreedyQPolicy(bss);
         BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, envToUse, p);
+        //POOOBeliefAgent agent = new POOOBeliefAgent(domain, envToUse, p);
+
         agent.setBeliefState(initialBelief);
         agent.setEnvironment(poooEnv);
 
@@ -264,10 +217,10 @@ public class RockSamplePO implements DomainGenerator{
         vis.setDefaultCloseOperation(vis.EXIT_ON_CLOSE);
         vis.initGUI(); */
 
-      Visualizer v = RockSampleVisualizer.getVisualizer(5,5);
+      //Visualizer v = RockSampleVisualizer.getVisualizer(5,5);
 
        //VisualExplorer exp = new VisualExplorer(domain, v, s);
-        VisualExplorer exp = new VisualExplorer(domain,envToUse,v);
+      //  VisualExplorer exp = new VisualExplorer(domain, envToUse, v);
       /*  exp.addKeyAction("w",ACTION_NORTH,"");
         exp.addKeyAction("s",ACTION_SOUTH,"");
         exp.addKeyAction("d",ACTION_EAST,"");
@@ -275,7 +228,7 @@ public class RockSamplePO implements DomainGenerator{
         exp.addKeyAction("x",ACTION_CHECK,"");
         exp.addKeyAction("q",ACTION_SAMPLE,"");*/
 
-        exp.initGUI();
+       // exp.initGUI();
 
       //  EnvironmentShell shell = new EnvironmentShell(domain, envToUse);
        // shell.start();

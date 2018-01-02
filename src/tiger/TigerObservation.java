@@ -1,5 +1,7 @@
 package tiger;
 
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 
 import java.util.Arrays;
@@ -20,8 +22,10 @@ public class TigerObservation implements MutableState {
     }
 
     public TigerObservation(String hear) {
-        if(!hear.equals(HEAR_LEFT) && !hear.equals(HEAR_RIGHT) && !hear.equals(HEAR_NOTHING) && !hear.equals(DOOR_RESET)){
-            throw new RuntimeException("Value must be either " + HEAR_LEFT + ", " + HEAR_RIGHT + ", " + HEAR_NOTHING + ", or " + DOOR_RESET);
+        if(!hear.equals(HEAR_LEFT) && !hear.equals(HEAR_RIGHT)
+                && !hear.equals(HEAR_NOTHING) && !hear.equals(DOOR_RESET)) {
+            throw new RuntimeException("Value must be either " + HEAR_LEFT + ", " + HEAR_RIGHT + ", "
+                    + HEAR_NOTHING + ", or " + DOOR_RESET);
         }
         this.hear = hear;
     }
@@ -35,7 +39,8 @@ public class TigerObservation implements MutableState {
 
         String hear = (String)value;
         if(!hear.equals(HEAR_LEFT) && !hear.equals(HEAR_RIGHT) && !hear.equals(HEAR_NOTHING) && !hear.equals(DOOR_RESET)){
-            throw new RuntimeException("Value must be either " + HEAR_LEFT + ", " + HEAR_RIGHT + ", " + HEAR_NOTHING + ", or " + DOOR_RESET);
+            throw new RuntimeException("Value must be either " + HEAR_LEFT + ", " + HEAR_RIGHT + ", "
+                    + HEAR_NOTHING + ", or " + DOOR_RESET);
         }
         this.hear = hear;
 

@@ -6,18 +6,15 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import rocksample.state.RockSampleRock;
 import rocksample.state.RockSampleState;
 import rocksample.state.RoverAgent;
 
-/**
- * Created by steph on 10/26/2017.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class RockSampleModel implements FullStateModel {
+
     /**
      * the array saying how the probabilities are distributed
      */
@@ -28,11 +25,9 @@ public class RockSampleModel implements FullStateModel {
     private double noisyProbability;
 
     // RockSampleModel
-    // Given the movement probability, whether or not the sensor is noisy, and
-    // the noisy probability of the sensor, creates a new RockSampleModel
-    public RockSampleModel(double[][] moveprob,
-                           boolean noisy,
-                           double noisyProb){
+    // Given the movement probability, whether or not the sensor is noisy, and the noisy probability of the sensor,
+    // creates a new RockSampleModel
+    public RockSampleModel(double[][] moveprob, boolean noisy, double noisyProb) {
         this.moveProbability = moveprob;
         this.noisyProbability = noisyProb;
         this.noisy = noisy;
@@ -48,7 +43,7 @@ public class RockSampleModel implements FullStateModel {
     // sample
     // Given a state and an action, returns the next state
     @Override
-    public State sample(State s, Action a){
+    public State sample(State s, Action a) {
         List<StateTransitionProb> stpList = this.stateTransitions(s,a);
 
         // get a random number
@@ -57,7 +52,7 @@ public class RockSampleModel implements FullStateModel {
         double curSum = 0.;
 
         // sum up state trans prob
-        for(int i = 0; i < stpList.size(); i++){
+        for(int i = 0; i < stpList.size(); i++) {
             curSum += stpList.get(i).p;
             if(roll < curSum){
                 // return the corresponding state
@@ -68,35 +63,33 @@ public class RockSampleModel implements FullStateModel {
     }
 
     // stateTransitions
-    // Given a state and an action, returns all of the state transition
-    // probabilities from that state-action pair
+    // Given a state and an action, returns all of the state transition probabilities from that state-action pair
     @Override
-    public List<StateTransitionProb> stateTransitions(State s, Action a){
+    public List<StateTransitionProb> stateTransitions(State s, Action a) {
         List<StateTransitionProb> tps = new ArrayList<StateTransitionProb>();
         int action = actionInd(a);
         RockSampleState rockSampleS = (RockSampleState) s;
 
-        if(action <= RockSample.IND_WEST){
+        if (action <= RockSample.IND_WEST) {
             movement(rockSampleS, action, tps);
-        }else if(action == RockSample.IND_SAMPLE){
+        } else if (action == RockSample.IND_SAMPLE) {
             sampleRock(rockSampleS, action, tps);
-        }else if(action == RockSample.IND_CHECK){
+        } else if (action == RockSample.IND_CHECK) {
             checkRock(rockSampleS, (ObjectParameterizedAction) a, tps);
         }
         return tps;
     }
 
     // movement
-    // Given a state, an action index, and the state transition probabilities,
-    // moves the rover if the action is a viable movement action
-    public void movement(RockSampleState s, int action,
-                         List<StateTransitionProb> tps){
+    // Given a state, an action index, and the state transition probabilities, moves the rover if the action is a
+    // viable movement action
+    public void movement(RockSampleState s, int action, List<StateTransitionProb> tps) {
         double[] moveProbabilities = this.moveProbability[action];
 
         int roverX = (int) s.getRoverAtt(RockSample.ATT_X);
         int roverY = (int) s.getRoverAtt(RockSample.ATT_Y);
 
-        for (int outcome = 0; outcome < moveProbabilities.length; outcome++){
+        for (int outcome = 0; outcome < moveProbabilities.length; outcome++) {
             double p = moveProbabilities[outcome];
             if (p == 0)
                 continue;
@@ -134,10 +127,8 @@ public class RockSampleModel implements FullStateModel {
     }
 
     // sampleRock
-    // Given a state, an action index, and the state transition probabilities,
-    // samples the rock at the agent's location
-    public void sampleRock(RockSampleState s, int action,
-                           List<StateTransitionProb> tps){
+    // Given a state, an action index, and the state transition probabilities, samples the rock at the agent's location
+    public void sampleRock(RockSampleState s, int action, List<StateTransitionProb> tps) {
         RockSampleState ns = s.copy();
 
         int roverX = (int) s.getRoverAtt(RockSample.ATT_X);
@@ -146,7 +137,7 @@ public class RockSampleModel implements FullStateModel {
         RockSampleRock rock = ns.getRockAtPoint(roverX, roverY);
 
         // if there is a rock at the agent's location
-        if (rock != null){
+        if (rock != null) {
             int rx = (int) rock.get(RockSample.ATT_X);
             int ry = (int) rock.get(RockSample.ATT_Y);
             RockSampleRock nRock = ns.touchRock(rock.name());
@@ -159,10 +150,9 @@ public class RockSampleModel implements FullStateModel {
     }
 
     // checkRock
-    // Given a state, an action, and the state transition probabilities,
-    // checks the quality of a the rock that parameterizes the action
-    public void checkRock(RockSampleState s, ObjectParameterizedAction a,
-                          List<StateTransitionProb> tps) {
+    // Given a state, an action, and the state transition probabilities, checks the quality of a the rock that
+    // parameterizes the action
+    public void checkRock(RockSampleState s, ObjectParameterizedAction a, List<StateTransitionProb> tps) {
         String n = a.getObjectParameters()[0];
         RockSampleState ns = s.copy();
 
@@ -173,17 +163,12 @@ public class RockSampleModel implements FullStateModel {
         // get the quality of the rock at that particular location
         String rockQuality = (String) s.getRockAtt(n, RockSample.ATT_QUALITY);
 
-        /*
-         1. Cast rockquality to boolean
-         2.
-         */
-
         tps.add(new StateTransitionProb(ns, 1.));
     }
 
     // actionInd
     // Given an action, returns the index of that action
-    public int actionInd(Action a){
+    public int actionInd(Action a) {
         String aname = a.actionName();
         if(aname.startsWith(RockSample.ACTION_NORTH))
             return RockSample.IND_NORTH;

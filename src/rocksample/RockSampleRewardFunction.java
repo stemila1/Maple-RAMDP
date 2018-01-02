@@ -8,9 +8,12 @@ import burlap.mdp.singleagent.model.RewardFunction;
 import rocksample.state.RockSampleRock;
 import rocksample.state.RockSampleState;
 import rocksample.state.RoverAgent;
+
 /**
  * Created by steph on 10/26/2017.
  */
+
+// TODO: Change hardcoded terminal area value in reward()
 public class RockSampleRewardFunction implements RewardFunction {
 
     private double exitAreaReward;
@@ -19,7 +22,7 @@ public class RockSampleRewardFunction implements RewardFunction {
 
     private TerminalFunction tf;
 
-    public RockSampleRewardFunction(){
+    public RockSampleRewardFunction() {
         exitAreaReward = 10;
         goodRockReward = 10;
         badRockReward = -10;
@@ -27,8 +30,7 @@ public class RockSampleRewardFunction implements RewardFunction {
     }
 
     // reward
-    // Given a state, action, and subsequent state, return the corresponding
-    // reward
+    // Given a state, action, and subsequent state, return the corresponding reward
     public double reward(State s, Action a, State sprime) {
         RockSampleState state = (RockSampleState) sprime;
         RoverAgent rover = state.getRover();
@@ -36,7 +38,7 @@ public class RockSampleRewardFunction implements RewardFunction {
         int roverY = (int) rover.get(RockSample.ATT_Y);
 
         // reward for sampling rock
-        if(a.actionName().equals(RockSample.ACTION_SAMPLE)){
+        if(a.actionName().equals(RockSample.ACTION_SAMPLE)) {
             RockSampleState prevstate = (RockSampleState) s;
             RockSampleRock rock = prevstate.getRockAtPoint(roverX, roverY);
 

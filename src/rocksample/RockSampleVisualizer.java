@@ -27,7 +27,7 @@ public class RockSampleVisualizer {
 
     // initColors
     // Initializes the colors
-    private static void initColors(){
+    private static void initColors() {
         colors = new HashMap<String, Color>();
         colors.put(RockSample.COLOR_RED, Color.red);
         colors.put(RockSample.COLOR_YELLOW, Color.YELLOW);
@@ -40,7 +40,7 @@ public class RockSampleVisualizer {
 
     // getVisualizer
     // Given a width and a height, returns a visualizer
-    public static Visualizer getVisualizer(int w, int h){
+    public static Visualizer getVisualizer(int w, int h) {
         initColors();
         Visualizer v = new Visualizer(getStateRenderLayer(w, h));
         return v;
@@ -48,7 +48,7 @@ public class RockSampleVisualizer {
 
     // getStateRenderLayer
     // Given a width and a height, returns a state render layer
-    public static StateRenderLayer getStateRenderLayer(int w, int h){
+    public static StateRenderLayer getStateRenderLayer(int w, int h) {
         StateRenderLayer rl = new StateRenderLayer();
         OOStatePainter oopainter = new OOStatePainter();
 
@@ -56,12 +56,9 @@ public class RockSampleVisualizer {
         cellsTall = h;
 
         // add painters for each object
-        oopainter.addObjectClassPainter(RockSample.CLASS_ROVER,
-                new RoverPainter());
-        oopainter.addObjectClassPainter(RockSample.CLASS_ROCK,
-                new RockPainter());
-        oopainter.addObjectClassPainter(RockSample.CLASS_WALL,
-                new WallPainter());
+        oopainter.addObjectClassPainter(RockSample.CLASS_ROVER, new RoverPainter());
+        oopainter.addObjectClassPainter(RockSample.CLASS_ROCK, new RockPainter());
+        oopainter.addObjectClassPainter(RockSample.CLASS_WALL, new WallPainter());
 
         rl.addStatePainter(oopainter);
 
@@ -73,7 +70,7 @@ public class RockSampleVisualizer {
 
         @Override
         public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
-                                float cWidth, float cHeight){
+                                float cWidth, float cHeight) {
             // set color and size of rover
             g2.setColor(Color.RED);
             float roverWidth = (float) cWidth / cellsWide;
@@ -123,11 +120,11 @@ public class RockSampleVisualizer {
         }
     }
 
-    public static class WallPainter implements ObjectPainter{
+    public static class WallPainter implements ObjectPainter {
 
         @Override
         public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
-                                float cWidth, float cHeight){
+                                float cWidth, float cHeight) {
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(10));
 
@@ -143,10 +140,10 @@ public class RockSampleVisualizer {
 
             int length = (int) w.get(RockSample.ATT_LENGTH);
             boolean isHoriz = (boolean) w.get(RockSample.ATT_IS_HORIZONTAL);
-            if(isHoriz){
+            if(isHoriz) {
                 wx2 = wx1 + length * wallWidth;
                 wy2 = wy1;
-            }else{
+            } else {
                 wx2 = wx1;
                 wy2 = wy1 - length * wallHeight;
             }

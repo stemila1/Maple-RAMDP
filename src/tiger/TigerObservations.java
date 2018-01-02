@@ -100,13 +100,13 @@ public class TigerObservations implements DiscreteObservationFunction {
                 }
             }
             else{
-                if(oVal.equals(TigerDomain.HEAR_LEFT)){
+                if(oVal.equals(TigerDomain.HEAR_LEFT)) {
                     return 1.-this.listenAccuracy;
                 }
-                else if(oVal.equals(TigerDomain.HEAR_RIGHT)){
+                else if(oVal.equals(TigerDomain.HEAR_RIGHT)) {
                     return this.listenAccuracy;
                 }
-                else{
+                else {
                     return 0.;
                 }
             }

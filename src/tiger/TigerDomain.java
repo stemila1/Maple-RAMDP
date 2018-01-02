@@ -30,6 +30,7 @@ import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.ReflectiveHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.domain.singleagent.pomdp.tiger.TigerState;
+import rocksample.POOO.POOODomain;
 
 /**
  * An implementation of the classic Tiger domain. In this problem an agent is faced with two closed doors side by side:
@@ -115,12 +116,12 @@ public class TigerDomain implements DomainGenerator {
     /**
      * Whether this domain should include the do nothing action or not
      */
-    protected boolean 						includeDoNothing = false;
+    protected boolean includeDoNothing = false;
 
     /**
      * The probability of hearing accurately where the tiger is
      */
-    protected double						listenAccuracy = 0.85;
+    protected double listenAccuracy = 0.85;
 
 
 
@@ -149,7 +150,7 @@ public class TigerDomain implements DomainGenerator {
      * Initializes. There will be no "do nothing" action and the listen
      * accuracy will be set to 0.85
      */
-    public TigerDomain(){
+    public TigerDomain() {
 
     }
 
@@ -158,7 +159,7 @@ public class TigerDomain implements DomainGenerator {
      * @param includeDoNothing if true, then the do nothing action will be
      *                         included; if false, then it will not be included
      */
-    public TigerDomain(boolean includeDoNothing){
+    public TigerDomain(boolean includeDoNothing) {
         this.includeDoNothing = includeDoNothing;
     }
 
@@ -168,7 +169,7 @@ public class TigerDomain implements DomainGenerator {
      *                         included; if false, then it will not be included
      * @param listenAccuracy the listen accuracy
      */
-    public TigerDomain(boolean includeDoNothing, double listenAccuracy){
+    public TigerDomain(boolean includeDoNothing, double listenAccuracy) {
         this.includeDoNothing = includeDoNothing;
         this.listenAccuracy = listenAccuracy;
     }
@@ -224,13 +225,13 @@ public class TigerDomain implements DomainGenerator {
     @Override
     public Domain generateDomain() {
 
-        PODomain domain = new PODomain();
+        POOODomain domain = new POOODomain();
 
         domain.addActionType(new UniversalActionType(ACTION_LEFT))
                 .addActionType(new UniversalActionType(ACTION_RIGHT))
                 .addActionType(new UniversalActionType(ACTION_LISTEN));
 
-        if(this.includeDoNothing){
+        if(this.includeDoNothing) {
             domain.addActionType(new UniversalActionType(ACTION_DO_NOTHING));
         }
 
@@ -256,7 +257,7 @@ public class TigerDomain implements DomainGenerator {
      * left side, and 50% time on the right.
      * @return a {@link burlap.mdp.auxiliary.StateGenerator}
      */
-    public static StateGenerator randomSideStateGenerator(){
+    public static StateGenerator randomSideStateGenerator() {
         return randomSideStateGenerator(0.5);
     }
 
@@ -269,7 +270,7 @@ public class TigerDomain implements DomainGenerator {
      *                 left side will be generated
      * @return a {@link burlap.mdp.auxiliary.StateGenerator}
      */
-    public static StateGenerator randomSideStateGenerator(final double probLeft){
+    public static StateGenerator randomSideStateGenerator(final double probLeft) {
         return new StateGenerator() {
             @Override
             public State generateState() {
@@ -287,7 +288,7 @@ public class TigerDomain implements DomainGenerator {
      * @return an initial {@link TabularBeliefState} in which the it is equally
      * uncertain where the tiger is (50/50).
      */
-    public static TabularBeliefState getInitialBeliefState(PODomain domain){
+    public static TabularBeliefState getInitialBeliefState(PODomain domain) {
         TabularBeliefState bs = new TabularBeliefState(domain, domain.getStateEnumerator());
         bs.initializeBeliefsUniformly();
         return bs;
@@ -305,9 +306,9 @@ public class TigerDomain implements DomainGenerator {
      * @param args either empty or ["h"]; provide "h" to explorer the
      *             underlying fully observable tiger MDP.
      */
-    public static void main(String [] args){
+    public static void main(String [] args) {
         TigerDomain tiger = new TigerDomain(true);
-        PODomain domain = (PODomain)tiger.generateDomain();
+        POOODomain domain = (POOODomain)tiger.generateDomain();
         BeliefState initialBelief = TigerDomain.getInitialBeliefState(domain);
 
         BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new ReflectiveHashableStateFactory(), 10, -1);

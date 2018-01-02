@@ -8,6 +8,7 @@ import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 
+import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import tiger.TigerDomain;
 
 import java.util.Arrays;

@@ -19,311 +19,120 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static rocksample.RockSamplePO.ACTION_CHECK;
-import static rocksample.RockSamplePO.CLASS_ROCK;
+import static rocksample.RockSamplePO.*;
 
 /**
  * Created by steph on 11/9/2017.
  */
-public class RockSampleObservationFunction implements DiscreteObservationFunction{
+/**TODO: Is the explicit addition of all possible states excessive? Is there an easier way we can do this to make
+   more extensible?
+ */
+public class RockSampleObservationFunction implements DiscreteObservationFunction {
 
-    protected double checkAccuracy;
+    protected double sensorAccuracy;
 
-    public void RockSampleState(){
-    }
-
-    public RockSampleObservationFunction(double checkAccuracy){
-        this.checkAccuracy = checkAccuracy;
+    public RockSampleObservationFunction(double sensorAccuracy) {
+        this.sensorAccuracy = sensorAccuracy;
     }
 
     //@Override
-    public boolean canEnumerateObservation(){
+    public boolean canEnumerateObservation() {
         return true;
     }
 
-
-
+    // think this is maybe more like observation good rock observation bad rock rather than the observation of the
+    // entire state with all of the possibilities enumerated. each observation does not include all of the rocks, but
+    // should be specifically updating a particular rock - if that makes sense.
     public List<State> allObservations() {
 
-        List<State> result = new ArrayList<State>(16);
+        List<State> result = new ArrayList<State>(NUM_ROCKS * 2);
 
-
-        RockSampleStateFactory rs_statefactory = new RockSampleStateFactory();
-        result.add(rs_statefactory.createCustomState("Good", "Good", "Good", "Good"));
-        result.add(rs_statefactory.createCustomState("Bad", "Good", "Good", "Good"));
-        result.add(rs_statefactory.createCustomState("Good", "Bad", "Good", "Good"));
-        result.add(rs_statefactory.createCustomState("Good", "Good", "Bad", "Good"));
-        result.add(rs_statefactory.createCustomState("Good", "Good", "Good", "Bad"));
-
-        result.add(rs_statefactory.createCustomState("Bad", "Bad", "Good", "Good"));
-        result.add(rs_statefactory.createCustomState("Bad", "Good", "Bad", "Good"));
-        result.add(rs_statefactory.createCustomState("Bad", "Good", "Good", "Bad"));
-        result.add(rs_statefactory.createCustomState("Good", "Bad", "Bad", "Good"));
-
-        result.add(rs_statefactory.createCustomState("Good", "Bad", "Good", "Bad"));
-        result.add(rs_statefactory.createCustomState("Good", "Good", "Bad", "Bad"));
-        result.add(rs_statefactory.createCustomState("Bad", "Bad", "Bad", "Good"));
-        result.add(rs_statefactory.createCustomState("Bad", "Good", "Bad", "Bad"));
-
-        result.add(rs_statefactory.createCustomState("Bad", "Bad", "Good", "Bad"));
-        result.add(rs_statefactory.createCustomState("Good", "Bad", "Bad", "Bad"));
-        result.add(rs_statefactory.createCustomState("Bad", "Bad", "Bad", "Bad"));
-
+        for(int i = 0; i < NUM_ROCKS; i++) {
+            result.add(this.observationGoodRock(CLASS_ROCK + i));
+            result.add(this.observationBadRock(CLASS_ROCK + i));
+        }
 
         return result;
     }
 
-
-    //@Override
-    public State sampleObservation(State state, Action action_1){
-        /* Need to include checks for all ACTION_CHECK */
-        /* Pass in rock number to the ObservationRock(int rockNum) */
-
-        System.out.println("ENTERED OBS");
-        if (action_1.actionName().equals(ACTION_CHECK)){
-            ObjectParameterizedAction action = (ObjectParameterizedAction) action_1;
-            String n = action.getObjectParameters()[0];
-            RockSampleState rs_state = (RockSampleState) state;
-            int roverX = (int) rs_state.getRoverAtt(RockSample.ATT_X);
-            int roverY = (int) rs_state.getRoverAtt(RockSample.ATT_Y);
-
-            int rockX = (int) rs_state.getRockAtt(n, RockSample.ATT_X);
-            int rockY = (int) rs_state.getRockAtt(n, RockSample.ATT_Y);
-
-            String rockQual = (String) rs_state.getRockAtt(n, RockSample.ATT_QUALITY);
-
-            /* Now we will do math, though you can move it into observation rock and pass the paramters */
-            int dx = (roverX-rockX) * (roverX-rockX); //squaring
-            int dy = (roverY-rockY) * (roverY-rockY); //square
-
-            double distance = Math.sqrt(dx+ dy);
-            double tunable_constant = 20;
-
-            /* Now, we will apply that awkward function */
-            double sensor_efficiency = Math.pow(2,-(distance)/tunable_constant);
-
-            /* get random number, and if less than random number */
-            //Random rand = new Random();
-            double rand = RandomFactory.getMapped(0).nextDouble();
-            if(sensor_efficiency > rand){
-                if(rockQual.equals("Good")){
-                    rockQual = "Bad";
-                }
-                else{
-                    rockQual = "Good";
-                }
-            }
-            this.checkAccuracy = sensor_efficiency;
-            /* have applied the mask */
-
-            /* this is stupid code, b/c I don't want to use a map */
-            int indx;
-            if(n.equals("Rock0")){
-                indx = 0;
-            }
-            else if(n.equals("Rock1")){
-                indx=1;
-            }
-            else if(n.equals("Rock2")){
-                indx = 2;
-            }
-            else if(n.equals("Rock3")){
-                indx=3;
-            }
-            else{
-
-                System.out.println("ERROR FOOL");
-                indx = 0;
-            }
-            return this.observationRock(indx, rockQual);
-
-        }
-        return null;
+    protected State observationGoodRock(String name) {
+        return new RockSampleState(name, ATT_GOOD);
     }
 
-    /*
-    //@Override
-    public State sampleObservation(State state, ObjectParameterizedAction action){
-        // Need to include checks for all ACTION_CHECK
-        // Pass in rock number to the ObservationRock(int rockNum)
-        if (action.actionName().equals(ACTION_CHECK)){
-            String n = action.getObjectParameters()[0];
-            RockSampleState rs_state = (RockSampleState) state;
-            int roverX = (int) rs_state.getRoverAtt(RockSample.ATT_X);
-            int roverY = (int) rs_state.getRoverAtt(RockSample.ATT_Y);
-
-            int rockX = (int) rs_state.getRockAtt(n, RockSample.ATT_X);
-            int rockY = (int) rs_state.getRockAtt(n, RockSample.ATT_Y);
-
-            String rockQual = (String) rs_state.getRockAtt(n, RockSample.ATT_QUALITY);
-
-            // Now we will do math, though you can move it into observation rock and pass the paramters
-            int dx = (roverX-rockX) * (roverX-rockX); //squaring
-            int dy = (roverY-rockY) * (roverY-rockY); //square
-
-            double distance = Math.sqrt(dx+ dy);
-            double tunable_constant = 20;
-
-            /* Now, we will apply that awkward function
-            double sensor_efficiency = Math.pow(2,-(distance)/tunable_constant);
-
-            // get random number, and if less than random number
-            //Random rand = new Random();
-            double rand = RandomFactory.getMapped(0).nextDouble();
-            if(sensor_efficiency > rand){
-                if(rockQual.equals("Good")){
-                    rockQual = "Bad";
-                }
-                else{
-                    rockQual = "Good";
-                }
-            }
-
-            // have applied the mask
-
-
-            return this.observationRock(rockQual);
-        }
-        return null;
-    } */
-
-    //@Override
-    public double getObservationProbability(State observation, State state,
-                                            ObjectParameterizedAction action){
-        return this.checkAccuracy;
+    protected State observationBadRock(String name) {
+        return new RockSampleState(name, ATT_BAD);
     }
 
-
-    /*protected State observationRock(String rockQual){
-
-        // Go into RockSampleDomain, get the rock value
-        RockSampleState checkRock = new RockSampleState(1);
-        //String qual = (String) checkRock.getRockAtt(rock, RockSample.ATT_QUALITY);
-
-        // Now have to do the randomness mask
-
-
-        return checkRock;
-    } */
-
-    protected State observationRock(int indx, String rockQual){
-
-        /* Go into RockSampleDomain, get the rock value */
-        RockSampleState checkRock = new RockSampleState(indx,rockQual);
-        //String qual = (String) checkRock.getRockAtt(rock, RockSample.ATT_QUALITY);
-
-        // Now have to do the randomness mask
-
-
-        return checkRock;
-    }
-
-
-    @Override
-    public State sample(State state, Action action){
-        if (action.actionName().equals(ACTION_CHECK)){
-            ObjectParameterizedAction action_op = (ObjectParameterizedAction) action;
-
-            //   get the value of the rock being checked
-
-        //   get a random number
-        //   if r < the accuracy
-        //     return the true observation of the rock
-        //   else return the opposite
-
-        String n = action_op.getObjectParameters()[0];
-        RockSampleState rs_state = (RockSampleState) state;
-        int roverX = (int) rs_state.getRoverAtt(RockSample.ATT_X);
-        int roverY = (int) rs_state.getRoverAtt(RockSample.ATT_Y);
-
-        int rockX = (int) rs_state.getRockAtt(n, RockSample.ATT_X);
-        int rockY = (int) rs_state.getRockAtt(n, RockSample.ATT_Y);
-
-        String rockQual = (String) rs_state.getRockAtt(n, RockSample.ATT_QUALITY);
-
-            /* Now we will do math, though you can move it into observation rock and pass the paramters */
-        int dx = (roverX-rockX) * (roverX-rockX); //squaring
-        int dy = (roverY-rockY) * (roverY-rockY); //square
+    public void setSensorAccuracy(int roverX, int roverY, int rockX, int rockY) {
+        int dx = (roverX - rockX) * (roverX - rockX); //squaring
+        int dy = (roverY - rockY) * (roverY - rockY); //square
 
         double distance = Math.sqrt(dx+ dy);
         double tunable_constant = 20;
 
-            /* Now, we will apply that awkward function */
-        double sensor_efficiency = Math.pow(2,-(distance)/tunable_constant);
+        double sensorAccuracy = Math.pow(2, -(distance)/tunable_constant);
 
-            /* get random number, and if less than random number */
-        //Random rand = new Random();
-        double rand = RandomFactory.getMapped(0).nextDouble();
-        if(sensor_efficiency > rand){
-            if(rockQual.equals("Good")){
-                rockQual = "Bad";
-            }
-            else{
-                rockQual = "Good";
-            }
-        }
-
-            /* have applied the mask */
-
-            /* this is stupid code, b/c I don't want to use a map */
-        int indx;
-        if(n.equals("Rock0")){
-            rs_state.set("Rock0",rockQual);
-            indx = 0;
-        }
-        else if(n.equals("Rock1")){
-            rs_state.set("Rock1",rockQual);
-            indx=1;
-        }
-        else if(n.equals("Rock2")){
-            rs_state.set("Rock2",rockQual);
-            indx = 2;
-        }
-        else if(n.equals("Rock3")){
-            rs_state.set("Rock3",rockQual);
-            indx=3;
-        }
-        else{
-
-            System.out.println("ERROR FOOL");
-            indx = 0;
-        }
-        return rs_state;
-
+        this.sensorAccuracy = sensorAccuracy;
     }
-    return state;
+
+    @Override
+    public State sample(State state, Action action) {
+        if (action.actionName().equals(ACTION_CHECK)) {
+            ObjectParameterizedAction a = (ObjectParameterizedAction) action;
+            String n = a.getObjectParameters()[0];
+            RockSampleState rsState = (RockSampleState) state;
+
+            // get rover and rock coordinates
+            int roverX = (int) rsState.getRoverAtt(RockSample.ATT_X);
+            int roverY = (int) rsState.getRoverAtt(RockSample.ATT_Y);
+
+            int rockX = (int) rsState.getRockAtt(n, RockSample.ATT_X);
+            int rockY = (int) rsState.getRockAtt(n, RockSample.ATT_Y);
+
+           setSensorAccuracy(roverX, roverY, rockX, rockY);
+
+            double rand = RandomFactory.getMapped(0).nextDouble();
+
+            String rockQual = (String) rsState.getRockAtt(n, RockSample.ATT_QUALITY);
+
+            if (this.sensorAccuracy > rand) {
+                if (rockQual.equals(ATT_GOOD)) {
+                    return this.observationBadRock(n);
+                }
+                else {
+                    return this.observationGoodRock(n);
+                }
+            }
+            else {
+                if (rockQual.equals(ATT_GOOD)) {
+                    return this.observationGoodRock(n);
+                }
+                else {
+                    return this.observationBadRock(n);
+                }
+            }
+
+        }
+        return state;
     //throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
 
-}
-
-
-
+    }
 
     public List<ObservationProbability> probabilities(State state, Action action) {
         return ObservationUtilities.probabilitiesByEnumeration((DiscreteObservationFunction) this, state, action);
     }
 
+    // TODO: probabilities might be a little wonky, but will keep as is for now
     @Override
     public double probability(State observation, State state, Action action){
         String oVal = (String)observation.get(RockSamplePO.ACTION_CHECK);
         String rockVal = (String)state.get(RockSample.CLASS_ROCK);
 
-
-        // if action name is check
-        // then if the value of the rock is good/bad
-        //  return the accuracy
-        // otherwise return 0
-
-        if(action.actionName().equals(RockSamplePO.ACTION_CHECK)) {
-            return this.checkAccuracy;
+        if (action.actionName().equals(RockSamplePO.ACTION_CHECK)) {
+            return this.sensorAccuracy;
         }
-        else{
+        else {
             return 1.0;
         }
-        /*throw new RuntimeException("Unknown action " +
-                                   action.actionName() +
-                                   "; cannot return observation probability."); */
-
     }
-
 }

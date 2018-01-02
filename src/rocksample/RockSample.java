@@ -1,27 +1,14 @@
 package rocksample;
 
-import burlap.behavior.singleagent.Episode;
-import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.UniversalActionType;
-import burlap.mdp.core.oo.ObjectParameterizedAction;
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
-import burlap.statehashing.HashableStateFactory;
-import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rocksample.state.RoverAgent;
 import rocksample.state.RockSampleWall;
 import rocksample.state.RockSampleRock;
-import rocksample.stateGenerator.RockSampleStateFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by steph on 10/26/2017.

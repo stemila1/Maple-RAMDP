@@ -14,8 +14,7 @@ public class CheckActionType extends ObjectParameterizedActionType{
     }
 
     @Override
-    protected boolean applicableInState(State s,
-                                        ObjectParameterizedAction objAction){
+    protected boolean applicableInState(State s, ObjectParameterizedAction objAction) {
         return true;
     }
 
