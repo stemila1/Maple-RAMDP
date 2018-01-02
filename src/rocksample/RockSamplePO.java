@@ -236,3 +236,4 @@ public class RockSamplePO implements DomainGenerator {
     }
 
 }
+

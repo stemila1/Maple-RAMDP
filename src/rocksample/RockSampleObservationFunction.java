@@ -83,17 +83,17 @@ public class RockSampleObservationFunction implements DiscreteObservationFunctio
             RockSampleState rsState = (RockSampleState) state;
 
             // get rover and rock coordinates
-            int roverX = (int) rsState.getRoverAtt(RockSample.ATT_X);
-            int roverY = (int) rsState.getRoverAtt(RockSample.ATT_Y);
+            int roverX = (int) rsState.getRoverAtt(ATT_X);
+            int roverY = (int) rsState.getRoverAtt(ATT_Y);
 
-            int rockX = (int) rsState.getRockAtt(n, RockSample.ATT_X);
-            int rockY = (int) rsState.getRockAtt(n, RockSample.ATT_Y);
+            int rockX = (int) rsState.getRockAtt(n, ATT_X);
+            int rockY = (int) rsState.getRockAtt(n, ATT_Y);
 
-           setSensorAccuracy(roverX, roverY, rockX, rockY);
+            setSensorAccuracy(roverX, roverY, rockX, rockY);
 
             double rand = RandomFactory.getMapped(0).nextDouble();
 
-            String rockQual = (String) rsState.getRockAtt(n, RockSample.ATT_QUALITY);
+            String rockQual = (String) rsState.getRockAtt(n, ATT_QUALITY);
 
             if (this.sensorAccuracy > rand) {
                 if (rockQual.equals(ATT_GOOD)) {
@@ -136,3 +136,4 @@ public class RockSampleObservationFunction implements DiscreteObservationFunctio
         }
     }
 }
+
