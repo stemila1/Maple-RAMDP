@@ -19,21 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static rocksample.RockSamplePO.ACTION_CHECK;
-import static rocksample.RockSamplePO.CLASS_ROCK;
+import static rocksample.RockSamplePO.*;
 
 /**
  * Created by steph on 11/9/2017.
  */
+/**TODO: Is the explicit addition of all possible states excessive? Is there an easier way we can do this to make
+   more extensible?
+ */
 public class RockSampleObservationFunction implements DiscreteObservationFunction {
 
-    protected double checkAccuracy;
+    protected double sensorAccuracy;
 
-    public void RockSampleState() {
-    }
-
-    public RockSampleObservationFunction(double checkAccuracy) {
-        this.checkAccuracy = checkAccuracy;
+    public RockSampleObservationFunction(double sensorAccuracy) {
+        this.sensorAccuracy = sensorAccuracy;
     }
 
     //@Override
@@ -41,99 +40,100 @@ public class RockSampleObservationFunction implements DiscreteObservationFunctio
         return true;
     }
 
-
+    // think this is maybe more like observation good rock observation bad rock rather than the observation of the
+    // entire state with all of the possibilities enumerated. each observation does not include all of the rocks, but
+    // should be specifically updating a particular rock - if that makes sense.
     public List<State> allObservations() {
 
-        List<State> result = new ArrayList<State>(2);
+        List<State> result = new ArrayList<State>(NUM_ROCKS * 2);
 
-        result.add(this.observationGoodRock());
-        result.add(this.observationBadRock());
+        for(int i = 0; i < NUM_ROCKS; i++) {
+            result.add(this.observationGoodRock(CLASS_ROCK + i));
+            result.add(this.observationBadRock(CLASS_ROCK + i));
+        }
+
         return result;
     }
 
-    // TODO: UPDATE THIS TO DO THE MATH PORTION OF THE OBS PROBABILITY SO CAN CALL WITHIN SAMPLE
-    //@Override
-    public double getObservationProbability(State observation, State state,
-                                            ObjectParameterizedAction action) {
-        return this.checkAccuracy;
+    protected State observationGoodRock(String name) {
+        return new RockSampleState(name, ATT_GOOD);
     }
 
-    protected State observationGoodRock() {
-        return new RockSampleObservation("Good");
+    protected State observationBadRock(String name) {
+        return new RockSampleState(name, ATT_BAD);
     }
 
-    protected State observationBadRock() {
-        return new RockSampleObservation("Bad");
+    public void setSensorAccuracy(int roverX, int roverY, int rockX, int rockY) {
+        int dx = (roverX - rockX) * (roverX - rockX); //squaring
+        int dy = (roverY - rockY) * (roverY - rockY); //square
+
+        double distance = Math.sqrt(dx+ dy);
+        double tunable_constant = 20;
+
+        double sensorAccuracy = Math.pow(2, -(distance)/tunable_constant);
+
+        this.sensorAccuracy = sensorAccuracy;
     }
 
     @Override
     public State sample(State state, Action action) {
         if (action.actionName().equals(ACTION_CHECK)) {
-            ObjectParameterizedAction action_op = (ObjectParameterizedAction) action;
+            ObjectParameterizedAction a = (ObjectParameterizedAction) action;
+            String n = a.getObjectParameters()[0];
+            RockSampleState rsState = (RockSampleState) state;
 
-            String n = action_op.getObjectParameters()[0];
-            RockSampleState rs_state = (RockSampleState) state;
-            int roverX = (int) rs_state.getRoverAtt(RockSample.ATT_X);
-            int roverY = (int) rs_state.getRoverAtt(RockSample.ATT_Y);
+            // get rover and rock coordinates
+            int roverX = (int) rsState.getRoverAtt(RockSample.ATT_X);
+            int roverY = (int) rsState.getRoverAtt(RockSample.ATT_Y);
 
-            int rockX = (int) rs_state.getRockAtt(n, RockSample.ATT_X);
-            int rockY = (int) rs_state.getRockAtt(n, RockSample.ATT_Y);
+            int rockX = (int) rsState.getRockAtt(n, RockSample.ATT_X);
+            int rockY = (int) rsState.getRockAtt(n, RockSample.ATT_Y);
 
-            String rockQual = (String) rs_state.getRockAtt(n, RockSample.ATT_QUALITY);
+           setSensorAccuracy(roverX, roverY, rockX, rockY);
 
-            /* Now we will do math, though you can move it into observation rock and pass the paramters */
-            int dx = (roverX - rockX) * (roverX - rockX); //squaring
-            int dy = (roverY - rockY) * (roverY - rockY); //square
-
-            double distance = Math.sqrt(dx + dy);
-            double tunable_constant = 20;
-
-            /* Now, we will apply that awkward function */
-            double sensor_efficiency = Math.pow(2, -(distance) / tunable_constant);
-
-            /* get random number, and if less than random number */
-            //Random rand = new Random();
             double rand = RandomFactory.getMapped(0).nextDouble();
-            if (sensor_efficiency > rand) {
-                if (rockQual.equals("Good")) {
-                    return this.observationGoodRock();
-                } else {
-                    return this.observationBadRock();
+
+            String rockQual = (String) rsState.getRockAtt(n, RockSample.ATT_QUALITY);
+
+            if (this.sensorAccuracy > rand) {
+                if (rockQual.equals(ATT_GOOD)) {
+                    return this.observationBadRock(n);
                 }
-            } else {
-                if (rockQual.equals("Good")) {
-                    return this.observationBadRock();
-                } else {
-                    return this.observationGoodRock();
+                else {
+                    return this.observationGoodRock(n);
                 }
             }
+            else {
+                if (rockQual.equals(ATT_GOOD)) {
+                    return this.observationGoodRock(n);
+                }
+                else {
+                    return this.observationBadRock(n);
+                }
+            }
+
         }
-        throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
+        return state;
+    //throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
+
     }
 
-    @Override
-    public List<ObservationProbability> probabilities (State state, Action action){
+    public List<ObservationProbability> probabilities(State state, Action action) {
         return ObservationUtilities.probabilitiesByEnumeration((DiscreteObservationFunction) this, state, action);
     }
 
+    // TODO: probabilities might be a little wonky, but will keep as is for now
     @Override
-    public double probability (State observation, State state, Action action){
-        String oVal = (String) observation.get(RockSamplePO.ACTION_CHECK);
-        String rockVal = (String) state.get(RockSample.CLASS_ROCK);
+    public double probability(State observation, State state, Action action){
+        String oVal = (String)observation.get(RockSamplePO.ACTION_CHECK);
+        String rockVal = (String)state.get(RockSample.CLASS_ROCK);
 
-
-            // if action name is check
-            // then if the value of the rock is good/bad
-            //  return the accuracy
-            // otherwise return 0
-
-        // TODO: this might need to be updated to be more like tiger
         if (action.actionName().equals(RockSamplePO.ACTION_CHECK)) {
-            return this.checkAccuracy;
+            return this.sensorAccuracy;
         }
-        throw new RuntimeException("Unknown action " +
-                                   action.actionName() +
-                                   "; cannot return observation probability.");
+        else {
+            return 1.0;
+        }
     }
 }
 
