@@ -1,4 +1,4 @@
-package rocksample;
+package rocksample.POOO;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.mdp.core.oo.OODomain;

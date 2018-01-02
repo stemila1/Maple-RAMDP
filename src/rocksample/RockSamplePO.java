@@ -1,52 +1,34 @@
 package rocksample;
 
-import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
-import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.modellearning.artdp.ARTDP;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
 import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
 import burlap.behavior.singleagent.pomdp.wrappedmdpalgs.BeliefSparseSampling;
-import burlap.behavior.valuefunction.QProvider;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
-import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.singleagent.pomdp.PODomain;
-import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
-import burlap.shell.EnvironmentShell;
-import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.ReflectiveHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import burlap.visualizer.Visualizer;
+import rocksample.POOO.OOTabularBeliefState;
+import rocksample.POOO.POOOBeliefState;
+import rocksample.POOO.SimulatedPOOOEnvironment;
 import rocksample.state.RockSampleRock;
-import rocksample.state.RockSampleState;
 import rocksample.state.RockSampleWall;
 import rocksample.state.RoverAgent;
-import rocksample.POOODomain;
+import rocksample.POOO.POOODomain;
 import rocksample.stateGenerator.RockSampleStateFactory;
-import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import rocksample.SimulatedPOOOEnvironment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by steph on 11/9/2017.
@@ -67,6 +49,9 @@ public class RockSamplePO implements DomainGenerator{
 
     // rock attributes
     public static final String ATT_QUALITY =                "quality";
+    public static final String ATT_GOOD =                   "Good";
+    public static final String ATT_BAD =                    "Bad";
+    public static final String ATT_EMPTY =                  "Empty";
 
     // wall attributes
     public static final String ATT_START_X = 				"startX";
@@ -214,7 +199,7 @@ public class RockSamplePO implements DomainGenerator{
 
     // just returns a random ass state casted to a belief state but ok
     public static BeliefState getInitialBeliefState(POOODomain domain){
-        TabularBeliefState bs = new TabularBeliefState(domain, domain.getStateEnumerator());
+        POOOBeliefState bs = new POOOBeliefState(domain, domain.getStateEnumerator());
         bs.initializeBeliefsUniformly();
         return bs;
     }
@@ -263,19 +248,19 @@ public class RockSamplePO implements DomainGenerator{
                 domain, outputPath);
         vis.setDefaultCloseOperation(vis.EXIT_ON_CLOSE);
         vis.initGUI(); */
-
+/*
       Visualizer v = RockSampleVisualizer.getVisualizer(5,5);
 
        //VisualExplorer exp = new VisualExplorer(domain, v, s);
         VisualExplorer exp = new VisualExplorer(domain,envToUse,v);
-      /*  exp.addKeyAction("w",ACTION_NORTH,"");
+        exp.addKeyAction("w",ACTION_NORTH,"");
         exp.addKeyAction("s",ACTION_SOUTH,"");
         exp.addKeyAction("d",ACTION_EAST,"");
         exp.addKeyAction("a",ACTION_WEST,"");
         exp.addKeyAction("x",ACTION_CHECK,"");
         exp.addKeyAction("q",ACTION_SAMPLE,"");*/
 
-        exp.initGUI();
+        //exp.initGUI();
 
       //  EnvironmentShell shell = new EnvironmentShell(domain, envToUse);
        // shell.start();

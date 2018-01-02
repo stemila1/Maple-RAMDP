@@ -1,4 +1,4 @@
-package rocksample;
+package rocksample.POOO;
 
 import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.action.Action;
@@ -7,6 +7,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
+import rocksample.POOO.POOODomain;
 
 /**
  * Created by steph on 11/24/2017.
