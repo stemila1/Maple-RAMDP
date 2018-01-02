@@ -1,4 +1,5 @@
 package rocksample.POOO;
+
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.oo.state.OOState;
@@ -23,7 +24,7 @@ import java.util.*;
  * it is recommended that you use the {@link burlap.statehashing.ReflectiveHashableStateFactory}, since {@link POOOBeliefState}
  * implements {@link HashableState} and since you probably do not want to do abstraction of the belief state.
  */
-public abstract class POOOBeliefState extends OOTabularBeliefState implements OOState, BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
+public class POOOBeliefState implements OOState, BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
 
 
     /**
@@ -38,7 +39,8 @@ public abstract class POOOBeliefState extends OOTabularBeliefState implements OO
 
 
     /**
-     * The POMDP domain with which this belief state is associated. Contains the {@link ObservationFunction} necessary to perform
+     * The POMDP domain with which this belief state is associated. Contains
+     * the {@link ObservationFunction} necessary to perform
      * belief state updates.
      */
     protected POOODomain domain;
@@ -47,9 +49,8 @@ public abstract class POOOBeliefState extends OOTabularBeliefState implements OO
     }
 
     /**
-     * Constructs a new {@link POOOBeliefState} from a source
-     * {@link POOOBeliefState}. Changes to the new state or source
-     * state will not affect the other.
+     * Constructs a new {@link POOOBeliefState} from a source {@link POOOBeliefState}. Changes to the new state or
+     * source state will not affect the other.
      * @param srcBeliefState the source {@link POOOBeliefState} to copy.
      */
     public POOOBeliefState(POOOBeliefState srcBeliefState){
@@ -347,7 +348,10 @@ public abstract class POOOBeliefState extends OOTabularBeliefState implements OO
         throw new RuntimeException("Cound not return belief value for key, because it is a " + variableKey.getClass().getName() + " rather than an Integer, State, or String representation of an integer");
     }
 
-
+    @Override
+    public POOOBeliefState copy() {
+        return new POOOBeliefState(this);
+    }
 
     @Override
     public State s() {
@@ -394,4 +398,28 @@ public abstract class POOOBeliefState extends OOTabularBeliefState implements OO
         return this.beliefValues.toString();
     }
 
+    @Override
+    public int numObjects() {
+        return 0;
+    }
+
+    @Override
+    public ObjectInstance object(String s) {
+        return null;
+    }
+
+    @Override
+    public List<ObjectInstance> objects() {
+      //  List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
+      //  objs.add(rover);
+      //  objs.addAll(rocks.values());
+      //  objs.addAll(walls.values());
+       // return objs;
+        throw new RuntimeException("no objects little bad");
+    }
+
+    @Override
+    public List<ObjectInstance> objectsOfClass(String s) {
+        return null;
+    }
 }
