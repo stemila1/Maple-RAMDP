@@ -12,6 +12,7 @@ import doorworld.state.DoorWorldState;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +96,6 @@ public class DoorWorldVisualizer {
             this.maxY = maxY;
         }
 
-
         @Override
         public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 
@@ -117,7 +117,7 @@ public class DoorWorldVisualizer {
             int bottom = (Integer) ob.get(DoorWorld.ATT_BOTTOM);
             int right = (Integer) ob.get(DoorWorld.ATT_RIGHT);
 
-            Color rcol = Color.BLUE;
+            Color rcol = colorForName(ob.get(DoorWorld.ATT_COLOR).toString());
             float[] hsb = new float[3];
             Color.RGBtoHSB(rcol.getRed(), rcol.getGreen(), rcol.getBlue(), hsb);
             hsb[1] = 0.4f;
@@ -140,6 +140,17 @@ public class DoorWorldVisualizer {
             }
 
         }
+
+    }
+
+    protected static Color colorForName(String colName) {
+        Color col = Color.darkGray;
+        Field field;
+        try {
+            field = Class.forName("java.awt.Color").getField(colName);
+            col = (Color) field.get(null);
+        } catch (Exception e) { }
+        return col;
 
     }
 

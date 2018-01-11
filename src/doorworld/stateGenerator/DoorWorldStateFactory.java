@@ -29,9 +29,14 @@ public class DoorWorldStateFactory {
         String room0 = DoorWorld.CLASS_ROOM + 0;
         String room1 = DoorWorld.CLASS_ROOM + 1;
         String room2 = DoorWorld.CLASS_ROOM + 2;
-        rooms.put(room0, new DoorWorldRoom(room0, minX, maxX-1, minY, halfY));
-        rooms.put(room1, new DoorWorldRoom(room1, minX, halfX, halfY, maxY-1));
-        rooms.put(room2, new DoorWorldRoom(room2, halfX, maxX-1, halfY, maxY-1));
+
+        String room0Color = DoorWorld.COLOR_BLUE;
+        String room1Color = DoorWorld.COLOR_GREEN;
+        String room2Color = DoorWorld.COLOR_YELLOW;
+
+        rooms.put(room0, new DoorWorldRoom(room0, minX, maxX-1, minY, halfY, room0Color));
+        rooms.put(room1, new DoorWorldRoom(room1, minX, halfX, halfY, maxY-1, room1Color));
+        rooms.put(room2, new DoorWorldRoom(room2, halfX, maxX-1, halfY, maxY-1, room2Color));
 
         return new DoorWorldState(maxX, maxY, agent, rooms);
 

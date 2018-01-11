@@ -20,12 +20,12 @@ public class DoorWorld implements DomainGenerator {
     // object classes
     public static final String CLASS_AGENT =            "Agent";
     public static final String CLASS_ROOM =             "Room";
-    public static final String CLASS_WALL =             "Wall";
     public static final String CLASS_DOOR =             "Door";
 
     // common attributes
     public static final String ATT_X =                  "x";
     public static final String ATT_Y =                  "y";
+    public static final String ATT_COLOR =              "color";
 
     // wall attributes
     public static final String ATT_START_X = 			"startX";
@@ -62,7 +62,7 @@ public class DoorWorld implements DomainGenerator {
     public Domain generateDomain() {
         OOSADomain domain = new OOSADomain();
         domain.addStateClass(CLASS_AGENT, DoorWorld.class)
-                .addStateClass(CLASS_WALL, DoorWorld.class);
+                .addStateClass(CLASS_ROOM, DoorWorld.class);
 
         domain.addActionTypes(
                 new UniversalActionType(ACTION_NORTH),

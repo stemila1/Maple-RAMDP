@@ -20,6 +20,7 @@ public class DoorWorldModel implements FullModel {
         this.noReward = noReward;
     }
 
+    // transitions
     @Override
     public List<TransitionProb> transitions(State s, Action a) {
         String actionName = a.actionName();
@@ -35,6 +36,7 @@ public class DoorWorldModel implements FullModel {
         throw new RuntimeException("Unknown action " + a.toString());
     }
 
+    // sample
     @Override
     public EnvironmentOutcome sample(State state, Action action) {
         String actionName = action.actionName();
