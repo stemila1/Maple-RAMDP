@@ -20,6 +20,7 @@ public class DoorWorldVisualizer {
     private static Map<String, Color> colors;
     private static int cellsWide, cellsTall;
 
+    // initColors
     private static void initColors(){
         colors = new HashMap<String, Color>();
         colors.put(DoorWorld.COLOR_RED, Color.red);
@@ -31,12 +32,14 @@ public class DoorWorldVisualizer {
         colors.put(DoorWorld.COLOR_GRAY, Color.DARK_GRAY);
     }
 
+    // getVisualizer
     public static Visualizer getVisualizer(int minX, int minY, int maxX, int maxY){
         initColors();
         Visualizer v = new Visualizer(getStateRenderLayer(minX, minY, maxX, maxY));
         return v;
     }
 
+    // getStateRenderLayer
     public static StateRenderLayer getStateRenderLayer(int minX, int minY, int maxX, int maxY) {
         StateRenderLayer rl = new StateRenderLayer();
         OOStatePainter oopainter = new OOStatePainter();
@@ -47,6 +50,7 @@ public class DoorWorldVisualizer {
         cellsTall = h;
 
         oopainter.addObjectClassPainter(DoorWorld.CLASS_ROOM, new RoomPainter(minX, minY, maxX, maxY));
+        oopainter.addObjectClassPainter(DoorWorld.CLASS_DOOR, new DoorPainter(minX, minY, maxX, maxY));
         oopainter.addObjectClassPainter(DoorWorld.CLASS_AGENT, new AgentPainter());
 
         rl.addStatePainter(oopainter);
@@ -57,6 +61,7 @@ public class DoorWorldVisualizer {
 
     public static class AgentPainter implements ObjectPainter {
 
+        // paintObject
         @Override
         public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
                                 float cWidth, float cHeight) {
@@ -89,6 +94,7 @@ public class DoorWorldVisualizer {
         protected int maxX = -1;
         protected int maxY = -1;
 
+        // RoomPainter
         public RoomPainter(int minX, int minY, int maxX, int maxY) {
             this.minX = minX;
             this.minY = minY;
@@ -96,6 +102,7 @@ public class DoorWorldVisualizer {
             this.maxY = maxY;
         }
 
+        // paintObject
         @Override
         public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 
@@ -143,6 +150,65 @@ public class DoorWorldVisualizer {
 
     }
 
+    public static class DoorPainter implements ObjectPainter {
+
+
+        protected int minX = -1;
+        protected int minY = -1;
+        protected int maxX = -1;
+        protected int maxY = -1;
+
+        // DoorPainter
+        public DoorPainter(int minX, int minY, int maxX, int maxY) {
+            this.minX = minX;
+            this.minY = minY;
+            this.maxX = maxX;
+            this.maxY = maxY;
+        }
+
+        // paintObject
+        @Override
+        public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
+            float domainXScale = DoorWorld.maxRoomXExtent(s) + 1f;
+            float domainYScale = DoorWorld.maxRoomYExtent(s) + 1f;
+
+            if (maxX != -1) {
+                domainXScale = maxX;
+                domainYScale = maxY;
+            }
+
+            //determine then normalized width
+            float width = (1.0f / domainXScale) * cWidth;
+            float height = (1.0f / domainYScale) * cHeight;
+
+            int top = (Integer) ob.get(DoorWorld.ATT_TOP);
+            int left = (Integer) ob.get(DoorWorld.ATT_LEFT);
+            int bottom = (Integer) ob.get(DoorWorld.ATT_BOTTOM);
+            int right = (Integer) ob.get(DoorWorld.ATT_RIGHT);
+
+            g2.setColor(Color.white);
+
+            String lockedState = ob.get(DoorWorld.ATT_LOCKED).toString();
+            if (lockedState.equals("unknown")) {
+                g2.setColor(Color.gray);
+            } else if (lockedState.equals("locked")) {
+                g2.setColor(Color.black);
+            }
+
+
+            for (int i = left; i <= right; i++) {
+                for (int j = bottom; j <= top; j++) {
+
+                    float rx = i * width;
+                    float ry = cHeight - height - j * height;
+                    g2.fill(new Rectangle2D.Float(rx, ry, width, height));
+
+                }
+            }
+        }
+    }
+
+    // colorForName
     protected static Color colorForName(String colName) {
         Color col = Color.darkGray;
         Field field;

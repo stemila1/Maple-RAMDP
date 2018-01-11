@@ -62,7 +62,8 @@ public class DoorWorld implements DomainGenerator {
     public Domain generateDomain() {
         OOSADomain domain = new OOSADomain();
         domain.addStateClass(CLASS_AGENT, DoorWorld.class)
-                .addStateClass(CLASS_ROOM, DoorWorld.class);
+                .addStateClass(CLASS_ROOM, DoorWorld.class)
+                .addStateClass(CLASS_DOOR, DoorWorld.class);
 
         domain.addActionTypes(
                 new UniversalActionType(ACTION_NORTH),
@@ -76,6 +77,7 @@ public class DoorWorld implements DomainGenerator {
         return domain;
     }
 
+    // maxRoomXExtent
     public static int maxRoomXExtent(OOState s) {
 
         int max = 0;
@@ -90,6 +92,7 @@ public class DoorWorld implements DomainGenerator {
         return max;
     }
 
+    // maxRoomYExtent
     public static int maxRoomYExtent(OOState s) {
 
         int max = 0;
@@ -108,7 +111,7 @@ public class DoorWorld implements DomainGenerator {
         DoorWorld doorWorldBuild = new DoorWorld();
         OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
 //        State s = DoorWorldStateFactory.createClassicState();
-        State s = DoorWorldStateFactory.generateThreeRooms(0, 0, 8, 8);
+        State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, 8, 8);
 
         Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 8, 8);
         VisualExplorer exp = new VisualExplorer(domain, v, s);
