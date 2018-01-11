@@ -7,10 +7,12 @@ import burlap.visualizer.ObjectPainter;
 import burlap.visualizer.StateRenderLayer;
 import burlap.visualizer.Visualizer;
 import doorworld.state.DoorWorldAgent;
+import doorworld.state.DoorWorldState;
 import doorworld.state.DoorWorldWall;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,21 +31,24 @@ public class DoorWorldVisualizer {
         colors.put(DoorWorld.COLOR_GRAY, Color.DARK_GRAY);
     }
 
-    public static Visualizer getVisualizer(int w, int h){
+    public static Visualizer getVisualizer(int minX, int minY, int maxX, int maxY){
         initColors();
-        Visualizer v = new Visualizer(getStateRenderLayer(w, h));
+        Visualizer v = new Visualizer(getStateRenderLayer(minX, minY, maxX, maxY));
         return v;
     }
 
-    public static StateRenderLayer getStateRenderLayer(int w, int h) {
+    public static StateRenderLayer getStateRenderLayer(int minX, int minY, int maxX, int maxY) {
         StateRenderLayer rl = new StateRenderLayer();
         OOStatePainter oopainter = new OOStatePainter();
 
+        int w = maxX - minX;
+        int h = maxY - minY;
         cellsWide = w;
         cellsTall = h;
 
-        oopainter.addObjectClassPainter(DoorWorld.CLASS_AGENT, new AgentPainter());
+        oopainter.addObjectClassPainter(DoorWorld.CLASS_ROOM, new RoomPainter(minX, minY, maxX, maxY));
         oopainter.addObjectClassPainter(DoorWorld.CLASS_WALL, new WallPainter());
+        oopainter.addObjectClassPainter(DoorWorld.CLASS_AGENT, new AgentPainter());
 
         rl.addStatePainter(oopainter);
 
@@ -106,6 +111,69 @@ public class DoorWorldVisualizer {
 
             g2.drawLine((int) wx1, (int) wy1, (int) wx2, (int) wy2);
         }
+    }
+    public static class RoomPainter implements ObjectPainter {
+
+        protected int minX = -1;
+        protected int minY = -1;
+        protected int maxX = -1;
+        protected int maxY = -1;
+
+        public RoomPainter(int minX, int minY, int maxX, int maxY) {
+            this.minX = minX;
+            this.minY = minY;
+            this.maxX = maxX;
+            this.maxY = maxY;
+        }
+
+
+        @Override
+        public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
+
+            DoorWorldState cws = (DoorWorldState) s;
+            float domainXScale = DoorWorld.maxRoomXExtent(cws) + 1f;
+            float domainYScale = DoorWorld.maxRoomYExtent(cws) + 1f;
+
+            if (maxX != -1) {
+                domainXScale = maxX;
+                domainYScale = maxY;
+            }
+
+            //determine then normalized width
+            float width = (1.0f / domainXScale) * cWidth;
+            float height = (1.0f / domainYScale) * cHeight;
+
+            int top = (Integer) ob.get(DoorWorld.ATT_TOP);
+            int left = (Integer) ob.get(DoorWorld.ATT_LEFT);
+            int bottom = (Integer) ob.get(DoorWorld.ATT_BOTTOM);
+            int right = (Integer) ob.get(DoorWorld.ATT_RIGHT);
+
+            Color rcol = Color.BLUE;
+            float[] hsb = new float[3];
+            Color.RGBtoHSB(rcol.getRed(), rcol.getGreen(), rcol.getBlue(), hsb);
+            hsb[1] = 0.4f;
+            rcol = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+
+            for (int i = left; i <= right; i++) {
+                for (int j = bottom; j <= top; j++) {
+
+                    float rx = i * width;
+                    float ry = cHeight - height - j * height;
+
+                    if (i == left || i == right || j == bottom || j == top) {
+//                        if (cws.doorContainingPoint(i, j) == null) {
+//                            g2.setColor(Color.black);
+//                            g2.fill(new Rectangle2D.Float(rx, ry, width, height));
+//                        }
+                    } else {
+                        g2.setColor(rcol);
+                        g2.fill(new Rectangle2D.Float(rx, ry, width, height));
+                    }
+                }
+            }
+
+        }
+
     }
 
 }

@@ -3,6 +3,8 @@ package doorworld;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.action.UniversalActionType;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.shell.visual.VisualExplorer;
@@ -11,6 +13,7 @@ import doorworld.state.DoorWorldState;
 import doorworld.stateGenerator.DoorWorldStateFactory;
 
 import javax.swing.*;
+import java.util.List;
 
 public class DoorWorld implements DomainGenerator {
 
@@ -73,12 +76,41 @@ public class DoorWorld implements DomainGenerator {
         return domain;
     }
 
+    public static int maxRoomXExtent(OOState s) {
+
+        int max = 0;
+        List<ObjectInstance> rooms = s.objectsOfClass(CLASS_ROOM);
+        for (ObjectInstance r : rooms) {
+            int right = (Integer) r.get(ATT_RIGHT);
+            if (right > max) {
+                max = right;
+            }
+        }
+
+        return max;
+    }
+
+    public static int maxRoomYExtent(OOState s) {
+
+        int max = 0;
+        List<ObjectInstance> rooms = s.objectsOfClass(CLASS_ROOM);
+        for (ObjectInstance r : rooms) {
+            int top = (Integer) r.get(ATT_TOP);
+            if (top > max) {
+                max = top;
+            }
+        }
+
+        return max;
+    }
+
     public static void main(String[] args) {
         DoorWorld doorWorldBuild = new DoorWorld();
         OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
-        State s = DoorWorldStateFactory.createClassicState();
+//        State s = DoorWorldStateFactory.createClassicState();
+        State s = DoorWorldStateFactory.generateThreeRooms(0, 0, 8, 8);
 
-        Visualizer v = DoorWorldVisualizer.getVisualizer(8, 8);
+        Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 8, 8);
         VisualExplorer exp = new VisualExplorer(domain, v, s);
 
         exp.addKeyAction("w", ACTION_NORTH,"");

@@ -20,7 +20,7 @@ public class DoorWorldState implements MutableOOState {
 
     public DoorWorldState(DoorWorldAgent agent, List<DoorWorldWall> walls) {
         this.agent = agent;
-
+        this.rooms = new HashMap<String, DoorWorldRoom>();
         this.walls = new HashMap<String, DoorWorldWall>();
         for (DoorWorldWall w: walls) {
             this.walls.put(w.name(), w);
@@ -30,7 +30,15 @@ public class DoorWorldState implements MutableOOState {
     public DoorWorldState(DoorWorldAgent a, Map<String, DoorWorldWall> walls) {
         this.agent = a;
         this.walls = walls;
+        this.rooms = new HashMap<String, DoorWorldRoom>();
     }
+
+    public DoorWorldState(DoorWorldAgent agent, Map<String, DoorWorldWall> walls, Map<String, DoorWorldRoom> rooms) {
+        this.agent = agent;
+        this.walls = walls;
+        this.rooms = rooms;
+    }
+
 
     @Override
     public MutableOOState addObject(ObjectInstance objectInstance) {
@@ -94,6 +102,9 @@ public class DoorWorldState implements MutableOOState {
         else if(className.equals(DoorWorld.CLASS_WALL)) {
             return new ArrayList<ObjectInstance>(walls.values());
         }
+        else if(className.equals(DoorWorld.CLASS_ROOM)) {
+            return new ArrayList<ObjectInstance>(rooms.values());
+        }
         throw new RuntimeException("No object class " + className);
     }
 
@@ -104,6 +115,8 @@ public class DoorWorldState implements MutableOOState {
             touchAgent().set(varKey, value);
         } else if(walls.get(key.obName) != null) {
             touchWall(key.obName).set(varKey, value);
+        }  else if(rooms.get(key.obName) != null) {
+            touchRoom(key.obName).set(varKey, value);
         } else {
             throw new RuntimeException("ERROR: unable to set value for " + varKey);
         }
@@ -122,7 +135,7 @@ public class DoorWorldState implements MutableOOState {
 
     @Override
     public State copy() {
-        return new DoorWorldState(agent, walls);
+        return new DoorWorldState(agent, walls, rooms);
     }
 
     public Object getAgentAtt(String attName) {
@@ -143,6 +156,13 @@ public class DoorWorldState implements MutableOOState {
         touchWalls().remove(wallName);
         walls.put(wallName, w);
         return w;
+    }
+
+    public DoorWorldRoom touchRoom(String roomName) {
+        DoorWorldRoom r = (DoorWorldRoom) rooms.get(roomName).copy();
+        touchRooms().remove(roomName);
+        rooms.put(roomName, r);
+        return r;
     }
 
     // touchWalls
