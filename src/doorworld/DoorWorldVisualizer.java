@@ -161,10 +161,8 @@ public class DoorWorldVisualizer {
                     float ry = cHeight - height - j * height;
 
                     if (i == left || i == right || j == bottom || j == top) {
-//                        if (cws.doorContainingPoint(i, j) == null) {
-//                            g2.setColor(Color.black);
-//                            g2.fill(new Rectangle2D.Float(rx, ry, width, height));
-//                        }
+                        g2.setColor(Color.black);
+                        g2.fill(new Rectangle2D.Float(rx, ry, width, height));
                     } else {
                         g2.setColor(rcol);
                         g2.fill(new Rectangle2D.Float(rx, ry, width, height));
