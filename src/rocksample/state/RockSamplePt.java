@@ -12,7 +12,7 @@ import java.util.List;
  *  Abstract point class with x and y attributes.
  */
 
-public abstract class RockSamplePt extends MutableObject{
+public abstract class RockSamplePt extends MutableObject {
 
     /**
      *      Standard x, y

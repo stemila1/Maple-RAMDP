@@ -9,6 +9,8 @@ import rocksample.state.RockSampleRock;
 import rocksample.state.RockSampleState;
 import rocksample.state.RoverAgent;
 
+import static rocksample.RockSamplePO.TERMINAL_ZONE_X;
+
 /**
  * Created by steph on 10/26/2017.
  */
@@ -53,7 +55,7 @@ public class RockSampleRewardFunction implements RewardFunction {
         }
 
         // if the rover is in the terminal zone
-        if (roverX == 4) {
+        if (roverX == TERMINAL_ZONE_X) {
             return exitAreaReward;
         }
         return 0;

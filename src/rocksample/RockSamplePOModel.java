@@ -23,13 +23,14 @@ import static rocksample.RockSamplePO.*;
 /** TODO: (in process) changing from fullstatemodel to fullmodel like in tiger
  *
  */
-//public class RockSamplePOModel implements FullStateModel {
-public class RockSamplePOModel implements FullModel {
-    public double exitAreaReward;
-    public double goodRockReward;
-    public double badRockReward;
-    public double noReward;
 
+public class RockSamplePOModel implements FullModel {
+    public double exitAreaReward;   // the reward for reaching the exit area
+    public double goodRockReward;   // the reward for sampling a good rock
+    public double badRockReward;    // the reward for sampling a bad rock
+    public double noReward;         // the reward for doing actions which receive no reward
+
+    // RockSamplePOModel
     public RockSamplePOModel(double exitAreaReward, double goodRockReward, double badRockReward, double noReward) {
         this.exitAreaReward = exitAreaReward;
         this.goodRockReward = goodRockReward;
@@ -77,11 +78,15 @@ public class RockSamplePOModel implements FullModel {
         throw new RuntimeException("Unknown action " + a.toString());
     }
 
+    // updateRock
+    // Given a RockSampleState and a rock, update the quality of the rock in that state
     public void updateRock(RockSampleState s, RockSampleRock rock) {
         RockSampleRock nRock = s.touchRock(rock.name());
         nRock.set(ATT_QUALITY, ATT_BAD);
     }
 
+    // getRock
+    // Given a RockSampleState, return the rock at the
     public RockSampleRock getRock(RockSampleState s) {
         int roverX = (int) s.getRoverAtt(ATT_X);
         int roverY = (int) s.getRoverAtt(ATT_Y);
@@ -121,6 +126,8 @@ public class RockSamplePOModel implements FullModel {
         throw new RuntimeException("Unknown action " + action.toString());
     }
 
+    // sampleRock
+    //
     public RockSampleState sampleRock(RockSampleRock rock, RockSampleState state) {
         RockSampleState ns = state.copy();
 

@@ -25,11 +25,14 @@ public class RockSampleObservationFunction implements DiscreteObservationFunctio
 
     protected double sensorAccuracy;
 
+    // RockSampleObservationFunction
+    // Observation function for rs based on input of sensor accuracy
     public RockSampleObservationFunction(double sensorAccuracy) {
         this.sensorAccuracy = sensorAccuracy;
     }
 
-    //@Override
+    // canEnumerateObservation
+    // Returns whether or not the observation can be enumerated
     public boolean canEnumerateObservation() {
         return true;
     }
@@ -49,14 +52,22 @@ public class RockSampleObservationFunction implements DiscreteObservationFunctio
         return result;
     }
 
+    // observationGoodRock
+    // Given the name of a rock, returns a good rock observation
     protected State observationGoodRock(String name) {
         return new RockSampleState(name, ATT_GOOD);
     }
 
+    // observationBadRock
+    // Given the name of a rock, returns a bad rock observation
     protected State observationBadRock(String name) {
         return new RockSampleState(name, ATT_BAD);
     }
 
+    // setSensorAccuracy
+    // Given the location (x & y) of both the rover and the rock to check,
+    // calculates the accuracy of the sensor based on the distance between the
+    // two objects
     public void setSensorAccuracy(int roverX, int roverY, int rockX, int rockY) {
         int dx = (roverX - rockX) * (roverX - rockX); //squaring
         int dy = (roverY - rockY) * (roverY - rockY); //square

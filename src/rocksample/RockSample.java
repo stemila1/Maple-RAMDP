@@ -137,8 +137,8 @@ public class RockSample implements DomainGenerator {
                 .addStateClass(CLASS_WALL, RockSampleWall.class);
 
         RockSampleModel model = new RockSampleModel(moveDynamics);
-        FactoredModel taxiModel = new FactoredModel(model, rf, tf);
-        domain.setModel(taxiModel);
+        FactoredModel rsModel = new FactoredModel(model, rf, tf);
+        domain.setModel(rsModel);
 
         domain.addActionTypes(
                 new UniversalActionType(ACTION_NORTH),
@@ -146,8 +146,6 @@ public class RockSample implements DomainGenerator {
                 new UniversalActionType(ACTION_EAST),
                 new UniversalActionType(ACTION_WEST),
                 new UniversalActionType(ACTION_SAMPLE),
-
-                // check would be object parameterized action
                 new CheckActionType(ACTION_CHECK, new String[]{CLASS_ROCK}));
         return domain;
     }

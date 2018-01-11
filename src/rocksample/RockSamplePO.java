@@ -69,6 +69,7 @@ public class RockSamplePO implements DomainGenerator {
     public static final String COLOR_BLACK = 				"black";
     public static final String COLOR_GRAY =					"gray";
 
+    public static final int TERMINAL_ZONE_X =               4;
     // actions
     public static final int NUM_MOVE_ACTIONS = 				4;
     public static final String ACTION_NORTH = 				"north";

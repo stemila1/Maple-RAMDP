@@ -13,6 +13,8 @@ import rocksample.state.RoverAgent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rocksample.RockSamplePO.ATT_BAD;
+
 public class RockSampleModel implements FullStateModel {
 
     /**
@@ -138,10 +140,8 @@ public class RockSampleModel implements FullStateModel {
 
         // if there is a rock at the agent's location
         if (rock != null) {
-            int rx = (int) rock.get(RockSample.ATT_X);
-            int ry = (int) rock.get(RockSample.ATT_Y);
             RockSampleRock nRock = ns.touchRock(rock.name());
-            nRock.set(RockSample.ATT_QUALITY, "Bad");
+            nRock.set(RockSample.ATT_QUALITY, ATT_BAD);
         }
 
         // else?
@@ -152,6 +152,7 @@ public class RockSampleModel implements FullStateModel {
     // checkRock
     // Given a state, an action, and the state transition probabilities, checks the quality of a the rock that
     // parameterizes the action
+    // TODO: not sure if this is how i want to check to work. revisit later.
     public void checkRock(RockSampleState s, ObjectParameterizedAction a, List<StateTransitionProb> tps) {
         String n = a.getObjectParameters()[0];
         RockSampleState ns = s.copy();
