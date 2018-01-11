@@ -8,7 +8,6 @@ import burlap.visualizer.StateRenderLayer;
 import burlap.visualizer.Visualizer;
 import doorworld.state.DoorWorldAgent;
 import doorworld.state.DoorWorldState;
-import doorworld.state.DoorWorldWall;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -47,7 +46,6 @@ public class DoorWorldVisualizer {
         cellsTall = h;
 
         oopainter.addObjectClassPainter(DoorWorld.CLASS_ROOM, new RoomPainter(minX, minY, maxX, maxY));
-        oopainter.addObjectClassPainter(DoorWorld.CLASS_WALL, new WallPainter());
         oopainter.addObjectClassPainter(DoorWorld.CLASS_AGENT, new AgentPainter());
 
         rl.addStatePainter(oopainter);
@@ -83,35 +81,6 @@ public class DoorWorldVisualizer {
         }
     }
 
-    public static class WallPainter implements ObjectPainter {
-        @Override
-        public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
-            g2.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(10));
-
-            float wallWidth = (float) cWidth / cellsWide;
-            float wallHeight = (float) cHeight / cellsTall;
-
-            DoorWorldWall w = (DoorWorldWall) ob;
-            int startx = (int) w.get(DoorWorld.ATT_START_X);
-            int starty = (int) w.get(DoorWorld.ATT_START_Y);
-            float wx1 = startx * wallWidth;
-            float wy1 = cHeight - starty * wallHeight;
-            float wx2, wy2;
-
-            int length = (int) w.get(DoorWorld.ATT_LENGTH);
-            boolean isHorizontal = (boolean) w.get(DoorWorld.ATT_IS_HORIZONTAL);
-            if (isHorizontal) {
-                wx2 = wx1 + length * wallWidth;
-                wy2 = wy1;
-            } else {
-                wx2 = wx1;
-                wy2 = wy1 - length * wallHeight;
-            }
-
-            g2.drawLine((int) wx1, (int) wy1, (int) wx2, (int) wy2);
-        }
-    }
     public static class RoomPainter implements ObjectPainter {
 
         protected int minX = -1;
@@ -139,7 +108,7 @@ public class DoorWorldVisualizer {
                 domainYScale = maxY;
             }
 
-            //determine then normalized width
+            // determine then normalized width
             float width = (1.0f / domainXScale) * cWidth;
             float height = (1.0f / domainYScale) * cHeight;
 

@@ -56,39 +56,59 @@ public class DoorWorldModel implements FullModel {
         throw new RuntimeException("Unknown action " + action.toString());
     }
 
+    // moveNorth
     public DoorWorldState moveNorth(DoorWorldState state, Action action) {
         DoorWorldState ns = (DoorWorldState) state.copy();
 
+        int x = (int) state.getAgentAtt(ATT_X);
         int ny = (int) state.getAgentAtt(ATT_Y) + 1;
-        DoorWorldAgent nagent = ns.touchAgent();
-        nagent.set(ATT_Y, ny);
+
+        if(!ns.wallAt(x, ny)) {
+            DoorWorldAgent nagent = ns.touchAgent();
+            nagent.set(ATT_Y, ny);
+        }
         return ns;
     }
 
+    // moveEast
     public DoorWorldState moveEast(DoorWorldState state, Action action) {
         DoorWorldState ns = (DoorWorldState) state.copy();
 
+        int y = (int) state.getAgentAtt(ATT_Y);
         int nx = (int) state.getAgentAtt(ATT_X) + 1;
-        DoorWorldAgent nagent = ns.touchAgent();
-        nagent.set(ATT_X, nx);
+
+        if(!ns.wallAt(nx, y)) {
+            DoorWorldAgent nagent = ns.touchAgent();
+            nagent.set(ATT_X, nx);
+        }
         return ns;
     }
 
+    // moveSouth
     public DoorWorldState moveSouth(DoorWorldState state, Action action) {
         DoorWorldState ns = (DoorWorldState) state.copy();
 
+        int x = (int) state.getAgentAtt(ATT_X);
         int ny = (int) state.getAgentAtt(ATT_Y) - 1;
-        DoorWorldAgent nagent = ns.touchAgent();
-        nagent.set(ATT_Y, ny);
+
+        if(!ns.wallAt(x, ny)) {
+            DoorWorldAgent nagent = ns.touchAgent();
+            nagent.set(ATT_Y, ny);
+        }
         return ns;
     }
 
+    // moveWest
     public DoorWorldState moveWest(DoorWorldState state, Action action) {
         DoorWorldState ns = (DoorWorldState) state.copy();
 
+        int y = (int) state.getAgentAtt(ATT_Y);
         int nx = (int) state.getAgentAtt(ATT_X) - 1;
-        DoorWorldAgent nagent = ns.touchAgent();
-        nagent.set(ATT_X, nx);
+
+        if(!ns.wallAt(nx, y)) {
+            DoorWorldAgent nagent = ns.touchAgent();
+            nagent.set(ATT_X, nx);
+        }
         return ns;
     }
 
