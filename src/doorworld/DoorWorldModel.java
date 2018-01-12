@@ -93,6 +93,8 @@ public class DoorWorldModel implements FullModel {
     }
 
     // getDoorNearby
+    // TODO: should likely update to have desired door obtained by the direction of the agent
+    // this is just a placeholder method until that is implemented
     public DoorWorldDoor getDoorNearby(DoorWorldState s) {
         int agentX = (int) s.getAgentAtt(ATT_X);
         int agentY = (int) s.getAgentAtt(ATT_Y);
@@ -106,10 +108,10 @@ public class DoorWorldModel implements FullModel {
             return doorEast;
         } else if(doorNorth != null) {
             return doorNorth;
-        } else if(doorSouth != null) {
-            return doorSouth;
         } else if(doorWest != null) {
             return doorWest;
+        } else if(doorSouth != null) {
+            return doorSouth;
         } else {
             return null;
         }
@@ -130,6 +132,11 @@ public class DoorWorldModel implements FullModel {
 
         int x = (int) state.getAgentAtt(ATT_X);
         int ny = (int) state.getAgentAtt(ATT_Y) + 1;
+
+        DoorWorldDoor door = getDoor(ns);
+        if(door != null) {
+            door.set(ATT_CLOSED, VAL_CLOSED);
+        }
 
         // TODO: make these checks more efficient
         // if there isn't a wall
@@ -162,6 +169,11 @@ public class DoorWorldModel implements FullModel {
 
         int y = (int) state.getAgentAtt(ATT_Y);
         int nx = (int) state.getAgentAtt(ATT_X) + 1;
+
+        DoorWorldDoor door = getDoor(ns);
+        if(door != null) {
+            door.set(ATT_CLOSED, VAL_CLOSED);
+        }
 
         // TODO: make these checks more efficient
         // if there isn't a wall
@@ -196,6 +208,11 @@ public class DoorWorldModel implements FullModel {
         int x = (int) state.getAgentAtt(ATT_X);
         int ny = (int) state.getAgentAtt(ATT_Y) - 1;
 
+        DoorWorldDoor door = getDoor(ns);
+        if(door != null) {
+            door.set(ATT_CLOSED, VAL_CLOSED);
+        }
+
         if(!ns.wallAt(x, ny)) {
             DoorWorldAgent nagent = ns.touchAgent();
             nagent.set(ATT_Y, ny);
@@ -225,6 +242,11 @@ public class DoorWorldModel implements FullModel {
 
         int y = (int) state.getAgentAtt(ATT_Y);
         int nx = (int) state.getAgentAtt(ATT_X) - 1;
+
+        DoorWorldDoor door = getDoor(ns);
+        if(door != null) {
+            door.set(ATT_CLOSED, VAL_CLOSED);
+        }
 
         if(!ns.wallAt(nx, y)) {
             DoorWorldAgent nagent = ns.touchAgent();
