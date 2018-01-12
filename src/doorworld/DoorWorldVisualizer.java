@@ -189,10 +189,8 @@ public class DoorWorldVisualizer {
             g2.setColor(Color.white);
 
             String lockedState = ob.get(DoorWorld.ATT_LOCKED).toString();
-            if (lockedState.equals("unknown")) {
+            if (lockedState.equals(DoorWorld.VAL_LOCKED)) {
                 g2.setColor(Color.gray);
-            } else if (lockedState.equals("locked")) {
-                g2.setColor(Color.black);
             }
 
 

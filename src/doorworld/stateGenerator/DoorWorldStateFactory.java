@@ -56,10 +56,10 @@ public class DoorWorldStateFactory {
         rooms.put(room1, new DoorWorldRoom(room1, minX, halfX, halfY, maxY-1, room1Color));
         rooms.put(room2, new DoorWorldRoom(room2, halfX, maxX-1, halfY, maxY-1, room2Color));
 
-        // add the doors -- all are unlocked for now
-        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, "unlocked"));
-        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, "unlocked"));
-        doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, "unlocked"));
+        // add the doors -- all are locked for now
+        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, DoorWorld.VAL_UNLOCKED));
+        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, DoorWorld.VAL_UNLOCKED));
+        doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, DoorWorld.VAL_LOCKED));
 
         return new DoorWorldState(maxX, maxY, agent, rooms, doors);
 

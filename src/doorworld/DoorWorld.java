@@ -27,14 +27,13 @@ public class DoorWorld implements DomainGenerator {
     public static final String ATT_Y =                  "y";
     public static final String ATT_COLOR =              "color";
 
-    // wall attributes
-    public static final String ATT_START_X = 			"startX";
-    public static final String ATT_START_Y = 			"startY";
-    public static final String ATT_LENGTH = 			"length";
-    public static final String ATT_IS_HORIZONTAL =		"isHorizontal";
-
     // door attributes
+    public static final String ATT_CLOSED =             "closed";
+    public static final String VAL_CLOSED =             "isClosed";
+    public static final String VAL_OPEN =               "isOpen";
     public static final String ATT_LOCKED =             "locked";
+    public static final String VAL_LOCKED =             "isLocked";
+    public static final String VAL_UNLOCKED =           "isUnlocked";
 
     // room attributes
     public static final String ATT_TOP =                "top";
@@ -48,6 +47,7 @@ public class DoorWorld implements DomainGenerator {
     public static final String ACTION_EAST =			"east";
     public static final String ACTION_SOUTH =			"south";
     public static final String ACTION_WEST = 			"west";
+    public static final String ACTION_OPEN_DOOR =       "openDoor";
 
     // colors
     public static final String COLOR_RED = 				"red";
@@ -69,7 +69,8 @@ public class DoorWorld implements DomainGenerator {
                 new UniversalActionType(ACTION_NORTH),
                 new UniversalActionType(ACTION_SOUTH),
                 new UniversalActionType(ACTION_EAST),
-                new UniversalActionType(ACTION_WEST));
+                new UniversalActionType(ACTION_WEST),
+                new UniversalActionType(ACTION_OPEN_DOOR));
 
         DoorWorldModel model = new DoorWorldModel(0);
         domain.setModel(model);
@@ -88,7 +89,6 @@ public class DoorWorld implements DomainGenerator {
                 max = right;
             }
         }
-
         return max;
     }
 
@@ -103,7 +103,6 @@ public class DoorWorld implements DomainGenerator {
                 max = top;
             }
         }
-
         return max;
     }
 
@@ -120,6 +119,7 @@ public class DoorWorld implements DomainGenerator {
         exp.addKeyAction("s", ACTION_SOUTH,"");
         exp.addKeyAction("d", ACTION_EAST,"");
         exp.addKeyAction("a", ACTION_WEST,"");
+        exp.addKeyAction("o", ACTION_OPEN_DOOR, "");
 
         exp.initGUI();
         exp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

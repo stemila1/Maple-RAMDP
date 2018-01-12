@@ -37,6 +37,9 @@ public class DoorWorldState implements MutableOOState {
         this.doors = doors;
     }
 
+    public DoorWorldState(String name, String locked) {
+        set(name, locked);
+    }
 
     @Override
     public MutableOOState addObject(ObjectInstance objectInstance) {

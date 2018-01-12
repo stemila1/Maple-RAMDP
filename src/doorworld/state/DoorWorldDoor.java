@@ -17,10 +17,12 @@ public class DoorWorldDoor extends MutableObject {
             DoorWorld.ATT_BOTTOM,
             DoorWorld.ATT_TOP,
             DoorWorld.ATT_LOCKED,
+            DoorWorld.ATT_CLOSED,
             DoorWorld.ATT_COLOR
     );
 
-    public DoorWorldDoor(String name, int left, int right, int bottom, int top, String locked, String color) {
+    public DoorWorldDoor(String name, int left, int right, int bottom, int top,
+                         String locked, String closed, String color) {
         this.set(DoorWorld.ATT_X, left);
         this.set(DoorWorld.ATT_Y, bottom);
         this.set(DoorWorld.ATT_LEFT, left);
@@ -28,12 +30,13 @@ public class DoorWorldDoor extends MutableObject {
         this.set(DoorWorld.ATT_BOTTOM, bottom);
         this.set(DoorWorld.ATT_TOP, top);
         this.set(DoorWorld.ATT_LOCKED, locked);
+        this.set(DoorWorld.ATT_CLOSED, closed);
         this.set(DoorWorld.ATT_COLOR, color);
         this.name = name;
     }
 
     public DoorWorldDoor(String name, int left, int right, int bottom, int top, String lockableState) {
-        this(name, left, right, bottom, top, lockableState, DoorWorld.COLOR_GRAY);
+        this(name, left, right, bottom, top, lockableState, DoorWorld.VAL_CLOSED, DoorWorld.COLOR_GRAY);
     }
 
     // className
@@ -51,6 +54,7 @@ public class DoorWorldDoor extends MutableObject {
                 (int) get(DoorWorld.ATT_BOTTOM),
                 (int) get(DoorWorld.ATT_TOP),
                 (String) get(DoorWorld.ATT_LOCKED),
+                (String) get(DoorWorld.ATT_CLOSED),
                 (String) get(DoorWorld.ATT_COLOR));
     }
 
