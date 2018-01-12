@@ -7,6 +7,10 @@ import utilities.MutableObject;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Created by Stephanie Milani on 01/11/2018
+ */
+
 public class DoorWorldDoor extends MutableObject {
 
     private final static List<Object> keys = Arrays.asList(
@@ -21,6 +25,7 @@ public class DoorWorldDoor extends MutableObject {
             DoorWorld.ATT_COLOR
     );
 
+    // DoorWorldDoor
     public DoorWorldDoor(String name, int left, int right, int bottom, int top,
                          String locked, String closed, String color) {
         this.set(DoorWorld.ATT_X, left);
@@ -35,6 +40,7 @@ public class DoorWorldDoor extends MutableObject {
         this.name = name;
     }
 
+    // DoorWorldDoor
     public DoorWorldDoor(String name, int left, int right, int bottom, int top, String lockableState) {
         this(name, left, right, bottom, top, lockableState, DoorWorld.VAL_CLOSED, DoorWorld.COLOR_GRAY);
     }

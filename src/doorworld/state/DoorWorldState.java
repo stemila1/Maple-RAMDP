@@ -11,6 +11,10 @@ import doorworld.DoorWorld;
 
 import java.util.*;
 
+/**
+ * Created by Stephanie Milani on 01/11/2018
+ */
+
 public class DoorWorldState implements MutableOOState {
     private static final int DEFAULT_MIN_X = 0;
     private static final int DEFAULT_MIN_Y = 0;
@@ -21,6 +25,7 @@ public class DoorWorldState implements MutableOOState {
     private Map<String, DoorWorldRoom> rooms;
     private Map<String, DoorWorldDoor> doors;
 
+    // DoorWorldState
     public DoorWorldState(int w, int h, DoorWorldAgent agent, List<DoorWorldRoom> rooms) {
         this.width = w;
         this.height = h;
@@ -28,6 +33,7 @@ public class DoorWorldState implements MutableOOState {
         this.rooms = new HashMap<String, DoorWorldRoom>();
     }
 
+    // DoorWorldState
     public DoorWorldState(int w, int h, DoorWorldAgent agent, Map<String, DoorWorldRoom> rooms,
                           Map<String, DoorWorldDoor> doors) {
         this.width = w;
@@ -37,10 +43,12 @@ public class DoorWorldState implements MutableOOState {
         this.doors = doors;
     }
 
+    // DoorWorldState
     public DoorWorldState(String name, String locked) {
         set(name, locked);
     }
 
+    // addObject
     @Override
     public MutableOOState addObject(ObjectInstance objectInstance) {
         if(objectInstance instanceof DoorWorldAgent
@@ -59,11 +67,13 @@ public class DoorWorldState implements MutableOOState {
         return this;
     }
 
+    // removeObject
     @Override
     public MutableOOState removeObject(String name) {
         throw new RuntimeException("Remove not implemented");
     }
 
+    // renameObject
     @Override
     public MutableOOState renameObject(String currName, String newName) {
         throw new RuntimeException("Rename not implemented");

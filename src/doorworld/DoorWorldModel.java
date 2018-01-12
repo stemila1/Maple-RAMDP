@@ -14,6 +14,10 @@ import java.util.List;
 
 import static doorworld.DoorWorld.*;
 
+/**
+ * Created by Stephanie Milani on 01/11/2018
+ */
+
 public class DoorWorldModel implements FullModel {
     public double noReward;
 
@@ -26,7 +30,6 @@ public class DoorWorldModel implements FullModel {
     public List<TransitionProb> transitions(State s, Action a) {
         String actionName = a.actionName();
 
-        // think this transition might be wrong -- s, a, ns ?
         // if the action is one of the movement actions
         if(actionName.equals(ACTION_NORTH)
             || actionName.equals(ACTION_SOUTH)

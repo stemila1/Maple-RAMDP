@@ -15,6 +15,10 @@ import doorworld.stateGenerator.DoorWorldStateFactory;
 import javax.swing.*;
 import java.util.List;
 
+/**
+ * Created by Stephanie Milani on 01/11/2018
+ */
+
 public class DoorWorld implements DomainGenerator {
 
     // object classes

@@ -16,6 +16,10 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Created by Stephanie Milani on 01/11/2018
+ */
+
 public class DoorWorldVisualizer {
     private static Map<String, Color> colors;
     private static int cellsWide, cellsTall;

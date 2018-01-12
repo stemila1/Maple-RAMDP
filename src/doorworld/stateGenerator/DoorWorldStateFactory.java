@@ -10,15 +10,21 @@ import doorworld.state.DoorWorldState;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Created by Stephanie Milani on 01/11/2018
+ */
+
 // TODO: Make method of creating rooms more general, so that the number of rooms can be passed into some
 // method, along with the max X of the world and it can be divided up relatively easily. hardcoded values are
 // okay for now
 
 public class DoorWorldStateFactory {
+    // createClassicState
     public static OOState createClassicState() {
         return generateThreeRoomsThreeDoors(0, 0, 8, 8);
     }
 
+    // generateThreeRoomsThreeDoors
     public static OOState generateThreeRoomsThreeDoors(int minX, int minY, int maxX, int maxY) {
         int width = maxX - minX;
         int height = maxY - minY;
@@ -56,7 +62,7 @@ public class DoorWorldStateFactory {
         rooms.put(room1, new DoorWorldRoom(room1, minX, halfX, halfY, maxY-1, room1Color));
         rooms.put(room2, new DoorWorldRoom(room2, halfX, maxX-1, halfY, maxY-1, room2Color));
 
-        // add the doors -- all are locked for now
+        // add the doors
         doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, DoorWorld.VAL_UNLOCKED));
         doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, DoorWorld.VAL_UNLOCKED));
         doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, DoorWorld.VAL_LOCKED));
