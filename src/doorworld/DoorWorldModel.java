@@ -40,7 +40,7 @@ public class DoorWorldModel implements FullModel {
             );
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             State ds = s.copy();
-            DoorWorldDoor door = getDoorNearby((DoorWorldState) s);
+            DoorWorldDoor door = getDoorToOpen((DoorWorldState) s);
             if(door != null) {
                 return Arrays.asList(
                         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
@@ -92,7 +92,7 @@ public class DoorWorldModel implements FullModel {
             return new EnvironmentOutcome(state, action, ns, noReward, false);
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             DoorWorldState ns = (DoorWorldState) state;
-            DoorWorldDoor door = getDoorNearby((DoorWorldState) state);
+            DoorWorldDoor door = getDoorToOpen((DoorWorldState) state);
 
             // if there is no door
             if(door == null) {
@@ -108,29 +108,30 @@ public class DoorWorldModel implements FullModel {
         throw new RuntimeException("Unknown action " + action.toString());
     }
 
-    // getDoorNearby
-    // TODO: should likely update to have desired door obtained by the direction of the agent
-    // this is just a placeholder method until that is implemented
-    public DoorWorldDoor getDoorNearby(DoorWorldState s) {
+    // getDoorToOpen
+    public DoorWorldDoor getDoorToOpen(DoorWorldState s) {
         int agentX = (int) s.getAgentAtt(ATT_X);
         int agentY = (int) s.getAgentAtt(ATT_Y);
 
-        DoorWorldDoor doorEast = s.doorContainingPoint(agentX + 1, agentY);
-        DoorWorldDoor doorNorth = s.doorContainingPoint(agentX, agentY + 1);
-        DoorWorldDoor doorSouth = s.doorContainingPoint(agentX, agentY - 1);
-        DoorWorldDoor doorWest = s.doorContainingPoint(agentX - 1, agentY);
+        int xdelta = 0;
+        int ydelta = 0;
+        String agentDir = s.getAgentAtt(ATT_DIR).toString();
 
-        if(doorEast != null) {
-            return doorEast;
-        } else if(doorNorth != null) {
-            return doorNorth;
-        } else if(doorWest != null) {
-            return doorWest;
-        } else if(doorSouth != null) {
-            return doorSouth;
+        if(agentDir == ACTION_NORTH) {
+            ydelta = 1;
+        } else if (agentDir == ACTION_EAST) {
+            xdelta = 1;
+        } else if (agentDir == ACTION_SOUTH) {
+            ydelta = -1;
         } else {
-            return null;
+            xdelta = -1;
         }
+
+        int nx = agentX + xdelta;
+        int ny = agentY + ydelta;
+
+        DoorWorldDoor door = s.doorContainingPoint(nx, ny);
+        return door;
     }
 
     // getDoor
