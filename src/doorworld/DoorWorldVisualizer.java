@@ -42,6 +42,10 @@ public class DoorWorldVisualizer {
         colors.put(DoorWorld.COLOR_MAGENTA, Color.MAGENTA);
         colors.put(DoorWorld.COLOR_BLACK, Color.BLACK);
         colors.put(DoorWorld.COLOR_GRAY, Color.DARK_GRAY);
+        colors.put(DoorWorld.COLOR_ORANGE, Color.ORANGE);
+        colors.put(DoorWorld.COLOR_WHITE, Color.WHITE);
+        colors.put(DoorWorld.COLOR_CYAN, Color.CYAN);
+        colors.put(DoorWorld.COLOR_LIGHT_GRAY, Color.LIGHT_GRAY);
     }
 
     // getVisualizer

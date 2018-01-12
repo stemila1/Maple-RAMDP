@@ -66,6 +66,10 @@ public class DoorWorld implements DomainGenerator {
     public static final String COLOR_MAGENTA =			"magenta";
     public static final String COLOR_BLACK = 			"black";
     public static final String COLOR_GRAY =				"gray";
+    public static final String COLOR_ORANGE =           "orange";
+    public static final String COLOR_WHITE =            "white";
+    public static final String COLOR_CYAN =             "cyan";
+    public static final String COLOR_LIGHT_GRAY =       "lightGray";
 
     @Override
     public Domain generateDomain() {
@@ -119,9 +123,9 @@ public class DoorWorld implements DomainGenerator {
         DoorWorld doorWorldBuild = new DoorWorld();
         OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
 //        State s = DoorWorldStateFactory.createClassicState();
-        State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, 8, 8);
-
-        Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 8, 8);
+ //       State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, 8, 8);
+        State s = DoorWorldStateFactory.generateNineRoomsTenDoors(0,0, 13, 13);
+        Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 13, 13);
         VisualExplorer exp = new VisualExplorer(domain, v, s);
 
         exp.addKeyAction("w", ACTION_NORTH,"");
