@@ -31,6 +31,10 @@ public class DoorWorld implements DomainGenerator {
     public static final String ATT_Y =                  "y";
     public static final String ATT_COLOR =              "color";
 
+    // agent attributes
+    public static final String ATT_DIR =                "direction";
+    public static final String ATT_SHAPE =              "shape";
+
     // door attributes
     public static final String ATT_CLOSED =             "closed";
     public static final String VAL_CLOSED =             "isClosed";
@@ -52,6 +56,7 @@ public class DoorWorld implements DomainGenerator {
     public static final String ACTION_SOUTH =			"south";
     public static final String ACTION_WEST = 			"west";
     public static final String ACTION_OPEN_DOOR =       "openDoor";
+    public static final String[] DIRECTIONS = {ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST};
 
     // colors
     public static final String COLOR_RED = 				"red";

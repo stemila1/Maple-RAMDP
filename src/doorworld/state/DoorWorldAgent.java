@@ -15,16 +15,15 @@ public class DoorWorldAgent extends MutableObject {
 
     private final static List<Object> keys = Arrays.asList(
             DoorWorld.ATT_X,
-            DoorWorld.ATT_Y
+            DoorWorld.ATT_Y,
+            DoorWorld.ATT_DIR
     );
 
     // DoorWorldAgent
-    public DoorWorldAgent(String name, int x, int y) { this(name, (Object) x, (Object) y);}
-
-    // DoorWorldAgent
-    public DoorWorldAgent(String name, Object x, Object y) {
+    public DoorWorldAgent(String name, Object x, Object y, Object direction) {
         this.set(DoorWorld.ATT_X, x);
         this.set(DoorWorld.ATT_Y, y);
+        this.set(DoorWorld.ATT_DIR, direction);
         this.setName(name);
     }
 
@@ -45,7 +44,8 @@ public class DoorWorldAgent extends MutableObject {
         return new DoorWorldAgent(
                 name,
                 get(DoorWorld.ATT_X),
-                get(DoorWorld.ATT_Y)
+                get(DoorWorld.ATT_Y),
+                get(DoorWorld.ATT_DIR)
         );
     }
 

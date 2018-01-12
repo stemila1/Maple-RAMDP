@@ -9,9 +9,14 @@ import burlap.visualizer.Visualizer;
 import doorworld.state.DoorWorldAgent;
 import doorworld.state.DoorWorldState;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +26,9 @@ import java.util.Map;
  */
 
 public class DoorWorldVisualizer {
+
+    public static String imagePath = "./data/resources/robotImages/";
+
     private static Map<String, Color> colors;
     private static int cellsWide, cellsTall;
 
@@ -55,7 +63,7 @@ public class DoorWorldVisualizer {
 
         oopainter.addObjectClassPainter(DoorWorld.CLASS_ROOM, new RoomPainter(minX, minY, maxX, maxY));
         oopainter.addObjectClassPainter(DoorWorld.CLASS_DOOR, new DoorPainter(minX, minY, maxX, maxY));
-        oopainter.addObjectClassPainter(DoorWorld.CLASS_AGENT, new AgentPainter());
+        oopainter.addObjectClassPainter(DoorWorld.CLASS_AGENT, new AgentPainter(maxX, maxY));
 
         rl.addStatePainter(oopainter);
 
@@ -63,7 +71,27 @@ public class DoorWorldVisualizer {
     }
 
 
-    public static class AgentPainter implements ObjectPainter {
+    public static class AgentPainter implements ObjectPainter, ImageObserver {
+
+        public int maxX;
+        public int maxY;
+
+        public HashMap<String, BufferedImage> dirToImage;
+
+        public AgentPainter(int maxX, int maxY) {
+            this.maxX = maxX;
+            this.maxY = maxY;
+
+            dirToImage = new HashMap<String, BufferedImage>(4);
+            try {
+                dirToImage.put("north", ImageIO.read(new File(imagePath + "robotNorth.png")));
+                dirToImage.put("south", ImageIO.read(new File(imagePath + "robotSouth.png")));
+                dirToImage.put("east", ImageIO.read(new File(imagePath + "robotEast.png")));
+                dirToImage.put("west", ImageIO.read(new File(imagePath + "robotWest.png")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         // paintObject
         @Override
@@ -87,7 +115,16 @@ public class DoorWorldVisualizer {
             float realX = roverx + 0.08f * agentWidth;
             float realy = rovery + 0.05f * agentHeight;
 
-            g2.fill(new Ellipse2D.Float(realX, realy, realWidth, realHeight));
+            String dir = ob.get(DoorWorld.ATT_DIR).toString();
+            BufferedImage img = this.dirToImage.get(dir);
+
+            g2.drawImage(img, (int) roverx, (int) rovery, (int) agentWidth, (int) agentHeight, this);
+        }
+
+        @Override
+        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 

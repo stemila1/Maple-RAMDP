@@ -64,15 +64,31 @@ public class DoorWorldModel implements FullModel {
         // movement actions
         if(actionName.equals(ACTION_NORTH)) {
             DoorWorldState ns = moveNorth((DoorWorldState) state, action);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_NORTH);
             return new EnvironmentOutcome(state, action, ns, noReward, false);
         } else if(actionName.equals(ACTION_EAST)) {
             DoorWorldState ns = moveEast((DoorWorldState) state, action);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_EAST);
             return new EnvironmentOutcome(state, action, ns, noReward, false);
         } else if(actionName.equals(ACTION_SOUTH)) {
             DoorWorldState ns = moveSouth((DoorWorldState) state, action);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_SOUTH);
             return new EnvironmentOutcome(state, action, ns, noReward, false);
         } else if(actionName.equals(ACTION_WEST)) {
             DoorWorldState ns = moveWest((DoorWorldState) state, action);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_WEST);
             return new EnvironmentOutcome(state, action, ns, noReward, false);
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             DoorWorldState ns = (DoorWorldState) state;
