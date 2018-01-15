@@ -38,6 +38,36 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
     @Override
     public State sample(State state, Action action) {
 
+        if(action.actionName().equals(ACTION_NORTH)
+                || action.actionName().equals(ACTION_EAST)
+                || action.actionName().equals(ACTION_WEST)
+                || action.actionName().equals(ACTION_SOUTH)) {
+            return this.observationNull();
+        } else if(action.actionName().equals(ACTION_OPEN_DOOR)) {
+            DoorWorldState s = (DoorWorldState) state;
+            DoorWorldDoor door = getDoorToOpen(s);
+            if(door == null) {
+                return this.observationNull();
+            } else {
+                double randomNumber = .5;
+                double fixedResult = .3;
+
+                if (fixedResult < randomNumber) {
+                    if(door.equals(VAL_LOCKED)) {
+                        return this.observationLocked();
+                    }
+                    else {
+                        return this.observationUnlocked();
+                    }
+                } else {
+                    if(door.equals(VAL_LOCKED)) {
+                        return this.observationUnlocked();
+                    } else {
+                        return this.observationLocked();
+                    }
+                }
+            }
+        }
         throw new RuntimeException("Unknown action " + action.actionName()
                 + "; cannot return observation sample.");
     }
@@ -50,36 +80,39 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
 
         String actionName = action.actionName();
         DoorWorldState state = (DoorWorldState) sprime;
-        ObjectInstance agent = state.touchAgent();
-        // first should test whether the goals are completed - need obs_complete
 
-        DoorWorldDoor door = getDoorToOpen((DoorWorldState) state);
-        String isOpen = (String) door.get(ATT_LOCKED);
-
-        // if the agent is opening the door
-        if(actionName.equals(ACTION_OPEN_DOOR)) {
-
-            // if observe that door is locked and door is locked
-            if(oVal.equals(OBS_LOCKED) && isOpen.equals(VAL_LOCKED)) {
-                return 1.; // this is where to include any degradation of accuracy
-            // if observe that door is locked and door is actually unlocked
-            } else if(oVal.equals(OBS_LOCKED) && isOpen.equals(VAL_UNLOCKED)) {
-                return 1.; // this is where to include any degradation of accuracy
-            // if observe that door is unlocked and door is unlocked
-            } else if(oVal.equals(OBS_UNLOCKED) && isOpen.equals(VAL_UNLOCKED)) {
-                return 1.; // this is where to include any degradation of accuracy
-            // if observe that door is unlocked and door is locked
-            } else if(oVal.equals(OBS_UNLOCKED) && isOpen.equals(VAL_LOCKED)) {
-                return 1.; // this is where to include any degradation of accuracy
-            // if observe that door is null
+        if(oVal.equals(OBS_NULL)) {
+            if(actionName.equals(ACTION_OPEN_DOOR)) {
+                return 0.;
+            }
+            else {
+                return 1.;
+            }
+        }
+        if(oVal.equals(OBS_LOCKED) || oVal.equals(OBS_UNLOCKED)) {
+            if(actionName.equals(ACTION_OPEN_DOOR)) {
+                return .5;
             } else {
                 return 0.;
             }
         }
+        return 0.;
+
+       /* if(actionName.equals(ACTION_NORTH)
+                || actionName.equals(ACTION_EAST)
+                || actionName.equals(ACTION_SOUTH)
+                || actionName.equals(ACTION_WEST)) {
+            if(agentX == agentOx && agentY == agentOy) {
+                return 1.;
+            }
+            else {
+                return 0.;
+            }
+        } */
 
 
-        throw new RuntimeException("Unknown action " + action.actionName()
-                + "; cannot return observation probability.");
+     //   throw new RuntimeException("Unknown action " + action.actionName()
+     //           + "; cannot return observation probability.");
     }
 
     // getDoorToOpen

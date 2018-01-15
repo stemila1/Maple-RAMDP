@@ -102,8 +102,8 @@ public class DoorWorld implements DomainGenerator {
 
     @Override
     public Domain generateDomain() {
-        OOSADomain domain = new OOSADomain();
-      //  POOODomain domain = new POOODomain();
+      //  OOSADomain domain = new OOSADomain();
+        POOODomain domain = new POOODomain();
 
         domain.addStateClass(CLASS_AGENT, DoorWorld.class)
                 .addStateClass(CLASS_ROOM, DoorWorld.class)
@@ -117,21 +117,37 @@ public class DoorWorld implements DomainGenerator {
                 new UniversalActionType(ACTION_OPEN_DOOR));
 
         // make & set observation function
-      //  ObservationFunction of = new DoorWorldObservationFunction();
-      //  domain.setObservationFunction(of);
+        ObservationFunction of = new DoorWorldObservationFunction();
+        domain.setObservationFunction(of);
 
         // make & set model
         DoorWorldModel model = new DoorWorldModel(0, -10, 10, 100);
         domain.setModel(model);
 
-      //  StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
-      //  getEnumeratedIDs(senum);
-      //  domain.setStateEnumerator(senum);
+        StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
+        getEnumeratedIDs(senum);
+        domain.setStateEnumerator(senum);
 
         return domain;
     }
     public static void getEnumeratedIDs(StateEnumerator senum) {
 
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_UNLOCKED, VAL_UNLOCKED, VAL_UNLOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_UNLOCKED, VAL_UNLOCKED, VAL_LOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_UNLOCKED, VAL_LOCKED, VAL_LOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_UNLOCKED, VAL_LOCKED, VAL_UNLOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_LOCKED, VAL_LOCKED, VAL_LOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_LOCKED, VAL_UNLOCKED, VAL_UNLOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_LOCKED, VAL_LOCKED, VAL_UNLOCKED));
+        senum.getEnumeratedID(DoorWorldStateFactory.createCustomState(0, 0, 8,8,
+                VAL_LOCKED, VAL_UNLOCKED, VAL_LOCKED));
     }
 
     // maxRoomXExtent
@@ -174,14 +190,14 @@ public class DoorWorld implements DomainGenerator {
 
         DoorWorld doorWorldBuild = new DoorWorld();
 
-    //    POOODomain domain = (POOODomain) doorWorldBuild.generateDomain();
-        OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
+        POOODomain domain = (POOODomain) doorWorldBuild.generateDomain();
+     //   OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
         State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, maxX, maxY);
    //     State s = DoorWorldStateFactory.generateNineRoomsTenDoors(0,0, 13, 13);
         HashableStateFactory hs = new SimpleHashableStateFactory();
 
         // janky partially observable stuff
-  /*      BeliefState initialBelief = DoorWorld.getInitialBeliefState(domain);
+        BeliefState initialBelief = DoorWorld.getInitialBeliefState(domain);
         BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99,
                 new ReflectiveHashableStateFactory(), 10, -1);
         Policy p = new GreedyQPolicy(bss);
@@ -197,7 +213,7 @@ public class DoorWorld implements DomainGenerator {
         agent.setEnvironment(env);
 
         List<Episode> eps = new ArrayList();
-        Episode ea = agent.actUntilTerminalOrMaxSteps(5);
+        Episode ea = agent.actUntilTerminalOrMaxSteps(100);
         for (int i = 0; i < ea.numTimeSteps()-1; i++) {
           //  Episode ea = agent.actUntilTerminalOrMaxSteps(1);
             System.out.println(ea.action(i) + " " + ea.reward(i + 1));
@@ -210,10 +226,10 @@ public class DoorWorld implements DomainGenerator {
                 DoorWorldVisualizer.getVisualizer(0, 0, maxX, maxY), domain, eps);
         v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
         v.initGUI();
-        */
+
 
         // for fully observable domain
-        SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
+        /*SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
 
         List<Episode> eps = new ArrayList();
         QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.1);
