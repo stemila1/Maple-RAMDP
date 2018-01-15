@@ -16,24 +16,23 @@ import java.util.*;
  */
 
 public class DoorWorldState implements MutableOOState {
+    /**
+     *      Private variables
+     */
     private static final int DEFAULT_MIN_X = 0;
     private static final int DEFAULT_MIN_Y = 0;
 
-    private int width;
-    private int height;
-    private DoorWorldAgent agent;
-    private Map<String, DoorWorldRoom> rooms;
-    private Map<String, DoorWorldDoor> doors;
+    private int width;                          // width of the state
+    private int height;                         // height of the state
+    private DoorWorldAgent agent;               // the agent in the domain
+    private Map<String, DoorWorldRoom> rooms;   // the rooms in the domain
+    private Map<String, DoorWorldDoor> doors;   // the doors in the domain
 
+    /**
+     *      Constructors
+     */
     // DoorWorldState
-    public DoorWorldState(int w, int h, DoorWorldAgent agent, List<DoorWorldRoom> rooms) {
-        this.width = w;
-        this.height = h;
-        this.agent = agent;
-        this.rooms = new HashMap<String, DoorWorldRoom>();
-    }
-
-    // DoorWorldState
+    // Given a width, a height, an agent, rooms, and doors, constructs a DoorWorldState
     public DoorWorldState(int w, int h, DoorWorldAgent agent, Map<String, DoorWorldRoom> rooms,
                           Map<String, DoorWorldDoor> doors) {
         this.width = w;
@@ -44,11 +43,22 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // DoorWorldState
+    // Given the name of a door and whether or not it is locked, sets the door to be locked or not
     public DoorWorldState(String name, String locked) {
         set(name, locked);
     }
 
+    // copy
+    @Override
+    public State copy() {
+        return new DoorWorldState(width, height, agent, rooms, doors);
+    }
+
+    /**
+     *      Accessors & Mutators
+     */
     // addObject
+    // Given an object instance, adds the object to the state. Otherwise, throws exception
     @Override
     public MutableOOState addObject(ObjectInstance objectInstance) {
         if(objectInstance instanceof DoorWorldAgent
@@ -80,12 +90,14 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // numObjects
+    // Returns the number of objects in the domain
     @Override
     public int numObjects() {
         return 1 + rooms.size() + doors.size();
     }
 
     // object
+    // If object name matches object in domain, return that object
     @Override
     public ObjectInstance object(String name) {
         if(agent.name().equals(name)) {
@@ -103,6 +115,7 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // objects
+    // Aggregates all objects in domain and returns the aggregation
     @Override
     public List<ObjectInstance> objects() {
         List<ObjectInstance> objs = new ArrayList<ObjectInstance>();
@@ -113,6 +126,7 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // objectsOfClass
+    // Given an object class, returns the objects in the domain of that class
     @Override
     public List<ObjectInstance> objectsOfClass(String className) {
         if(className.equals(DoorWorld.CLASS_AGENT)) {
@@ -126,6 +140,8 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // set
+    // Given a variable key and a value, sets the value of the object corresponding to the key
+    // and returns
     @Override
     public MutableState set(Object varKey, Object value) {
         OOVariableKey key = OOStateUtilities.generateKey(varKey);
@@ -149,15 +165,10 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // get
+    // Given a variable key, returns the object that corresponds to that key
     @Override
     public Object get(Object varKey) {
         return OOStateUtilities.get(this, varKey);
-    }
-
-    // copy
-    @Override
-    public State copy() {
-        return new DoorWorldState(width, height, agent, rooms, doors);
     }
 
     // getAgentAtt
@@ -168,7 +179,10 @@ public class DoorWorldState implements MutableOOState {
     // wallAt
     public boolean wallAt(int x, int y) {
 
-        if (x < DEFAULT_MIN_X || x >= DEFAULT_MIN_X + width || y < DEFAULT_MIN_Y || y >= DEFAULT_MIN_Y + height) {
+        if (x < DEFAULT_MIN_X
+                || x >= DEFAULT_MIN_X + width
+                || y < DEFAULT_MIN_Y
+                || y >= DEFAULT_MIN_Y + height) {
             return true;
         }
 
@@ -230,7 +244,8 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // regionContainingPoint
-    protected static ObjectInstance regionContainingPoint(List<ObjectInstance> obs, int x, int y, boolean countBound) {
+    protected static ObjectInstance regionContainingPoint(List<ObjectInstance> obs, int x,
+                                                          int y, boolean countBound) {
         for(ObjectInstance o : obs) {
             if(regionContainsPoint(o, x, y, countBound)) {
                 return o;
@@ -245,6 +260,10 @@ public class DoorWorldState implements MutableOOState {
         return (DoorWorldDoor) regionContainingPoint(doors, x, y, true);
     }
 
+    /**
+     *      Touch methods - allow shallow copy of states and copy of objects
+     *      only when modified
+     */
     // touchAgent
     // Returns a shallow copy of the agent
     public DoorWorldAgent touchAgent() {
@@ -253,6 +272,7 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // touchRoom
+    // Returns a shallow copy of a room
     public DoorWorldRoom touchRoom(String roomName) {
         DoorWorldRoom r = (DoorWorldRoom) rooms.get(roomName).copy();
         touchRooms().remove(roomName);
@@ -268,6 +288,7 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // touchDoor
+    // Returns a shallow copy of a door
     public DoorWorldDoor touchDoor(String doorName) {
         DoorWorldDoor d = (DoorWorldDoor) doors.get(doorName).copy();
         touchDoors().remove(doorName);
@@ -276,6 +297,7 @@ public class DoorWorldState implements MutableOOState {
     }
 
     // touchDoors
+    // Returns a shallow copy of all of the doors
     public Map<String, DoorWorldDoor> touchDoors() {
         this.doors = new HashMap<String, DoorWorldDoor> (doors);
         return doors;

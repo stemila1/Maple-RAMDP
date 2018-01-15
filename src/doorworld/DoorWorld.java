@@ -1,18 +1,39 @@
 package doorworld;
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.Episode;
+import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
+import burlap.behavior.singleagent.auxiliary.StateEnumerator;
+import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
+import burlap.behavior.singleagent.pomdp.wrappedmdpalgs.BeliefSparseSampling;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.mdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.shell.visual.VisualExplorer;
+import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.ReflectiveHashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 import doorworld.state.DoorWorldState;
 import doorworld.stateGenerator.DoorWorldStateFactory;
+import rocksample.POOO.POOODomain;
+import rocksample.POOO.SimulatedPOOOEnvironment;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +63,7 @@ public class DoorWorld implements DomainGenerator {
     public static final String ATT_LOCKED =             "locked";
     public static final String VAL_LOCKED =             "isLocked";
     public static final String VAL_UNLOCKED =           "isUnlocked";
+    public static final String VAL_UNKNOWN =            "isUnknown";
 
     // room attributes
     public static final String ATT_TOP =                "top";
@@ -58,6 +80,11 @@ public class DoorWorld implements DomainGenerator {
     public static final String ACTION_OPEN_DOOR =       "openDoor";
     public static final String[] DIRECTIONS = {ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST};
 
+    public static final String ATTR_OBS =               "observations";
+    public static final String OBS_LOCKED =             "locked";
+    public static final String OBS_UNLOCKED =           "unlocked";
+    public static final String OBS_NULL =               "null";
+
     // colors
     public static final String COLOR_RED = 				"red";
     public static final String COLOR_YELLOW = 			"yellow";
@@ -71,9 +98,18 @@ public class DoorWorld implements DomainGenerator {
     public static final String COLOR_CYAN =             "cyan";
     public static final String COLOR_LIGHT_GRAY =       "lightGray";
 
+    private RewardFunction rf;
+
+    //public DoorWorld() {
+   //     this.rf = new DoorWorldRewardFunction(100, 10, -10);
+    //}
+
+
     @Override
     public Domain generateDomain() {
         OOSADomain domain = new OOSADomain();
+        //POOODomain domain = new POOODomain();
+
         domain.addStateClass(CLASS_AGENT, DoorWorld.class)
                 .addStateClass(CLASS_ROOM, DoorWorld.class)
                 .addStateClass(CLASS_DOOR, DoorWorld.class);
@@ -85,7 +121,12 @@ public class DoorWorld implements DomainGenerator {
                 new UniversalActionType(ACTION_WEST),
                 new UniversalActionType(ACTION_OPEN_DOOR));
 
-        DoorWorldModel model = new DoorWorldModel(0);
+        // make & set observation function
+        //ObservationFunction of = new DoorWorldObservationFunction();
+        //domain.setObservationFunction(of);
+
+        // make & set model
+        DoorWorldModel model = new DoorWorldModel(0, -10, 10);
         domain.setModel(model);
 
         return domain;
@@ -119,13 +160,39 @@ public class DoorWorld implements DomainGenerator {
         return max;
     }
 
+    public static TabularBeliefState getInitialBeliefState(PODomain domain) {
+        TabularBeliefState bs = new TabularBeliefState(domain, domain.getStateEnumerator());
+        bs.initializeBeliefsUniformly();
+        return bs;
+    }
+
     public static void main(String[] args) {
         DoorWorld doorWorldBuild = new DoorWorld();
+
+   //     POOODomain domain = (POOODomain) doorWorldBuild.generateDomain();
         OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
-//        State s = DoorWorldStateFactory.createClassicState();
- //       State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, 8, 8);
+   //     State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, 8, 8);
         State s = DoorWorldStateFactory.generateNineRoomsTenDoors(0,0, 13, 13);
-        Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 13, 13);
+        HashableStateFactory hs = new SimpleHashableStateFactory();
+
+        SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
+
+        List<Episode> eps = new ArrayList();
+        QLearning qagent = new QLearning(domain, 0.95, hs, 0, 0.1);
+
+        for(int i = 0; i < 100; i++) {
+            Episode e = qagent.runLearningEpisode(env, 5000);
+            System.out.println(e.rewardSequence);
+            eps.add(e);
+            env.resetEnvironment();
+        }
+        EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(
+                DoorWorldVisualizer.getVisualizer(0, 0, 13, 13), domain, eps);
+        v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
+        v.initGUI();
+
+        // for manually controlling agent
+        /*Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 8, 8);
         VisualExplorer exp = new VisualExplorer(domain, v, s);
 
         exp.addKeyAction("w", ACTION_NORTH,"");
@@ -135,7 +202,8 @@ public class DoorWorld implements DomainGenerator {
         exp.addKeyAction("o", ACTION_OPEN_DOOR, "");
 
         exp.initGUI();
-        exp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        exp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); */
+
 
     }
 }

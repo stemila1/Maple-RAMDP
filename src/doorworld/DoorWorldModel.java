@@ -20,9 +20,13 @@ import static doorworld.DoorWorld.*;
 
 public class DoorWorldModel implements FullModel {
     public double noReward;
+    public double illegalActionReward;
+    public double openDoorReward;
 
-    public DoorWorldModel(double noReward) {
+    public DoorWorldModel(double noReward, double illegalActionReward, double openDoorReward) {
         this.noReward = noReward;
+        this.illegalActionReward = illegalActionReward;
+        this.openDoorReward = openDoorReward;
     }
 
     // transitions
@@ -41,16 +45,18 @@ public class DoorWorldModel implements FullModel {
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             State ds = s.copy();
             DoorWorldDoor door = getDoorToOpen((DoorWorldState) s);
+            // if the door exists
             if(door != null) {
                 return Arrays.asList(
                         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
                                 new DoorWorldState(door.name(), VAL_LOCKED), noReward, false)),
                         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                                new DoorWorldState(door.name(), VAL_UNLOCKED), noReward, false))
+                                new DoorWorldState(door.name(), VAL_UNLOCKED), openDoorReward, false))
                 );
             } else {
                 return Arrays.asList(
-                        new TransitionProb(1., new EnvironmentOutcome(s, a, s, noReward, false)));
+                        new TransitionProb(1., new EnvironmentOutcome(s, a,
+                                s, illegalActionReward, false)));
             }
         }
         throw new RuntimeException("Unknown action " + a.toString());
@@ -100,12 +106,14 @@ public class DoorWorldModel implements FullModel {
 
             // if there is no door
             if(door == null) {
-                return new EnvironmentOutcome(state, action, state, noReward, false);
+                return new EnvironmentOutcome(state, action, state,
+                        illegalActionReward, false);
             } else if (door.get(ATT_LOCKED) == VAL_UNLOCKED) {
                 door.set(ATT_CLOSED, VAL_OPEN);
-                return new EnvironmentOutcome(state, action, ns, noReward, false);
+                return new EnvironmentOutcome(state, action, ns, openDoorReward, false);
             } else {
-                return new EnvironmentOutcome(state, action, state, noReward, false);
+                return new EnvironmentOutcome(state, action, state,
+                        noReward, false);
             }
         }
 
