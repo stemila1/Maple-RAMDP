@@ -60,8 +60,6 @@ public class TigerModel implements FullModel {
             return Arrays.asList(
                     new TransitionProb(0.5, new EnvironmentOutcome(s, a, new TigerState(VAL_LEFT), r, false)),
                     new TransitionProb(0.5, new EnvironmentOutcome(s, a, new TigerState(VAL_RIGHT), r, false)));
-
-
         }
         else if(aname.equals(ACTION_RIGHT)){
             TigerState ts = (TigerState)s;

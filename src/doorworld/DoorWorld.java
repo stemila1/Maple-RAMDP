@@ -27,14 +27,16 @@ import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.ReflectiveHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
+import doorworld.state.DoorWorldDoor;
 import doorworld.state.DoorWorldState;
 import doorworld.stateGenerator.DoorWorldStateFactory;
 import rocksample.POOO.POOODomain;
 import rocksample.POOO.SimulatedPOOOEnvironment;
-
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Stephanie Milani on 01/11/2018
@@ -98,17 +100,10 @@ public class DoorWorld implements DomainGenerator {
     public static final String COLOR_CYAN =             "cyan";
     public static final String COLOR_LIGHT_GRAY =       "lightGray";
 
-    private RewardFunction rf;
-
-    //public DoorWorld() {
-   //     this.rf = new DoorWorldRewardFunction(100, 10, -10);
-    //}
-
-
     @Override
     public Domain generateDomain() {
         OOSADomain domain = new OOSADomain();
-        //POOODomain domain = new POOODomain();
+      //  POOODomain domain = new POOODomain();
 
         domain.addStateClass(CLASS_AGENT, DoorWorld.class)
                 .addStateClass(CLASS_ROOM, DoorWorld.class)
@@ -122,14 +117,21 @@ public class DoorWorld implements DomainGenerator {
                 new UniversalActionType(ACTION_OPEN_DOOR));
 
         // make & set observation function
-        //ObservationFunction of = new DoorWorldObservationFunction();
-        //domain.setObservationFunction(of);
+      //  ObservationFunction of = new DoorWorldObservationFunction();
+      //  domain.setObservationFunction(of);
 
         // make & set model
-        DoorWorldModel model = new DoorWorldModel(0, -10, 10);
+        DoorWorldModel model = new DoorWorldModel(0, -10, 10, 100);
         domain.setModel(model);
 
+      //  StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
+      //  getEnumeratedIDs(senum);
+      //  domain.setStateEnumerator(senum);
+
         return domain;
+    }
+    public static void getEnumeratedIDs(StateEnumerator senum) {
+
     }
 
     // maxRoomXExtent
@@ -167,14 +169,50 @@ public class DoorWorld implements DomainGenerator {
     }
 
     public static void main(String[] args) {
+        int maxX = 8;
+        int maxY = 8;
+
         DoorWorld doorWorldBuild = new DoorWorld();
 
-   //     POOODomain domain = (POOODomain) doorWorldBuild.generateDomain();
+    //    POOODomain domain = (POOODomain) doorWorldBuild.generateDomain();
         OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
-   //     State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, 8, 8);
-        State s = DoorWorldStateFactory.generateNineRoomsTenDoors(0,0, 13, 13);
+        State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, maxX, maxY);
+   //     State s = DoorWorldStateFactory.generateNineRoomsTenDoors(0,0, 13, 13);
         HashableStateFactory hs = new SimpleHashableStateFactory();
 
+        // janky partially observable stuff
+  /*      BeliefState initialBelief = DoorWorld.getInitialBeliefState(domain);
+        BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99,
+                new ReflectiveHashableStateFactory(), 10, -1);
+        Policy p = new GreedyQPolicy(bss);
+
+
+        // don't think am setting to right curr state but we will see...
+        SimulatedPOOOEnvironment env = new SimulatedPOOOEnvironment(domain);
+        env.setCurStateTo(DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, maxX, maxY));
+
+        BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, env, p);
+        agent.setBeliefState(initialBelief);
+
+        agent.setEnvironment(env);
+
+        List<Episode> eps = new ArrayList();
+        Episode ea = agent.actUntilTerminalOrMaxSteps(5);
+        for (int i = 0; i < ea.numTimeSteps()-1; i++) {
+          //  Episode ea = agent.actUntilTerminalOrMaxSteps(1);
+            System.out.println(ea.action(i) + " " + ea.reward(i + 1));
+         //   eps.add(ea);
+         //   env.resetEnvironment();
+        }
+        eps.add(ea);
+
+        EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(
+                DoorWorldVisualizer.getVisualizer(0, 0, maxX, maxY), domain, eps);
+        v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
+        v.initGUI();
+        */
+
+        // for fully observable domain
         SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
 
         List<Episode> eps = new ArrayList();
@@ -187,9 +225,10 @@ public class DoorWorld implements DomainGenerator {
             env.resetEnvironment();
         }
         EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(
-                DoorWorldVisualizer.getVisualizer(0, 0, 13, 13), domain, eps);
+                DoorWorldVisualizer.getVisualizer(0, 0, maxX, maxY), domain, eps);
         v.setDefaultCloseOperation(v.EXIT_ON_CLOSE);
         v.initGUI();
+
 
         // for manually controlling agent
         /*Visualizer v = DoorWorldVisualizer.getVisualizer(0, 0, 8, 8);

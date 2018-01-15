@@ -64,16 +64,16 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
                 return 1.; // this is where to include any degradation of accuracy
             // if observe that door is locked and door is actually unlocked
             } else if(oVal.equals(OBS_LOCKED) && isOpen.equals(VAL_UNLOCKED)) {
-                return 0.; // this is where to include any degradation of accuracy
+                return 1.; // this is where to include any degradation of accuracy
             // if observe that door is unlocked and door is unlocked
             } else if(oVal.equals(OBS_UNLOCKED) && isOpen.equals(VAL_UNLOCKED)) {
                 return 1.; // this is where to include any degradation of accuracy
             // if observe that door is unlocked and door is locked
             } else if(oVal.equals(OBS_UNLOCKED) && isOpen.equals(VAL_LOCKED)) {
-                return 0.; // this is where to include any degradation of accuracy
+                return 1.; // this is where to include any degradation of accuracy
             // if observe that door is null
             } else {
-                return 0;
+                return 0.;
             }
         }
 

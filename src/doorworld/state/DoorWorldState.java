@@ -48,6 +48,11 @@ public class DoorWorldState implements MutableOOState {
         set(name, locked);
     }
 
+    // DoorWorldState
+    public DoorWorldState(Map<String, DoorWorldDoor> doors) {
+        this.doors = doors;
+    }
+
     // copy
     @Override
     public State copy() {

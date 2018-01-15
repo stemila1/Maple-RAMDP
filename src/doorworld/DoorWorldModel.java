@@ -22,11 +22,14 @@ public class DoorWorldModel implements FullModel {
     public double noReward;
     public double illegalActionReward;
     public double openDoorReward;
+    public double goalReward;
 
-    public DoorWorldModel(double noReward, double illegalActionReward, double openDoorReward) {
+    public DoorWorldModel(double noReward, double illegalActionReward, double openDoorReward,
+                          double goalReward) {
         this.noReward = noReward;
         this.illegalActionReward = illegalActionReward;
         this.openDoorReward = openDoorReward;
+        this.goalReward = goalReward;
     }
 
     // transitions
@@ -34,9 +37,12 @@ public class DoorWorldModel implements FullModel {
     public List<TransitionProb> transitions(State s, Action a) {
         String actionName = a.actionName();
 
-        // if the action is one of the movement actions
+        // if the action is one of the movement actions -- think that this might be the issue
+        // seems like with tiger, they make each action have a variety of outcomes -- how does
+        // rocksample handle it?
         if(actionName.equals(ACTION_NORTH)
-            || actionName.equals(ACTION_SOUTH)
+
+           || actionName.equals(ACTION_SOUTH)
             || actionName.equals(ACTION_EAST)
             || actionName.equals(ACTION_WEST)) {
             return Arrays.asList(
