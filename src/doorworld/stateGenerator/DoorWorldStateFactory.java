@@ -33,7 +33,7 @@ public class DoorWorldStateFactory {
 
         // make the agent
         String agentDirection = DoorWorld.DIRECTIONS[0];
-        DoorWorldAgent agent = new DoorWorldAgent(DoorWorld.CLASS_AGENT + 0, 1, 2, agentDirection);
+        DoorWorldAgent agent = new DoorWorldAgent(DoorWorld.CLASS_AGENT + 0, 6, 1, agentDirection);
 
         // make the rooms
         Map<String, DoorWorldRoom> rooms = new HashMap<String, DoorWorldRoom>();

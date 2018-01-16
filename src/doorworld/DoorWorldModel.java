@@ -21,20 +21,18 @@ import static doorworld.DoorWorld.*;
 public class DoorWorldModel implements FullModel {
     public double noReward;
     public double illegalActionReward;
-    public double openDoorReward;
     public double goalReward;
 
-    public DoorWorldModel(double noReward, double illegalActionReward, double openDoorReward,
-                          double goalReward) {
+    public DoorWorldModel(double noReward, double illegalActionReward, double goalReward) {
         this.noReward = noReward;
         this.illegalActionReward = illegalActionReward;
-        this.openDoorReward = openDoorReward;
         this.goalReward = goalReward;
     }
 
     // transitions
     @Override
     public List<TransitionProb> transitions(State s, Action a) {
+        // transitions are probably messed up
         String actionName = a.actionName();
 
         // if the action is one of the movement actions -- think that this might be the issue
@@ -82,7 +80,7 @@ public class DoorWorldModel implements FullModel {
                 //if(door.get(ATT_LOCKED) == VAL_LOCKED) {
                     return Arrays.asList(
                             new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                                    ds, openDoorReward, false)),
+                                    ds, noReward, false)),
                             new TransitionProb(0.5, new EnvironmentOutcome(s, a,
                                     s, noReward, false))
                     );
@@ -107,6 +105,8 @@ public class DoorWorldModel implements FullModel {
     @Override
     public EnvironmentOutcome sample(State state, Action action) {
         String actionName = action.actionName();
+        int goalX = 6;
+        int goalY = 6;
 
         // movement actions
         if(actionName.equals(ACTION_NORTH)) {
@@ -115,7 +115,12 @@ public class DoorWorldModel implements FullModel {
             // update direction
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_NORTH);
-            return new EnvironmentOutcome(state, action, ns, noReward, false);
+
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return new EnvironmentOutcome(state, action, ns, goalReward, true);
+            } else {
+                return new EnvironmentOutcome(state, action, ns, noReward, false);
+            }
 
         } else if(actionName.equals(ACTION_EAST)) {
             DoorWorldState ns = moveEast((DoorWorldState) state, action);
@@ -123,24 +128,34 @@ public class DoorWorldModel implements FullModel {
             // update direction
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_EAST);
-            return new EnvironmentOutcome(state, action, ns, noReward, false);
 
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return new EnvironmentOutcome(state, action, ns, goalReward, true);
+            } else {
+                return new EnvironmentOutcome(state, action, ns, noReward, false);
+            }
         } else if(actionName.equals(ACTION_SOUTH)) {
             DoorWorldState ns = moveSouth((DoorWorldState) state, action);
 
             // update direction
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_SOUTH);
-            return new EnvironmentOutcome(state, action, ns, noReward, false);
-
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return new EnvironmentOutcome(state, action, ns, goalReward, true);
+            } else {
+                return new EnvironmentOutcome(state, action, ns, noReward, false);
+            }
         } else if(actionName.equals(ACTION_WEST)) {
             DoorWorldState ns = moveWest((DoorWorldState) state, action);
 
             // update direction
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_WEST);
-            return new EnvironmentOutcome(state, action, ns, noReward, false);
-
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return new EnvironmentOutcome(state, action, ns, goalReward, true);
+            } else {
+                return new EnvironmentOutcome(state, action, ns, noReward, false);
+            }
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             DoorWorldState ns = (DoorWorldState) state;
             DoorWorldDoor door = getDoorToOpen((DoorWorldState) state);
@@ -151,7 +166,7 @@ public class DoorWorldModel implements FullModel {
                         illegalActionReward, false);
             } else if(door.get(ATT_LOCKED) == VAL_UNLOCKED) {
                 door.set(ATT_CLOSED, VAL_OPEN);
-                return new EnvironmentOutcome(state, action, ns, openDoorReward, false);
+                return new EnvironmentOutcome(state, action, ns, noReward, false);
             } else {
                 return new EnvironmentOutcome(state, action, state,
                         noReward, false);
