@@ -39,7 +39,7 @@ public class TigerObservations implements DiscreteObservationFunction {
     }
 
     @Override
-    public State sample(State state, Action action){
+    public State sample(State state, Action action) {
         //override for faster sampling
         if(action.actionName().equals(TigerDomain.ACTION_LEFT) || action.actionName().equals(TigerDomain.ACTION_RIGHT)){
             return this.observationReset();

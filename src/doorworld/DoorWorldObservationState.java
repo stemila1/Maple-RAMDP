@@ -7,6 +7,7 @@ import doorworld.DoorWorld;
 import java.util.Arrays;
 import java.util.List;
 
+import static doorworld.DoorWorld.ATTR_OBS;
 import static doorworld.DoorWorld.VAL_UNKNOWN;
 
 
@@ -19,7 +20,8 @@ public class DoorWorldObservationState implements MutableState {
     }
 
     public DoorWorldObservationState(String obs) {
-        observation = obs;
+        // just updated this... see if this works.. it doesn't
+        set(ATTR_OBS, obs);
     }
 
     @Override
@@ -32,7 +34,7 @@ public class DoorWorldObservationState implements MutableState {
 
     @Override
     public List<Object> variableKeys() {
-        return Arrays.<Object>asList();
+        return Arrays.<Object>asList(ATTR_OBS);
     }
 
     @Override

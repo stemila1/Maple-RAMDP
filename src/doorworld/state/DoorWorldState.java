@@ -53,6 +53,7 @@ public class DoorWorldState implements MutableOOState {
         this.doors = doors;
     }
 
+    public DoorWorldState(String name, Object attribute, String open) { set(name, open); }
     // copy
     @Override
     public State copy() {

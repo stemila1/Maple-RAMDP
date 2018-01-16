@@ -34,7 +34,8 @@ public class DoorWorldModel implements FullModel {
     public List<TransitionProb> transitions(State s, Action a) {
         // transitions are probably messed up
         String actionName = a.actionName();
-
+        int goalX = 6;
+        int goalY = 6;
         // if the action is one of the movement actions -- think that this might be the issue
         // seems like with tiger, they make each action have a variety of outcomes -- how does
         // rocksample handle it?
@@ -43,16 +44,31 @@ public class DoorWorldModel implements FullModel {
             // update direction
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_NORTH);
-            return Arrays.asList(
-                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+
+            // just added this check -- not sure if it makes sense
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, goalReward, true))
+                );
+            } else {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            }
         } else if(actionName.equals(ACTION_EAST)) {
             DoorWorldState ns = moveEast((DoorWorldState) s, a);
 
             // update direction
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_EAST);
-            return Arrays.asList(
-                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            // just added this check -- not sure if it makes sense
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, goalReward, true))
+                );
+            } else {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            }
         } else if(actionName.equals(ACTION_SOUTH)) {
             DoorWorldState ns = moveSouth((DoorWorldState) s, a);
 
@@ -60,8 +76,15 @@ public class DoorWorldModel implements FullModel {
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_SOUTH);
 
-            return Arrays.asList(
-                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            // just added this check -- not sure if it makes sense
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, goalReward, true))
+                );
+            } else {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            }
         } else if(actionName.equals(ACTION_WEST)) {
             DoorWorldState ns = moveWest((DoorWorldState) s, a);
 
@@ -69,39 +92,42 @@ public class DoorWorldModel implements FullModel {
             DoorWorldAgent nAgent = ns.touchAgent();
             nAgent.set(ATT_DIR, ACTION_WEST);
 
-            return Arrays.asList(
-                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            // just added this check -- not sure if it makes sense
+            if((int) nAgent.get(ATT_X) == goalX && (int) nAgent.get(ATT_Y) == goalY) {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, goalReward, true))
+                );
+            } else {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+            }
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             State ds = s.copy();
-            DoorWorldDoor door = getDoorToOpen((DoorWorldState) s);
+            DoorWorldDoor door = getDoorToOpen((DoorWorldState) ds);
             // if the door exists
-            if(door != null) {
-               // System.out.print("Door name is " + door.getName());
-                //if(door.get(ATT_LOCKED) == VAL_LOCKED) {
-                    return Arrays.asList(
-                            new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                                    ds, noReward, false)),
-                            new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                                    s, noReward, false))
-                    );
-                } //else {
-                   // return Arrays.asList(
-                   //         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                   //                 new DoorWorldState(door.name(), VAL_LOCKED), noReward, false)),
-                   //         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                   //                 new DoorWorldState(door.name(), VAL_UNLOCKED), openDoorReward, false))
-                   // );
-               // }
-             else {
+            if(door == null) {
                 return Arrays.asList(
-                        new TransitionProb(1., new EnvironmentOutcome(s, a,
-                                s, illegalActionReward, false)));
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, s, illegalActionReward, false))
+                );
+            }
+            else if(door != null && door.get(ATT_LOCKED) == VAL_LOCKED) {
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, s, noReward, false))
+                );
+            // if door exists and is unlocked
+            } else {
+                door.set(ATT_CLOSED, VAL_OPEN);
+                // TODO: update transitions to x% of time not open the door even if it is unlocked
+                return Arrays.asList(
+                        new TransitionProb(1., new EnvironmentOutcome(s, a, ds, noReward, false))
+                );
             }
         }
         throw new RuntimeException("Unknown action " + a.toString());
     }
 
     // sample
+    // TODO: make test for goal loc prop fn?
     @Override
     public EnvironmentOutcome sample(State state, Action action) {
         String actionName = action.actionName();
