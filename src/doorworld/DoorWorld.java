@@ -213,7 +213,7 @@ public class DoorWorld implements DomainGenerator {
         agent.setEnvironment(env);
 
         List<Episode> eps = new ArrayList();
-        Episode ea = agent.actUntilTerminalOrMaxSteps(100);
+        Episode ea = agent.actUntilTerminalOrMaxSteps(10);
         for (int i = 0; i < ea.numTimeSteps()-1; i++) {
           //  Episode ea = agent.actUntilTerminalOrMaxSteps(1);
             System.out.println(ea.action(i) + " " + ea.reward(i + 1));

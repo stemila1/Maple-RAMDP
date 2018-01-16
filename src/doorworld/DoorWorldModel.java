@@ -40,26 +40,61 @@ public class DoorWorldModel implements FullModel {
         // if the action is one of the movement actions -- think that this might be the issue
         // seems like with tiger, they make each action have a variety of outcomes -- how does
         // rocksample handle it?
-        if(actionName.equals(ACTION_NORTH)
-
-           || actionName.equals(ACTION_SOUTH)
-            || actionName.equals(ACTION_EAST)
-            || actionName.equals(ACTION_WEST)) {
+        if(actionName.equals(ACTION_NORTH)) {
+            DoorWorldState ns = moveNorth((DoorWorldState) s, a);
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_NORTH);
             return Arrays.asList(
-                    new TransitionProb(1., new EnvironmentOutcome(s, a, s, noReward, false))
-            );
+                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+        } else if(actionName.equals(ACTION_EAST)) {
+            DoorWorldState ns = moveEast((DoorWorldState) s, a);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_EAST);
+            return Arrays.asList(
+                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+        } else if(actionName.equals(ACTION_SOUTH)) {
+            DoorWorldState ns = moveSouth((DoorWorldState) s, a);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_SOUTH);
+
+            return Arrays.asList(
+                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
+        } else if(actionName.equals(ACTION_WEST)) {
+            DoorWorldState ns = moveWest((DoorWorldState) s, a);
+
+            // update direction
+            DoorWorldAgent nAgent = ns.touchAgent();
+            nAgent.set(ATT_DIR, ACTION_WEST);
+
+            return Arrays.asList(
+                    new TransitionProb(1., new EnvironmentOutcome(s, a, ns, noReward, false)));
         } else if(actionName.equals(ACTION_OPEN_DOOR)) {
             State ds = s.copy();
             DoorWorldDoor door = getDoorToOpen((DoorWorldState) s);
             // if the door exists
             if(door != null) {
-                return Arrays.asList(
-                        new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                                new DoorWorldState(door.name(), VAL_LOCKED), noReward, false)),
-                        new TransitionProb(0.5, new EnvironmentOutcome(s, a,
-                                new DoorWorldState(door.name(), VAL_UNLOCKED), openDoorReward, false))
-                );
-            } else {
+               // System.out.print("Door name is " + door.getName());
+                //if(door.get(ATT_LOCKED) == VAL_LOCKED) {
+                    return Arrays.asList(
+                            new TransitionProb(0.5, new EnvironmentOutcome(s, a,
+                                    ds, openDoorReward, false)),
+                            new TransitionProb(0.5, new EnvironmentOutcome(s, a,
+                                    s, noReward, false))
+                    );
+                } //else {
+                   // return Arrays.asList(
+                   //         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
+                   //                 new DoorWorldState(door.name(), VAL_LOCKED), noReward, false)),
+                   //         new TransitionProb(0.5, new EnvironmentOutcome(s, a,
+                   //                 new DoorWorldState(door.name(), VAL_UNLOCKED), openDoorReward, false))
+                   // );
+               // }
+             else {
                 return Arrays.asList(
                         new TransitionProb(1., new EnvironmentOutcome(s, a,
                                 s, illegalActionReward, false)));
@@ -114,7 +149,7 @@ public class DoorWorldModel implements FullModel {
             if(door == null) {
                 return new EnvironmentOutcome(state, action, state,
                         illegalActionReward, false);
-            } else if (door.get(ATT_LOCKED) == VAL_UNLOCKED) {
+            } else if(door.get(ATT_LOCKED) == VAL_UNLOCKED) {
                 door.set(ATT_CLOSED, VAL_OPEN);
                 return new EnvironmentOutcome(state, action, ns, openDoorReward, false);
             } else {

@@ -96,23 +96,9 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
                 return 0.;
             }
         }
-        return 0.;
 
-       /* if(actionName.equals(ACTION_NORTH)
-                || actionName.equals(ACTION_EAST)
-                || actionName.equals(ACTION_SOUTH)
-                || actionName.equals(ACTION_WEST)) {
-            if(agentX == agentOx && agentY == agentOy) {
-                return 1.;
-            }
-            else {
-                return 0.;
-            }
-        } */
-
-
-     //   throw new RuntimeException("Unknown action " + action.actionName()
-     //           + "; cannot return observation probability.");
+        throw new RuntimeException("Unknown action " + action.actionName()
+                + "; cannot return observation probability.");
     }
 
     // getDoorToOpen
