@@ -22,6 +22,7 @@ public class DoorWorldObservationState implements MutableState {
     public DoorWorldObservationState(String obs) {
         // just updated this... see if this works.. it doesn't
         set(ATTR_OBS, obs);
+        this.observation = obs;
     }
 
     @Override

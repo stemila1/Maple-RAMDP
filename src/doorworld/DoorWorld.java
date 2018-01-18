@@ -192,7 +192,7 @@ public class DoorWorld implements DomainGenerator {
         DoorWorld doorWorldBuild = new DoorWorld();
 
         POOODomain domain = (POOODomain) doorWorldBuild.generateDomain();
-     //   OOSADomain domain = (OOSADomain) doorWorldBuild.generateDomain();
+//        OOSADomain domainV = (OOSADomain) doorWorldBuild.generateDomain();
         State s = DoorWorldStateFactory.generateThreeRoomsThreeDoors(0, 0, maxX, maxY);
    //     State s = DoorWorldStateFactory.generateNineRoomsTenDoors(0,0, 13, 13);
         HashableStateFactory hs = new SimpleHashableStateFactory();
@@ -213,14 +213,16 @@ public class DoorWorld implements DomainGenerator {
         agent.setEnvironment(env);
 
         List<Episode> eps = new ArrayList();
-        Episode ea = agent.actUntilTerminalOrMaxSteps(10);
-        for (int i = 0; i < ea.numTimeSteps()-1; i++) {
-          //  Episode ea = agent.actUntilTerminalOrMaxSteps(1);
-            System.out.println(ea.action(i) + " " + ea.reward(i + 1));
-         //   eps.add(ea);
-         //   env.resetEnvironment();
+        for(int i=0; i < 5; i++) {
+            Episode ea = agent.actUntilTerminalOrMaxSteps(100);
+            for (int j = 0; j < ea.numTimeSteps()-1; j++) {
+                //  Episode ea = agent.actUntilTerminalOrMaxSteps(1);
+                System.out.println(ea.action(i) + " " + ea.reward(i + 1));
+                //   eps.add(ea);
+                //   env.resetEnvironment();
+            }
+            eps.add(ea);
         }
-        eps.add(ea);
 
         EpisodeSequenceVisualizer v = new EpisodeSequenceVisualizer(
                 DoorWorldVisualizer.getVisualizer(0, 0, maxX, maxY), domain, eps);

@@ -45,6 +45,7 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
         int goalX = 6;
         int goalY = 6;
 
+        // if any one of the movement actions
         if(action.actionName().equals(ACTION_NORTH)
                 || action.actionName().equals(ACTION_EAST)
                 || action.actionName().equals(ACTION_WEST)
@@ -70,7 +71,6 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
                 + "; cannot return observation sample.");
     }
 
-    // TODO: update this as well
     @Override
     public double probability(State observation, State sprime, Action action) {
 
@@ -80,15 +80,8 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
         DoorWorldState state = (DoorWorldState) sprime;
         int goalX = 6;
         int goalY = 6;
-        // if any of the movement actions
-        //    if OVal equals complete
-        //      if agent is in right loc
-        //         return 1.;
-        //      else return 0.;
-        //    else if Oval equals Null
-        //       if agent != right loc
-        //          return 1;
-        //       else return 0;
+
+        // if any one of the movement actions
         if(actionName.equals(ACTION_NORTH)
                 || actionName.equals(ACTION_EAST)
                 || actionName.equals(ACTION_SOUTH)
@@ -100,7 +93,8 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
                 } else {
                     return 0.;
                 }
-            } else if(oVal.equals(OBS_NULL)) {
+            }
+            if(oVal.equals(OBS_NULL)) {
                 if((int) state.getAgentAtt(ATT_X) == goalX
                         && (int) state.getAgentAtt(ATT_Y) == goalY) {
                     return 0.;
@@ -108,65 +102,36 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
                 else {
                     return 1.;
                 }
-            } else {
-                throw new RuntimeException("Observation" + oVal.toString() + " not permitted with this state");
             }
+            return 0.;
         }
         if(actionName.equals(ACTION_OPEN_DOOR)) {
             DoorWorldDoor door = getDoorToOpen(state);
-            if(oVal.equals(OBS_NULL)) {
-                if(door == null) {
-                    return 1.;
-                } else {
-                    return 0.;
-                }
-            } else if(oVal.equals(OBS_UNLOCKED)) {
-                if(door != null && door.get(ATT_CLOSED) == VAL_OPEN) {
-                    return 1.;
-                } else {
-                    return 0.;
-                }
-            } else if(oVal.equals(OBS_LOCKED)) {
-                if(door != null && door.get(ATT_CLOSED) == VAL_OPEN) {
-                    return 0.;
-                } else {
-                    return 1.;
-                }
-            } else {
-                throw new RuntimeException("Observation " + oVal.toString() + "not permitted with this state");
-            }
-        }
-        // if opendooraction
-        //      get underlying door in state
-        //      if Oval equals Null
-        //        if door DNE
-        //           return 1.;
-        //        else return 0;
-        //      else if Oval equal Unlocked
-        //        if door is open
-        //           return 1.;
-        //        else return 0;
-        //      else
-        //         if door is open
-        //            return 0.;
-        //         else return 1.;
 
-        /*if(oVal.equals(OBS_NULL)) {
-            if(actionName.equals(ACTION_OPEN_DOOR)) {
-                return 0.;
-            }
-            else {
-                return 1.;
-            }
-        }
-        if(oVal.equals(OBS_LOCKED) || oVal.equals(OBS_UNLOCKED)) {
-            if(actionName.equals(ACTION_OPEN_DOOR)) {
-                return .5;
+            if(door == null) {
+                if(oVal.equals(OBS_NULL)) {
+                    return 1.;
+                } else {
+                    return 0.;
+                }
             } else {
-                return 0.;
+                if(oVal.equals(OBS_UNLOCKED)) {
+                    if(door.get(ATT_CLOSED) == VAL_OPEN) {
+                        return 1.;
+                    } else {
+                        return 0.;
+                    }
+                } else if(oVal.equals(OBS_LOCKED)) {
+                    if (door.get(ATT_CLOSED) == VAL_OPEN) {
+                        return .0;
+                    } else {
+                        return 1.;
+                    }
+                } else {
+                    return 0.;
+                }
             }
         }
-        */
         throw new RuntimeException("Unknown action " + action.actionName()
                 + "; cannot return observation probability.");
     }
