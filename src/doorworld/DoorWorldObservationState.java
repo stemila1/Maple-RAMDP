@@ -19,12 +19,14 @@ public class DoorWorldObservationState implements MutableState {
         //doorUnlocked = VAL_UNKNOWN;
     }
 
+    // DoorWorldObservationState
     public DoorWorldObservationState(String obs) {
         // just updated this... see if this works.. it doesn't
         set(ATTR_OBS, obs);
         this.observation = obs;
     }
 
+    // set
     @Override
     public MutableState set(Object varKey, Object value) {
         String obs = (String) varKey;
@@ -33,16 +35,19 @@ public class DoorWorldObservationState implements MutableState {
         return this;
     }
 
+    // variableKeys
     @Override
     public List<Object> variableKeys() {
         return Arrays.<Object>asList(ATTR_OBS);
     }
 
+    // get
     @Override
     public Object get(Object o) {
         return observation;
     }
 
+    // copy
     @Override
     public State copy() {
         return new DoorWorldObservationState(observation);

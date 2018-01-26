@@ -12,7 +12,7 @@ import doorworld.DoorWorld;
 import java.util.*;
 
 /**
- * Created by Stephanie Milani on 01/11/2018
+ *  Created by Stephanie Milani on 01/11/2018
  */
 
 public class DoorWorldState implements MutableOOState {

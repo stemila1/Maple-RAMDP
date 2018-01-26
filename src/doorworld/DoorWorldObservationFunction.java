@@ -27,6 +27,7 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
 
     }
 
+    // allObservations
     @Override
     public List<State> allObservations() {
         List<State> result = new ArrayList(3);
@@ -39,6 +40,7 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
         return result;
     }
 
+    // sample
     @Override
     public State sample(State state, Action action) {
         DoorWorldState sprime = (DoorWorldState) state;
@@ -71,6 +73,7 @@ public class DoorWorldObservationFunction implements DiscreteObservationFunction
                 + "; cannot return observation sample.");
     }
 
+    // probability
     @Override
     public double probability(State observation, State sprime, Action action) {
 

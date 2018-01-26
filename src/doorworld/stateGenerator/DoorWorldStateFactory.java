@@ -10,6 +10,8 @@ import doorworld.state.DoorWorldState;
 import java.util.HashMap;
 import java.util.Map;
 
+import static doorworld.DoorWorld.*;
+
 /**
  * Created by Stephanie Milani on 01/11/2018
  */
@@ -24,6 +26,47 @@ public class DoorWorldStateFactory {
         return generateThreeRoomsThreeDoors(0, 0, 8, 8);
     }
 
+    // generateTwoRoomsTwoDoors
+    public static OOState generateTwoRoomsTwoDoors(int minX, int minY, int maxX, int maxY) {
+        int width = maxX - minX;
+        int height = maxY - minY;
+        int halfX = minX + (width/2);
+        int halfY = minY + (height/2);
+
+        // make the agent
+        String agentDirection = DoorWorld.DIRECTIONS[0];
+        DoorWorldAgent agent = new DoorWorldAgent(CLASS_AGENT + 0, 1, 1, agentDirection);
+
+        // make the room
+        Map<String, DoorWorldRoom> rooms = new HashMap<>();
+        String room0 = CLASS_ROOM + 0;
+        String room1 = CLASS_ROOM + 1;
+
+        String room0Color = COLOR_BLUE;
+        String room1Color = COLOR_GREEN;
+
+        // make the doors
+        Map<String, DoorWorldDoor> doors = new HashMap<>();
+        String door0 = CLASS_DOOR + 0;
+        String door1 = CLASS_DOOR + 1;
+
+        // hardcoded values for now
+        int dx0 = 1;
+        int dx1 = 5;
+        int dy0 = 4;
+        int dy1 = 4;
+
+        // add the rooms
+        rooms.put(room0, new DoorWorldRoom(room0, minX, maxX-1, minY, halfY, room0Color));
+        rooms.put(room1, new DoorWorldRoom(room1, minX, maxX-1, halfY, maxY-1, room1Color));
+
+        // add the doors
+        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, VAL_LOCKED));
+        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, VAL_UNLOCKED));
+
+        return new DoorWorldState(maxX, maxY, agent, rooms, doors);
+    }
+
     // generateThreeRoomsThreeDoors
     public static OOState generateThreeRoomsThreeDoors(int minX, int minY, int maxX, int maxY) {
         int width = maxX - minX;
@@ -33,23 +76,23 @@ public class DoorWorldStateFactory {
 
         // make the agent
         String agentDirection = DoorWorld.DIRECTIONS[0];
-        DoorWorldAgent agent = new DoorWorldAgent(DoorWorld.CLASS_AGENT + 0, 6, 1, agentDirection);
+        DoorWorldAgent agent = new DoorWorldAgent(CLASS_AGENT + 0, 6, 1, agentDirection);
 
         // make the rooms
         Map<String, DoorWorldRoom> rooms = new HashMap<String, DoorWorldRoom>();
-        String room0 = DoorWorld.CLASS_ROOM + 0;
-        String room1 = DoorWorld.CLASS_ROOM + 1;
-        String room2 = DoorWorld.CLASS_ROOM + 2;
+        String room0 = CLASS_ROOM + 0;
+        String room1 = CLASS_ROOM + 1;
+        String room2 = CLASS_ROOM + 2;
 
-        String room0Color = DoorWorld.COLOR_BLUE;
-        String room1Color = DoorWorld.COLOR_GREEN;
-        String room2Color = DoorWorld.COLOR_YELLOW;
+        String room0Color = COLOR_BLUE;
+        String room1Color = COLOR_GREEN;
+        String room2Color = COLOR_YELLOW;
 
         // make the doors
         Map<String, DoorWorldDoor> doors = new HashMap<String, DoorWorldDoor>();
-        String door0 = DoorWorld.CLASS_DOOR + 0;
-        String door1 = DoorWorld.CLASS_DOOR + 1;
-        String door2 = DoorWorld.CLASS_DOOR + 2;
+        String door0 = CLASS_DOOR + 0;
+        String door1 = CLASS_DOOR + 1;
+        String door2 = CLASS_DOOR + 2;
 
         // hardcoded values for now
         int dx0 = 2;
@@ -66,12 +109,53 @@ public class DoorWorldStateFactory {
         rooms.put(room2, new DoorWorldRoom(room2, halfX, maxX-1, halfY, maxY-1, room2Color));
 
         // add the doors
-        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, DoorWorld.VAL_UNLOCKED));
-        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, DoorWorld.VAL_UNLOCKED));
-        doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, DoorWorld.VAL_LOCKED));
+        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, VAL_UNLOCKED));
+        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, VAL_UNLOCKED));
+        doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, VAL_LOCKED));
 
         return new DoorWorldState(maxX, maxY, agent, rooms, doors);
 
+    }
+
+    public static OOState createCustomStateTwoDoors(int minX, int minY, int maxX, int maxY,
+                                                    String qual0, String qual1) {
+        int width = maxX - minX;
+        int height = maxY - minY;
+        int halfX = minX + (width/2);
+        int halfY = minY + (height/2);
+
+        // make the agent
+        String agentDirection = DoorWorld.DIRECTIONS[0];
+        DoorWorldAgent agent = new DoorWorldAgent(CLASS_AGENT + 0, 1, 1, agentDirection);
+
+        // make the room
+        Map<String, DoorWorldRoom> rooms = new HashMap<>();
+        String room0 = CLASS_ROOM + 0;
+        String room1 = CLASS_ROOM + 1;
+
+        String room0Color = COLOR_BLUE;
+        String room1Color = COLOR_GREEN;
+
+        // make the doors
+        Map<String, DoorWorldDoor> doors = new HashMap<>();
+        String door0 = CLASS_DOOR + 0;
+        String door1 = CLASS_DOOR + 1;
+
+        // hardcoded values for now
+        int dx0 = 1;
+        int dx1 = 5;
+        int dy0 = 4;
+        int dy1 = 4;
+
+        // add the rooms
+        rooms.put(room0, new DoorWorldRoom(room0, minX, maxX-1, minY, halfY, room0Color));
+        rooms.put(room1, new DoorWorldRoom(room1, minX, maxX-1, halfY, maxY-1, room1Color));
+
+        // add the doors
+        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, qual0));
+        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, qual1));
+
+        return new DoorWorldState(maxX, maxY, agent, rooms, doors);
     }
 
     public static OOState createCustomState(int minX, int minY, int maxX, int maxY,
@@ -83,23 +167,23 @@ public class DoorWorldStateFactory {
 
         // make the agent
         String agentDirection = DoorWorld.DIRECTIONS[0];
-        DoorWorldAgent agent = new DoorWorldAgent(DoorWorld.CLASS_AGENT + 0, 1, 2, agentDirection);
+        DoorWorldAgent agent = new DoorWorldAgent(CLASS_AGENT + 0, 1, 2, agentDirection);
 
         // make the rooms
         Map<String, DoorWorldRoom> rooms = new HashMap<String, DoorWorldRoom>();
-        String room0 = DoorWorld.CLASS_ROOM + 0;
-        String room1 = DoorWorld.CLASS_ROOM + 1;
-        String room2 = DoorWorld.CLASS_ROOM + 2;
+        String room0 = CLASS_ROOM + 0;
+        String room1 = CLASS_ROOM + 1;
+        String room2 = CLASS_ROOM + 2;
 
-        String room0Color = DoorWorld.COLOR_BLUE;
-        String room1Color = DoorWorld.COLOR_GREEN;
-        String room2Color = DoorWorld.COLOR_YELLOW;
+        String room0Color = COLOR_BLUE;
+        String room1Color = COLOR_GREEN;
+        String room2Color = COLOR_YELLOW;
 
         // make the doors
         Map<String, DoorWorldDoor> doors = new HashMap<String, DoorWorldDoor>();
-        String door0 = DoorWorld.CLASS_DOOR + 0;
-        String door1 = DoorWorld.CLASS_DOOR + 1;
-        String door2 = DoorWorld.CLASS_DOOR + 2;
+        String door0 = CLASS_DOOR + 0;
+        String door1 = CLASS_DOOR + 1;
+        String door2 = CLASS_DOOR + 2;
 
         // hardcoded values for now
         int dx0 = 2;
@@ -134,42 +218,42 @@ public class DoorWorldStateFactory {
 
         // make the agent
         String agentDirection = DoorWorld.DIRECTIONS[0];
-        DoorWorldAgent agent = new DoorWorldAgent(DoorWorld.CLASS_AGENT + 0, 1, 2, agentDirection);
+        DoorWorldAgent agent = new DoorWorldAgent(CLASS_AGENT + 0, 1, 2, agentDirection);
 
         // make the rooms
         Map<String, DoorWorldRoom> rooms = new HashMap<String, DoorWorldRoom>();
-        String room0 = DoorWorld.CLASS_ROOM + 0;
-        String room1 = DoorWorld.CLASS_ROOM + 1;
-        String room2 = DoorWorld.CLASS_ROOM + 2;
-        String room3 = DoorWorld.CLASS_ROOM + 3;
-        String room4 = DoorWorld.CLASS_ROOM + 4;
-        String room5 = DoorWorld.CLASS_ROOM + 5;
-        String room6 = DoorWorld.CLASS_ROOM + 6;
-        String room7 = DoorWorld.CLASS_ROOM + 7;
-        String room8 = DoorWorld.CLASS_ROOM + 8;
+        String room0 = CLASS_ROOM + 0;
+        String room1 = CLASS_ROOM + 1;
+        String room2 = CLASS_ROOM + 2;
+        String room3 = CLASS_ROOM + 3;
+        String room4 = CLASS_ROOM + 4;
+        String room5 = CLASS_ROOM + 5;
+        String room6 = CLASS_ROOM + 6;
+        String room7 = CLASS_ROOM + 7;
+        String room8 = CLASS_ROOM + 8;
 
-        String room0Color = DoorWorld.COLOR_BLUE;
-        String room1Color = DoorWorld.COLOR_GREEN;
-        String room2Color = DoorWorld.COLOR_YELLOW;
-        String room3Color = DoorWorld.COLOR_MAGENTA;
-        String room4Color = DoorWorld.COLOR_RED;
-        String room5Color = DoorWorld.COLOR_CYAN;
-        String room6Color = DoorWorld.COLOR_ORANGE;
-        String room7Color = DoorWorld.COLOR_LIGHT_GRAY;
-        String room8Color = DoorWorld.COLOR_WHITE;
+        String room0Color = COLOR_BLUE;
+        String room1Color = COLOR_GREEN;
+        String room2Color = COLOR_YELLOW;
+        String room3Color = COLOR_MAGENTA;
+        String room4Color = COLOR_RED;
+        String room5Color = COLOR_CYAN;
+        String room6Color = COLOR_ORANGE;
+        String room7Color = COLOR_LIGHT_GRAY;
+        String room8Color = COLOR_WHITE;
 
         // make the doors
         Map<String, DoorWorldDoor> doors = new HashMap<String, DoorWorldDoor>();
-        String door0 = DoorWorld.CLASS_DOOR + 0;
-        String door1 = DoorWorld.CLASS_DOOR + 1;
-        String door2 = DoorWorld.CLASS_DOOR + 2;
-        String door3 = DoorWorld.CLASS_DOOR + 3;
-        String door4 = DoorWorld.CLASS_DOOR + 4;
-        String door5 = DoorWorld.CLASS_DOOR + 5;
-        String door6 = DoorWorld.CLASS_DOOR + 6;
-        String door7 = DoorWorld.CLASS_DOOR + 7;
-        String door8 = DoorWorld.CLASS_DOOR + 8;
-        String door9 = DoorWorld.CLASS_DOOR + 9;
+        String door0 = CLASS_DOOR + 0;
+        String door1 = CLASS_DOOR + 1;
+        String door2 = CLASS_DOOR + 2;
+        String door3 = CLASS_DOOR + 3;
+        String door4 = CLASS_DOOR + 4;
+        String door5 = CLASS_DOOR + 5;
+        String door6 = CLASS_DOOR + 6;
+        String door7 = CLASS_DOOR + 7;
+        String door8 = CLASS_DOOR + 8;
+        String door9 = CLASS_DOOR + 9;
 
         // hardcoded values for now
         int dx0 = 2;
@@ -206,16 +290,16 @@ public class DoorWorldStateFactory {
         rooms.put(room8, new DoorWorldRoom(room8, 2*thirdX, maxX-1, 2*thirdY, maxY-1, room8Color));
 
         // add the doors
-        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, DoorWorld.VAL_UNLOCKED));
-        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, DoorWorld.VAL_UNLOCKED));
-        doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, DoorWorld.VAL_LOCKED));
-        doors.put(door3, new DoorWorldDoor(door3, dx3, dx3, dy3, dy3, DoorWorld.VAL_LOCKED));
-        doors.put(door4, new DoorWorldDoor(door4, dx4, dx4, dy4, dy4, DoorWorld.VAL_UNLOCKED));
-        doors.put(door5, new DoorWorldDoor(door5, dx5, dx5, dy5, dy5, DoorWorld.VAL_UNLOCKED));
-        doors.put(door6, new DoorWorldDoor(door6, dx6, dx6, dy6, dy6, DoorWorld.VAL_UNLOCKED));
-        doors.put(door7, new DoorWorldDoor(door7, dx7, dx7, dy7, dy7, DoorWorld.VAL_UNLOCKED));
-        doors.put(door8, new DoorWorldDoor(door8, dx8, dx8, dy8, dy8, DoorWorld.VAL_UNLOCKED));
-        doors.put(door9, new DoorWorldDoor(door9, dx9, dx9, dy9, dy9, DoorWorld.VAL_UNLOCKED));
+        doors.put(door0, new DoorWorldDoor(door0, dx0, dx0, dy0, dy0, VAL_UNLOCKED));
+        doors.put(door1, new DoorWorldDoor(door1, dx1, dx1, dy1, dy1, VAL_UNLOCKED));
+        doors.put(door2, new DoorWorldDoor(door2, dx2, dx2, dy2, dy2, VAL_LOCKED));
+        doors.put(door3, new DoorWorldDoor(door3, dx3, dx3, dy3, dy3, VAL_LOCKED));
+        doors.put(door4, new DoorWorldDoor(door4, dx4, dx4, dy4, dy4, VAL_UNLOCKED));
+        doors.put(door5, new DoorWorldDoor(door5, dx5, dx5, dy5, dy5, VAL_UNLOCKED));
+        doors.put(door6, new DoorWorldDoor(door6, dx6, dx6, dy6, dy6, VAL_UNLOCKED));
+        doors.put(door7, new DoorWorldDoor(door7, dx7, dx7, dy7, dy7, VAL_UNLOCKED));
+        doors.put(door8, new DoorWorldDoor(door8, dx8, dx8, dy8, dy8, VAL_UNLOCKED));
+        doors.put(door9, new DoorWorldDoor(door9, dx9, dx9, dy9, dy9, VAL_UNLOCKED));
 
         return new DoorWorldState(maxX, maxY, agent, rooms, doors);
     }

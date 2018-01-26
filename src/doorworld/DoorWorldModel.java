@@ -23,6 +23,7 @@ public class DoorWorldModel implements FullModel {
     public double illegalActionReward;
     public double goalReward;
 
+    // DoorWorldModel
     public DoorWorldModel(double noReward, double illegalActionReward, double goalReward) {
         this.noReward = noReward;
         this.illegalActionReward = illegalActionReward;

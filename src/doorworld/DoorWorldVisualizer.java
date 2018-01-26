@@ -74,7 +74,6 @@ public class DoorWorldVisualizer {
         return rl;
     }
 
-
     public static class AgentPainter implements ObjectPainter, ImageObserver {
 
         public int maxX;
